@@ -3,7 +3,7 @@ import Fetch from 'whatwg-fetch';
 import Promise from 'promise';
 import RandExp from 'randexp';
 import React from 'react';
-import {Button, Input, Modal, Panel} from 'react-bootstrap';
+import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
 
 const WEBTASK_CLUSTER_URL = 'https://webtask.it.auth0.com';
 const WEBTASK_Verification_PATH = '/api/run/auth0-webtask-cli';
@@ -44,9 +44,7 @@ class VerifyConfirmationCode extends React.Component {
         super(props);
 
         this.state = {
-            issuingVerificationCode: false,
-            promptingForToken: false,
-            resendingVerificationCode: false,
+            verifyingCode: false,
         };
     }
 
@@ -58,7 +56,7 @@ class VerifyConfirmationCode extends React.Component {
         const query = `?${encodeURI(this.props.type)}=${encodeURIComponent(this.props.value)}&verification_code=${encodeURIComponent(verificationCode)}`;
 
         this.setState({
-            issuingVerificationCode: true,
+            verifyingCode: true,
         });
 
         return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_Verification_PATH}${query}`, {
@@ -71,7 +69,7 @@ class VerifyConfirmationCode extends React.Component {
             .then(handleIssuanceResponse)
             .catch((err) => self.setState({
                 error: err,
-                issuingVerificationCode: false,
+                verifyingCode: false,
             }));
 
         function handleIssuanceResponse(res) {
@@ -94,8 +92,7 @@ class VerifyConfirmationCode extends React.Component {
 
     render() {
         const self = this;
-        const loading = this.state.VerifyingCode
-            || this.resendingVerificationCode;
+        const loading = this.state.verifyingCode;
 
         return (
             <Panel header="Verify your identity">
@@ -122,7 +119,7 @@ class VerifyConfirmationCode extends React.Component {
                             type="submit"
                             disabled={loading}
                             onClick={loading ? null : self.verifyCode.bind(self)}>
-                            {self.state.VerifyingCode ? 'Verifying code...' : 'Verify'}
+                            {self.state.verifyingCode ? 'Verifying code...' : 'Verify'}
                         </Button>
                     </div>
                 </form>
@@ -139,7 +136,7 @@ class RequestVerification extends React.Component {
 
         this.state = {
             error: false,
-            issuingVerificationCode: false,
+            verifyingCode: false,
             promptingForToken: false,
         };
     }
@@ -174,7 +171,7 @@ class RequestVerification extends React.Component {
         const query = `?${encodeURI(type)}=${encodeURIComponent(value)}`;
 
         this.setState({
-            issuingVerificationCode: true,
+            verifyingCode: true,
         });
 
         return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_Verification_PATH}${query}`, {
@@ -188,7 +185,7 @@ class RequestVerification extends React.Component {
             .catch(function (err) {
                 self.setState({
                     error: err,
-                    issuingVerificationCode: false,
+                    verifyingCode: false,
                 });
             });
 
@@ -230,7 +227,7 @@ class RequestVerification extends React.Component {
 
     render() {
         const self = this;
-        const loading = this.state.issuingVerificationCode
+        const loading = this.state.verifyingCode
             || this.state.promptingForToken;
 
         return (
@@ -238,10 +235,9 @@ class RequestVerification extends React.Component {
                 {self.state.error
                     ? (<Alert
                         bsStyle="danger">
-                        <h4>Error confirming your identity</h4>
                         <p>{self.state.error.message}</p>
                         <p>
-                            <Button onClick={self.tryAgain.bind(self)}>Try again</Button>
+                            <Button bsSize="small" onClick={self.tryAgain.bind(self)}>Try again</Button>
                         </p>
                     </Alert>)
                     : null
@@ -272,7 +268,7 @@ class RequestVerification extends React.Component {
                             type="submit"
                             disabled={loading}
                             onClick={loading ? null : self.issueVerificationCode.bind(self)}>
-                            {self.state.issuingVerificationCode ? 'Sending code...' : 'Send code'}
+                            {self.state.verifyingCode ? 'Sending code...' : 'Send code'}
                         </Button>
                     </div>
                 </form>
@@ -385,7 +381,6 @@ class PromptForToken extends React.Component {
                 {this.state.error
                     ? (<Alert
                         bsStyle="danger">
-                        <h4>Invalid webtask.io token</h4>
                         <p>{this.state.error.message}</p>
                     </Alert>)
                     : null
