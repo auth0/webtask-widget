@@ -1,0 +1,41 @@
+
+body {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+@import "~bootstrap/less/bootstrap.less";
+
+#content {
+
+    flex: 0 1 400px;
+    height: 400px;
+}
+
+.btn-list > .btn {
+    margin-right: 0.5em;
+}
+
+.btn-list.text-right > .btn {
+    margin-left: 0.5em;
+}
+
+
+.a0-container {
+    position: relative;
+}
+
+.a0-layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: none;
+}
+
+.a0-layer:last-child {
+    display: block;
+}
