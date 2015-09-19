@@ -1,3 +1,4 @@
 node_modules
 .recordsCache
 build
+npm-debug.log
