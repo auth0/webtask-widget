@@ -14,7 +14,7 @@ require('brace/theme/textmate');
 
 const defaultCode = `
 module.exports = function (ctx, cb) {
-    cb(null, 'Hello world');
+    cb(null, 'Hello ' + ctx.query.hello);
 };
 `.trim();
 
@@ -146,10 +146,10 @@ class TryWebtask extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 query: {
-                    key: 'value',
+                    hello: 'world',
                 },
                 // body: {
-                //     key: 'value',
+                //     hello: 'world',
                 // }
             }, null, 2),
             result: null,
