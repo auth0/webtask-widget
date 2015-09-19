@@ -1,32 +1,30 @@
 import Decode from 'jwt-decode';
 import Fetch from 'whatwg-fetch';
 import Promise from 'promise';
-import RandExp from 'randexp';
 import React from 'react';
 import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
 
+import deriveProfileFromToken from 'lib/deriveProfileFromToken';
+
 const WEBTASK_CLUSTER_URL = 'https://webtask.it.auth0.com';
-const WEBTASK_Verification_PATH = '/api/run/auth0-webtask-cli';
+const WEBTASK_VERIFICATION_PATH = '/api/run/auth0-webtask-cli';
 const WEBTASK_SMS_EMAIL_TOKEN = 'eyJhbGciOiJIUzI1NiIsImtpZCI6IjIifQ.eyJqdGkiOiIyOTY5N2Y2MzM2ZTI0MWFjYTIxNjc1ZmE4ZWNmMjQ0MSIsImlhdCI6MTQzMzU0NzU2NCwiZHIiOjEsImNhIjpbXSwiZGQiOjAsInVybCI6Imh0dHBzOi8vY2RuLmF1dGgwLmNvbS93ZWJ0YXNrcy9zbXNfdmVyaWZpY2F0aW9uLmpzIiwidGVuIjoiYXV0aDAtd2VidGFzay1jbGkiLCJlY3R4IjoiK3BXR2MweFluUzV3V0laVlZOVjB5MmsyYitFY1MvbC9nTmwrc21ERkR6anFtdEp3RGl1a1JPMzcwVjZOUTJIZlc0am90YTQ0SXdDUE9iYUxneGhJc3pvWEVqdVAza1ZHWmUxZWF4T3BhdjFRelUzSTJRdlk2a1ZVVXM4YkhJMUtMcm52VjNEVjVRb1pJOEoxREErM2tuUDNXc3V4NnlydENPcXlrMUhpVGdFbS83Q1JSUFBmUzVuZTJEMTBKbnlaT2loMis1RTkzeVdidm5LM3F1aHF5VUl6QWlsQW1iSGNLRmpUMjB5OGF0MG03MXBzbm5teXN5K2I4MzJFN2F6aTBNbndTMUZ2UlRaWnNrUVdQdmlrWmpDRWE1bHhKUTBvanNHdklzMmVYRXhYNmxBUFBvTUVWd3k2T1pxYjA2Mzc2Njh4bHczQmRkUm9IUzF5UzZTVGNYcUY1YW42aDhkempxb29OWEF0aFFKeE5wQjN1c0VNcHdZOWxzSmxBNHpTLnhNaitWUGxkYUd5ZHhlcXRNYkJEK0E9PSJ9.cOcejs_Wj4XxpeR8WGxoSpQvec8NhfsScfirFPkATrg';
 
-function invokeModal (Component, options = {}) {
-    console.log('invokeModal', Component.name, options);
-    if (!options.container) options.container = document.body;
+function invokeModal (container, Component, options = {}) {
+    console.log('invokeModal', container, Component.name, Object.assign({container}, options));
 
     const wrapper = document.createElement('div');
     const promise = new Promise((resolve, reject) => {
-        const props = Object.assign({resolve, reject}, options);
+        const props = Object.assign({resolve, reject, container}, options);
 
         React.render((
-            <div className="modal-container">
-                <Component container={this} {...props}></Component>
-            </div>
+            <Component container={this} {...props}></Component>
         ), wrapper);
     });
 
     wrapper.className = 'a0-layer';
 
-    options.container.appendChild(wrapper);
+    container.appendChild(wrapper);
 
     return promise
         .finally(() => {
@@ -35,8 +33,8 @@ function invokeModal (Component, options = {}) {
         });
 }
 
-export function login (options = {}) {
-    return invokeModal(RequestVerification, options);
+export function login (container, options = {}) {
+    return invokeModal(container, RequestVerification, options);
 }
 
 class VerifyConfirmationCode extends React.Component {
@@ -59,7 +57,7 @@ class VerifyConfirmationCode extends React.Component {
             verifyingCode: true,
         });
 
-        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_Verification_PATH}${query}`, {
+        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}${query}`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -174,7 +172,7 @@ class RequestVerification extends React.Component {
             verifyingCode: true,
         });
 
-        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_Verification_PATH}${query}`, {
+        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}${query}`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -198,13 +196,11 @@ class RequestVerification extends React.Component {
         }
 
         function handleIssuanceResponse(res) {
-            const container = self.props.container;
-
             return Promise.resolve(res.json())
                 .then(function (data) {
                     if (!res.ok) throw new Error(data.message || 'Unknown error');
 
-                    return invokeModal(VerifyConfirmationCode, { type, value, data, container });
+                    return invokeModal(self.props.container, VerifyConfirmationCode, { type, value, data });
                 })
                 .then(self.props.resolve);
         }
@@ -212,7 +208,7 @@ class RequestVerification extends React.Component {
 
     promptForToken() {
         this.setState({ promptingForToken: true });
-        invokeModal(PromptForToken, { container: this.props.container })
+        invokeModal(this.props.container, PromptForToken)
             .then(this.props.resolve)
             .catch(() => this.setState({ promptingForToken: false }));
     }
@@ -232,7 +228,7 @@ class RequestVerification extends React.Component {
 
         return (
             <Panel header="Sign in to webtask.io">
-                {self.state.error
+                { self.state.error
                     ? (<Alert
                         bsStyle="danger">
                         <p>{self.state.error.message}</p>
@@ -295,79 +291,39 @@ class PromptForToken extends React.Component {
         const self = this;
         const token = this.refs.token.getValue().trim();
 
-        let ten;
-
-        if (!token) return this.setState({
-            error: new Error('You must enter a webtask token.'),
-        });
-
         try {
-            const claims = Decode(token);
+            const profile = deriveProfileFromToken(token, {url: WEBTASK_CLUSTER_URL});
 
-            ten = claims.ten;
-
-            if (!ten) return this.setState({
-                error: new Error(`Invalid token, missing 'ten' claim '${token}' (https://jwt.io/#id_token=${token}).`),
-            });
-
-            if (Array.isArray(ten)) {
-                ten = ten[0];
-            } else {
-                // Check if the `ten` claim is a RegExp
-                const matches = ten.match(/\/(.+)\//);
-
-                if (matches) {
-                    try {
-                        const regex = new RegExp(matches[1]);
-                        const gen = new RandExp(regex);
-
-                        // Monkey-patch RandExp to be deterministic
-                        gen.randInt = function (l, h) { return l; };
-
-                        ten = gen.gen();
-                    } catch (err) {
-                        return this.setState({
-                            error: new Error(`Unable to derive container name from 'ten' claim '${claims.ten}': ${err.message}.`),
-                        });
-                    }
-                }
-            }
-
-            if (typeof ten !== 'string' || !ten) return this.setState({
-                error: new Error(`Expecting 'ten' claim to be a non-blank string, got '${typeof ten}', with value '${ten}'.`),
-            });
-        } catch (__) {
-            return this.setState({
-                error: new Error('Invalid JSON Web Token.')
+            validateProfile(profile);
+        } catch (e) {
+            this.setState({
+                error: e,
             });
         }
 
-        this.setState({ validatingToken: true });
+        function validateProfile (profile) {
+            self.setState({ validatingToken: true });
 
-        Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}/api/cron/${ten}`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-        }))
-            .then(handleVerificationResponse)
-            .catch((e) => {
-                this.setState({
-                    error: new Error(`Token validation failed: ${e.message}`),
-                    validatingToken: false,
+            return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}/api/cron/${profile.tenant}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${profile.token}`,
+                },
+            }))
+                .then(handleVerificationResponse)
+                .then(() => profile) // Return the profile that is now validated
+                .catch((e) => {
+                    self.setState({
+                        error: new Error(`Token validation failed: ${e.message}`),
+                        validatingToken: false,
+                    });
                 });
-            });
+        }
 
         function handleVerificationResponse (res) {
             return res.json()
                 .then((data) => {
                     if (!res.ok) throw new Error(data.message || 'Unknown error');
-
-                    return self.props.resolve({
-                        tenant: ten,
-                        token: token,
-                        url: WEBTASK_CLUSTER_URL,
-                    });
                 });
         }
     }
@@ -417,85 +373,3 @@ class PromptForToken extends React.Component {
         );
     }
 }
-
-// function validateToken(e) {
-//     e.preventDefault();
-
-//     const self = this;
-//     const token = this.refs.token.getValue().trim();
-
-//     let ten;
-
-//     if (!token) return this.setState({
-//         error: new Error('You must enter a webtask token.'),
-//     });
-
-//     try {
-//         const claims = Decode(token);
-
-//         ten = claims.ten;
-
-//         if (!ten) return this.setState({
-//             error: new Error(`Invalid token, missing 'ten' claim '${token}' (https://jwt.io/#id_token=${token}).`),
-//         });
-
-//         if (Array.isArray(ten)) {
-//             ten = ten[0];
-//         } else {
-//             // Check if the `ten` claim is a RegExp
-//             const matches = ten.match(/\/(.+)\//);
-
-//             if (matches) {
-//                 try {
-//                     const regex = new RegExp(matches[1]);
-//                     const gen = new RandExp(regex);
-
-//                     // Monkey-patch RandExp to be deterministic
-//                     gen.randInt = function (l, h) { return l; };
-
-//                     ten = gen.gen();
-//                 } catch (err) {
-//                     return this.setState({
-//                         error: new Error(`Unable to derive container name from 'ten' claim '${claims.ten}': ${err.message}.`),
-//                     });
-//                 }
-//             }
-//         }
-
-//         if (typeof ten !== 'string' || !ten) return this.setState({
-//             error: new Error(`Expecting 'ten' claim to be a non-blank string, got '${typeof ten}', with value '${ten}'.`),
-//         });
-//     } catch (__) {
-//         return this.setState({
-//             error: new Error('Invalid JSON Web Token.')
-//         });
-//     }
-
-//     this.setState({ validatingToken: true });
-
-//     Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}/api/cron/${ten}`, {
-//         headers: {
-//             'Accept': 'application/json',
-//             'Authorization': `Bearer ${token}`,
-//         },
-//     }))
-//         .then(handleVerificationResponse)
-//         .catch((e) => {
-//             this.setState({
-//                 error: new Error(`Token validation failed: ${e.message}`),
-//                 validatingToken: false,
-//             });
-//         });
-
-//     function handleVerificationResponse (res) {
-//         return res.json()
-//             .then((data) => {
-//                 if (!res.ok) throw new Error(data.message || 'Unknown error');
-
-//                 return self.props.resolve({
-//                     tenant: ten,
-//                     token: token,
-//                 });
-//             });
-//     }
-// }

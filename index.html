@@ -3,11 +3,16 @@
 
     <head>
         <title>Webtask in a box demo</title>
+        <script type="text/javascript" src="build/build.js"></script>
     </head>
 
     <body>
         <div id="content"></div>
-        <script type="text/javascript" src="build/build.js"></script>
+        <script>
+            window.webtaskWidget.open(document.getElementById('content'), {
+                storeProfile: true,
+            });
+        </script>
     </body>
 
 </html>

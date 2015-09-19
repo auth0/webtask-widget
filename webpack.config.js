@@ -17,6 +17,8 @@ module.exports = {
         filename: 'build.js',
         publicPath: '/build/',
         hash: true,
+        library: 'webtaskWidget',
+        libraryTarget: 'umd',
     },
     recordsPath: Path.join(__dirname, '.recordsCache'),
     module: {

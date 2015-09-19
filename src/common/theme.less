@@ -1,3 +1,6 @@
+@import "~bootstrap/less/bootstrap.less";
+@import (less) "~react-json-inspector/json-inspector.css";
+
 
 body {
     display: flex;
@@ -5,20 +8,18 @@ body {
     justify-content: center;
 }
 
-@import "~bootstrap/less/bootstrap.less";
-
 #content {
-
     flex: 0 1 400px;
+    position: relative;
     height: 400px;
 }
 
 .btn-list > .btn {
-    margin-right: 0.5em;
+    margin: 0 1em 0 0;
 }
 
 .btn-list.text-right > .btn {
-    margin-left: 0.5em;
+    margin: 0 0 0 1em;
 }
 
 
@@ -27,15 +28,41 @@ body {
 }
 
 .a0-layer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
     display: none;
 }
 
 .a0-layer:last-child {
     display: block;
+}
+
+.a0-editor.panel {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-content: stretch;
+
+    .panel-heading {
+        flex: 0 0 initial;
+    }
+
+    .panel-body {
+        flex: 1 1 auto;
+
+        display: flex;
+        flex-direction: column;
+        align-content: stretch;
+
+        .form-group-grow {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            position: relative;
+
+            .ace_editor {
+                flex: 1 0 auto;
+                overflow: hidden;
+            }
+        }
+    }
 }
