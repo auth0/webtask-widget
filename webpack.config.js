@@ -51,14 +51,10 @@ module.exports = {
             }, {
                 test: require.resolve('localforage'),
                 loaders: ['exports-loader?localforage', 'script-loader'],
-            }, {
-                test: require.resolve('whatwg-fetch'),
-                loader: 'exports-loader?window.fetch',
             }
         ],
         noParse: [
             require.resolve('localforage'),
-            require.resolve('reqwest'),
         ],
     },
     plugins: [

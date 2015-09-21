@@ -1,10 +1,10 @@
+import Bluebird from 'bluebird';
 import Decode from 'jwt-decode';
-import Fetch from 'whatwg-fetch';
-import Promise from 'promise';
 import React from 'react';
-import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
+import Sandbox from 'sandboxjs';
+import Superagent from 'superagent';
 
-import deriveProfileFromToken from 'lib/deriveProfileFromToken';
+import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
 
 const WEBTASK_CLUSTER_URL = 'https://webtask.it.auth0.com';
 const WEBTASK_VERIFICATION_PATH = '/api/run/auth0-webtask-cli';
@@ -14,7 +14,7 @@ function invokeModal (container, Component, options = {}) {
     console.log('invokeModal', container, Component.name, Object.assign({container}, options));
 
     const wrapper = document.createElement('div');
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Bluebird((resolve, reject) => {
         const props = Object.assign({resolve, reject, container}, options);
 
         React.render((
@@ -51,40 +51,45 @@ class VerifyConfirmationCode extends React.Component {
 
         const self = this;
         const verificationCode = this.refs.verificationCode.getValue().trim();
-        const query = `?${encodeURI(this.props.type)}=${encodeURIComponent(this.props.value)}&verification_code=${encodeURIComponent(verificationCode)}`;
+        const query = {
+            verification_code: verificationCode,
+        };
+
+        query[this.props.type] = this.props.value;
 
         this.setState({
             verifyingCode: true,
         });
 
-        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}${query}`, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${WEBTASK_SMS_EMAIL_TOKEN}`,
-            },
-        }))
+        const request = Superagent
+            .post(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}`)
+            .query(query)
+            .accept('json')
+            .set('Authorization', `Bearer ${WEBTASK_SMS_EMAIL_TOKEN}`);
+
+        return issueRequest(request)
+            .get('body')
             .then(handleIssuanceResponse)
             .catch((err) => self.setState({
                 error: err,
                 verifyingCode: false,
             }));
 
-        function handleIssuanceResponse(res) {
-            return Promise.resolve(res.json())
-                .then(function (data) {
-                    if (!res.ok) throw new Error(data.message || 'Unknown error');
-                    if (!data.id_token) throw new Error(`Server response missing 'id_token' claim.`);
+        function handleIssuanceResponse (data) {
+            if (!data.id_token) throw new Error(`Server response missing 'id_token' claim.`);
 
-                    const claims = Decode(data.id_token);
+            const claims = Decode(data.id_token);
 
-                    if (!claims || !claims.webtask || !claims.webtask.token) {
-                        throw new Error('Unexpected data received from server.');
-                    }
+            if (!claims || !claims.webtask || !claims.webtask.token) {
+                throw new Error('Unexpected data received from server.');
+            }
 
-                    return self.props.resolve(claims.webtask);
-                })
-                .catch(self.props.reject);
+            return self.props.resolve({
+                url: claims.webtask.url,
+                container: claims.webtask.tenant,
+                containers: [claims.webtask.tenant, claims.webtask.subtenant],
+                token: claims.webtask.token,
+            });
         }
     }
 
@@ -166,19 +171,22 @@ class RequestVerification extends React.Component {
             });
         }
 
-        const query = `?${encodeURI(type)}=${encodeURIComponent(value)}`;
+        const query = {};
+
+        query[type] = value;
 
         this.setState({
             verifyingCode: true,
         });
 
-        return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}${query}`, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${WEBTASK_SMS_EMAIL_TOKEN}`,
-            },
-        }))
+        const request = Superagent
+            .post(`${WEBTASK_CLUSTER_URL}${WEBTASK_VERIFICATION_PATH}`)
+            .query(query)
+            .accept('json')
+            .set('Authorization', `Bearer ${WEBTASK_SMS_EMAIL_TOKEN}`);
+
+        return issueRequest(request)
+            .get('body')
             .then(handleIssuanceResponse)
             .catch(function (err) {
                 self.setState({
@@ -195,14 +203,8 @@ class RequestVerification extends React.Component {
             return !!value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
         }
 
-        function handleIssuanceResponse(res) {
-            return Promise.resolve(res.json())
-                .then(function (data) {
-                    if (!res.ok) throw new Error(data.message || 'Unknown error');
-
-                    return invokeModal(self.props.container, VerifyConfirmationCode, { type, value, data });
-                })
-                .then(self.props.resolve);
+        function handleIssuanceResponse(data) {
+            return self.props.resolve(invokeModal(self.props.container, VerifyConfirmationCode, { type, value, data }));
         }
     }
 
@@ -292,38 +294,30 @@ class PromptForToken extends React.Component {
         const token = this.refs.token.getValue().trim();
 
         try {
-            const profile = deriveProfileFromToken(token, {url: WEBTASK_CLUSTER_URL});
+            const profile = Sandbox.fromToken(token, {url: WEBTASK_CLUSTER_URL});
+
+            console.log('profile', profile);
 
             validateProfile(profile);
         } catch (e) {
+            console.error(e);
             this.setState({
                 error: e,
+                validatingToken: false,
             });
         }
 
         function validateProfile (profile) {
             self.setState({ validatingToken: true });
 
-            return Promise.resolve(Fetch(`${WEBTASK_CLUSTER_URL}/api/cron/${profile.tenant}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${profile.token}`,
-                },
-            }))
-                .then(handleVerificationResponse)
+            return profile.listCronJobs()
                 .then(() => profile) // Return the profile that is now validated
+                .then(self.props.resolve)
                 .catch((e) => {
                     self.setState({
                         error: new Error(`Token validation failed: ${e.message}`),
                         validatingToken: false,
                     });
-                });
-        }
-
-        function handleVerificationResponse (res) {
-            return res.json()
-                .then((data) => {
-                    if (!res.ok) throw new Error(data.message || 'Unknown error');
                 });
         }
     }
@@ -372,4 +366,31 @@ class PromptForToken extends React.Component {
             </Panel>
         );
     }
+}
+
+function issueRequest (request) {
+    return Bluebird.resolve(request)
+        .catch(function (err) {
+            throw new Error('Error communicating with the webtask cluster: '
+                + err.message);
+        })
+        .then(function (res) {
+            if (res.error) throw createResponseError(res);
+
+            // Api compatibility
+            res.statusCode = res.status;
+
+            return res;
+        });
+}
+
+function createResponseError (res) {
+    if (res.clientError) return new Error('Invalid request: '
+        + res.body && res.body.message
+            ? res.body.message
+            : res.text);
+    if (res.serverError) return new Error('Server error: '
+        + res.body && res.body.message
+            ? res.body.message
+            : res.text);
 }

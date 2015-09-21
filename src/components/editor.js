@@ -1,9 +1,8 @@
 import AceEditor from 'react-ace';
+import Bluebird from 'bluebird';
 import Brace from 'brace';
-import Fetch from 'whatwg-fetch';
-import Promise from 'promise';
 import React from 'react';
-import Qs from 'qs';
+import Sandbox from 'sandboxjs';
 
 import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
 import Inspector from 'react-json-inspector';
@@ -157,7 +156,6 @@ class TryWebtask extends React.Component {
     }
 
     run () {
-        // const createTokenUrl = `${this.props.profile.url}/api/tokens/issue`;
         const json = this.refs.data.editor.getValue();
         const code = this.props.code;
         let data;
@@ -169,60 +167,50 @@ class TryWebtask extends React.Component {
                 error: new Error('The data you enter must be valid json.'),
             });
         }
-        const query = Qs.stringify(Object.assign({}, data.query, {
-            webtask_pb: 1,
-            webtask_mb: 1,
-        }));
-        const runWebtaskUrl = `${this.props.profile.url}/api/run/${this.props.profile.tenant}?${query}`;
+
+        const sandbox = Sandbox.init(this.props.profile);
 
         this.setState({
             result: null,
             runningCode: true,
         });
 
-        Promise.resolve(Fetch(runWebtaskUrl, {
+        sandbox.run(code, {
             method: 'post',
-            headers: Object.assign({
-                'Authorization': `Bearer ${this.props.profile.token}`,
-                'Content-Type': 'text/plain',
-            }, data.headers),
-            body: code,
-        }))
+            parse: true,
+            headers: data.headers,
+            query: data.query,
+            body: data.body,
+        })
             .then((res) => {
-                const body = res.ok ? res.text() : res.json();
+                if (res.error) throw new Error(res.error);
 
-                return body
-                    .then((data) => {
-                        if (!res.ok) throw new Error(data.error);
+                const headers = res.header;
+                const auth0HeaderRx = /^x-auth0/;
 
-                        const it = res.headers.entries();
-                        const headers = {};
-                        let header;
+                for (let header in headers) {
+                    if (auth0HeaderRx.test(header)) {
+                        headers[header] = JSON.parse(headers[header]);
+                    }
+                }
 
-                        console.log('headers', res.headers.entries());
-
-                        while (!(header = it.next()).done) {
-                            headers[header.value[0]] = header.value[1];
-                        }
-
-                        this.setState({
-                            result: {
-                                headers: headers,
-                                statusCode: res.status,
-                                body: data,
-                            }
-                        });
-                    });
+                this.setState({
+                    result: {
+                        headers: headers,
+                        statusCode: res.status,
+                        body: res.body || res.text,
+                    }
+                });
             })
             .catch((err) => this.setState({error: err}))
             .finally(() => this.setState({runningCode: false}));
     }
-    
+
     onHide() {
         this.setState({
             result: null,
         });
-        
+
         this.props.onHide();
     }
 
@@ -278,7 +266,7 @@ class TryWebtask extends React.Component {
 export function editor (container, options = {}) {
     console.log('editor', container, Object.assign({container}, options));
 
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Bluebird((resolve, reject) => {
         const props = Object.assign({resolve, reject, container}, options);
 
         React.render((
