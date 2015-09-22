@@ -4,7 +4,7 @@ import Brace from 'brace';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
-import {Alert, Button, Input, Modal, Panel} from 'react-bootstrap';
+import {Alert, Button, Collapse, Input, Modal, Panel} from 'react-bootstrap';
 import Inspector from 'react-json-inspector';
 
 require('brace/mode/javascript');
@@ -24,9 +24,12 @@ class Editor extends React.Component {
 
         this.state = {
             code: props.code || defaultCode,
+            creatingToken: false,
             editingSecrets: false,
             savingWebtask: false,
             tryingWebtask: false,
+            mergeBody: true,
+            parseBody: true,
         };
     }
 
@@ -44,7 +47,19 @@ class Editor extends React.Component {
     }
 
     tryWebtask () {
-        return this.setState({tryingWebtask: true});
+        this.setState({ creatingToken: true });
+
+        const sandbox = Sandbox.init(this.props.profile);
+
+        sandbox.create(this.state.code, {
+            merge: this.state.mergeBody,
+            parse: this.state.parseBody,
+        })
+            .then((webtask) => this.setState({
+                webtask,
+                tryingWebtask: true,
+            }))
+            .finally(() => this.setState({ creatingToken: false }));
     }
 
     saveWebtask () {
@@ -59,8 +74,12 @@ class Editor extends React.Component {
 
     render() {
         const self = this;
-        const loading = false;
+        const loading = this.state.creatingToken
+            || this.state.editingSecrets
+            || this.state.savingWebtask
+            || this.state.tryingWebtask;
 
+        // Parked for future reference
         const webtaskName = (
             <Input
                 type="text"
@@ -85,7 +104,7 @@ class Editor extends React.Component {
                     show={self.state.tryingWebtask}
                     onHide={self.setState.bind(self, { tryingWebtask: false })}
                     code={self.state.code}
-                    profile={self.props.profile}
+                    webtask={self.state.webtask}
                 />
                 <div className="form-group form-group-grow">
                     <label className="control-label">Edit webtask code:</label>
@@ -98,16 +117,39 @@ class Editor extends React.Component {
                         value={this.state.code}
                         height=""
                         width=""
+                        readOnly={loading}
                         onChange={self.onChange.bind(self)}
                         editorProps={{$blockScrolling: true}}
                     />
+                </div>
+                <div className="form-group">
+                    <label className="checkbox-inline">
+                        <input
+                            ref="parseBody"
+                            type="checkbox"
+                            onChange={(e) => self.setState({parseBody: e.target.checked})}
+                            disabled={loading}
+                            checked={this.state.parseBody}
+                        />
+                        parse body
+                    </label>
+                    <label className="checkbox-inline">
+                        <input
+                            ref="mergeBody"
+                            type="checkbox"
+                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
+                            disabled={loading}
+                            checked={this.state.mergeBody}
+                        />
+                        merge body
+                    </label>
                 </div>
 
                 <div className="btn-list text-right">
                     <Button
                         bsStyle="link"
                         type="button"
-                        disabled={loading}
+                        disabled={loading || true}
                         onClick={loading ? null : self.editSecrets.bind(self)}>
                         {self.state.editingSecrets ? 'Editing secrets...' : 'Edit secrets'}
                     </Button>
@@ -116,13 +158,13 @@ class Editor extends React.Component {
                         type="submit"
                         disabled={loading}
                         onClick={loading ? null : self.tryWebtask.bind(self)}>
-                        {self.state.tryingWebtask ? 'Running...' : 'Try'}
+                        {self.state.creatingToken ? 'Creating...' : 'Try'}
                     </Button>
 
                     <Button
                         bsStyle="primary"
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || true}
                         onClick={loading ? null : self.saveWebtask.bind(self)}>
                         {self.state.savingWebtask ? 'Saving...' : 'Save'}
                     </Button>
@@ -140,6 +182,9 @@ class TryWebtask extends React.Component {
         this.state = {
             error: null,
             runningCode: false,
+            httpMethod: 'post',
+            parseBody: true,
+            mergeBody: true,
             json: JSON.stringify({
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,17 +192,17 @@ class TryWebtask extends React.Component {
                 query: {
                     hello: 'world',
                 },
-                // body: {
-                //     hello: 'world',
-                // }
-            }, null, 2),
+                body: {
+                    hint: 'Only sent for PUT, POST and PATCH requests',
+                },
+            }, null, 4),
             result: null,
         };
     }
 
-    run () {
+    run (method) {
         const json = this.refs.data.editor.getValue();
-        const code = this.props.code;
+        const webtask = this.props.webtask;
         let data;
 
         try {
@@ -168,16 +213,16 @@ class TryWebtask extends React.Component {
             });
         }
 
-        const sandbox = Sandbox.init(this.props.profile);
-
         this.setState({
+            error: null,
             result: null,
             runningCode: true,
         });
 
-        sandbox.run(code, {
-            method: 'post',
-            parse: true,
+        webtask.run({
+            method: method,
+            parse: !!this.state.parseBody,
+            merge: !!this.state.mergeBody,
             headers: data.headers,
             query: data.query,
             body: data.body,
@@ -208,6 +253,7 @@ class TryWebtask extends React.Component {
 
     onHide() {
         this.setState({
+            error: null,
             result: null,
         });
 
@@ -217,13 +263,36 @@ class TryWebtask extends React.Component {
     render () {
         const self = this;
         const loading = this.state.runningCode;
+        const methodInput = (
+            <Input
+                ref="httpMethod"
+                type="select"
+                label="Http method:"
+                labelClassName="col-xs-2"
+                wrapperClassName="col-xs-10"
+                onChange={() => self.setState({ httpMethod: self.refs.httpMethod.getValue() })}
+                value={self.state.httpMethod}>
+                <option value="get">GET</option>
+                <option value="put">PUT</option>
+                <option value="post">POST</option>
+                <option value="patch">PATCH</option>
+                <option value="delete">DELETE</option>
+            </Input>
+        );
 
         return (
-            <Modal show={self.props.show} onHide={self.onHide.bind(self)}>
+            <Modal bsSize="lg" show={self.props.show} onHide={self.onHide.bind(self)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Try webtask</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    { self.state.error
+                        ? (<Alert
+                            bsStyle="danger">
+                            <p>{self.state.error.message}</p>
+                        </Alert>)
+                        : null
+                    }
                     <div className="form-group form-group-grow">
                         <label className="control-label">Edit webtask payload:</label>
                         <AceEditor
@@ -253,8 +322,32 @@ class TryWebtask extends React.Component {
                         <Button
                             type="submit"
                             disabled={loading}
-                            onClick={loading ? null : self.run.bind(self)}>
-                            {self.state.runningCode ? 'Running...' : 'Run webtask'}
+                            onClick={loading ? null : self.run.bind(self, 'get')}>
+                            GET
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            onClick={loading ? null : self.run.bind(self, 'put')}>
+                            PUT
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            onClick={loading ? null : self.run.bind(self, 'post')}>
+                            POST
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            onClick={loading ? null : self.run.bind(self, 'patch')}>
+                            PATCH
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            onClick={loading ? null : self.run.bind(self, 'delete')}>
+                            DELETE
                         </Button>
                     </div>
                 </Modal.Body>

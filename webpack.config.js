@@ -1,4 +1,3 @@
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var Path = require('path');
 var Package = require('./package.json');
 var Webpack = require('webpack');
@@ -8,7 +7,7 @@ module.exports = {
     devtool: 'source-map',
     context: Path.join(__dirname, 'src'),
     entry: [
-        'webpack-dev-server/client?http://0.0.0.0:3000', // WebpackDevServer host and port
+        'webpack-dev-server/client?http://0.0.0.0:8080', // WebpackDevServer host and port
         'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
         './webtask.js',
     ],
