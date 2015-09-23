@@ -3,9 +3,11 @@ import Bluebird from 'bluebird';
 import Brace from 'brace';
 import React from 'react';
 import Sandbox from 'sandboxjs';
+// import ZeroClipboard from 'zeroclipboard';
 
 import {Alert, Button, Collapse, Input, Modal, Panel} from 'react-bootstrap';
 import Inspector from 'react-json-inspector';
+import ReactZeroClipboard from 'react-zeroclipboard';
 
 require('brace/mode/javascript');
 require('brace/mode/json');
@@ -26,11 +28,13 @@ class Editor extends React.Component {
             code: props.code || defaultCode,
             secrets: {},
             creatingToken: false,
-            editingSecrets: false,
-            creatingWebtask: false,
+            showAdvanced: false,
+            savingWebtask: false,
             tryingWebtask: false,
             mergeBody: true,
             parseBody: true,
+            name: '',
+            successMessage: '',
         };
     }
 
@@ -44,11 +48,14 @@ class Editor extends React.Component {
     }
 
     toggleSecrets () {
-        this.setState({ editingSecrets: !this.state.editingSecrets });
+        this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
     tryWebtask () {
-        this.setState({ creatingToken: true });
+        this.setState({
+            creatingToken: true,
+            successMessage: '',
+        });
 
         const sandbox = Sandbox.init(this.props.profile);
 
@@ -56,57 +63,76 @@ class Editor extends React.Component {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
             secret: this.state.secrets,
+            name: this.state.name
+                ? this.state.name + '__try'
+                : null,
         })
-            .then((webtask) => this.setState({
-                webtask,
+            .then((testWebtask) => this.setState({
+                testWebtask,
                 tryingWebtask: true,
             }))
             .finally(() => this.setState({ creatingToken: false }));
     }
 
-    createWebtask () {
+    saveWebtask () {
+        this.setState({
+            savingWebtask: true,
+            successMessage: '',
+        });
 
+        const sandbox = Sandbox.init(this.props.profile);
+
+        sandbox.create(this.state.code, {
+            merge: this.state.mergeBody,
+            parse: this.state.parseBody,
+            secret: this.state.secrets,
+            name: this.state.name,
+        })
+            .then((webtask) => this.setState({
+                webtask,
+                successMessage: 'Webtask successfully created',
+            }))
+            .finally(() => this.setState({ savingWebtask: false }));
     }
 
     onChange(code) {
         this.setState({
             code: code,
-        })
+        });
     }
 
     render() {
         const self = this;
         const loading = this.state.creatingToken
-            || this.state.creatingWebtask
+            || this.state.savingWebtask
             || this.state.tryingWebtask;
 
-        // Parked for future reference
-        const webtaskName = (
-            <Input
-                type="text"
-                value={this.state.webtaskName}
-                disabled={loading}
-                placeholder="Name"
-                label="Webtask name"
-                ref="webtaskName"
-            />
-        );
+        const copyButton = this.state.webtask
+            ?   (<ReactZeroClipboard text={this.state.webtask.url}>
+                    <Button>Copy</Button>
+                </ReactZeroClipboard>)
+            : null;
 
         return (
             <Panel className="a0-editor" header="Create a webtask">
                 { self.state.error
                     ? (<Alert
                         bsStyle="danger">
-                        <p>{self.state.error.message}</p>
+                        {self.state.error.message}
                     </Alert>)
                     : null
                 }
-                <TryWebtask
-                    show={self.state.tryingWebtask}
-                    onHide={self.setState.bind(self, { tryingWebtask: false })}
-                    code={self.state.code}
-                    webtask={self.state.webtask}
-                />
+
+                { self.state.tryingWebtask
+                    ? (<TryWebtask
+                        show={self.state.tryingWebtask}
+                        onHide={self.setState.bind(self, { tryingWebtask: false })}
+                        code={self.state.code}
+                        webtask={self.state.testWebtask}
+                    />)
+                    : null
+                }
+
                 <div className="form-group form-group-grow">
                     <label className="control-label">Edit webtask code:</label>
                     <AceEditor
@@ -116,6 +142,7 @@ class Editor extends React.Component {
                         mode="javascript"
                         theme="textmate"
                         value={this.state.code}
+                        maxLines={15}
                         height=""
                         width=""
                         readOnlyq={loading}
@@ -123,64 +150,105 @@ class Editor extends React.Component {
                         editorProps={{$blockScrolling: true}}
                     />
                 </div>
-                <div className="form-group">
-                    <label className="checkbox-inline">
-                        <input
-                            ref="parseBody"
-                            type="checkbox"
-                            onChange={(e) => self.setState({parseBody: e.target.checked})}
-                            disabled={loading}
-                            checked={this.state.parseBody}
-                        />
-                        parse body
-                    </label>
-                    <label className="checkbox-inline">
-                        <input
-                            ref="mergeBody"
-                            type="checkbox"
-                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
-                            disabled={loading}
-                            checked={this.state.mergeBody}
-                        />
-                        merge body
-                    </label>
-                </div>
 
-                { self.state.editingSecrets
-                    ?   <div className="form-group">
-                            <SecretEditor
-                                ref="secrets"
-                                secrets={self.state.secrets}
+                { self.state.showAdvanced
+                    ?   <div class="a0-advanced">
+                            <label className="control-label">Advaned options:</label>
+                            <div className="form-group">
+                                <label className="checkbox-inline">
+                                    <input
+                                        ref="parseBody"
+                                        type="checkbox"
+                                        onChange={(e) => self.setState({parseBody: e.target.checked})}
+                                        disabled={loading}
+                                        checked={self.state.parseBody}
+                                    />
+                                    parse body
+                                </label>
+                                <label className="checkbox-inline">
+                                    <input
+                                        ref="mergeBody"
+                                        type="checkbox"
+                                        onChange={(e) => self.setState({mergeBody: e.target.checked})}
+                                        disabled={loading}
+                                        checked={self.state.mergeBody}
+                                    />
+                                    merge body
+                                </label>
+                            </div>
+
+                            <Input
+                                label="Webtask name (optional)"
+                                type="text"
+                                bsSize="small"
+                                placeholder="Name"
+                                name="key"
+                                ref="name"
+                                value={self.state.name}
                                 onChange={() => self.setState({
-                                    secrets: self.refs.secrets.getValue()
+                                    name: self.refs.name.getValue(),
                                 })}
                             />
+
+                            <div className="form-group">
+                                <SecretEditor
+                                    ref="secrets"
+                                    secrets={self.state.secrets}
+                                    onChange={() => self.setState({
+                                        secrets: self.refs.secrets.getValue()
+                                    })}
+                                />
+                            </div>
                         </div>
+                    : null
+                }
+
+                { self.state.webtask
+                    ? (<div>
+                        { self.state.successMessage
+                            ? (<Alert
+                                bsStyle="success"
+                                onDismiss={() => self.setState({successMessage: ''})}
+                                dismissAfter={2000}>
+                                {self.state.successMessage}
+                            </Alert>)
+                            : null
+                        }
+
+                        <Input
+                            type="text"
+                            disabled
+                            label="Webtask url:"
+                            buttonAfter={copyButton}
+                            value={self.state.webtask.url}
+                        />
+                        </div>)
                     : null
                 }
 
                 <div className="btn-list text-right">
                     <Button
                         bsStyle="link"
+                        className="pull-left"
                         type="button"
                         disabled={loading}
                         onClick={loading ? null : self.toggleSecrets.bind(self)}>
-                        {self.state.editingSecrets ? 'Hide secrets' : 'Edit secrets'}
+                        {self.state.showAdvanced ? 'Hide advanced' : 'Show advanced'}
                     </Button>
 
                     <Button
                         type="submit"
                         disabled={loading}
                         onClick={loading ? null : self.tryWebtask.bind(self)}>
-                        {self.state.creatingToken ? 'Creating...' : 'Try'}
+                        {self.state.creatingToken ? 'Sending...' : 'Try'}
                     </Button>
 
                     <Button
                         bsStyle="primary"
                         type="submit"
-                        disabled={loading || true}
-                        onClick={loading ? null : self.createWebtask.bind(self)}>
-                        {self.state.creatingWebtask ? 'Creating...' : 'Create'}
+                        disabled={loading}
+                        onClick={loading ? null : self.saveWebtask.bind(self)}>
+                        {self.state.savingWebtask ? 'Saving...' : 'Save'}
                     </Button>
                 </div>
             </Panel>
@@ -199,7 +267,9 @@ class TryWebtask extends React.Component {
             httpMethod: 'post',
             parseBody: true,
             mergeBody: true,
+            logs: [],
             json: JSON.stringify({
+                path: '',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -212,6 +282,32 @@ class TryWebtask extends React.Component {
             }, null, 4),
             result: null,
         };
+    }
+
+    componentDidMount() {
+        this.logStream = this.props.webtask.createLogStream();
+
+        this.logStream.on('error', (e) => {
+            console.error(e);
+
+            this.setState({
+                error: new Error('Logs error: ' + e.message),
+            });
+        });
+        this.logStream.on('data', (msg) => {
+            const logs = this.state.logs.slice();
+
+            if (msg.name === 'sandbox-logs') {
+                logs.push(msg);
+                logs.sort((a, b) => new Date(b) - new Date(a));
+
+                this.setState({ logs });
+            }
+        });
+    }
+
+    componentWillUnmount() {
+        this.logStream.destroy();
     }
 
     run (method) {
@@ -235,6 +331,7 @@ class TryWebtask extends React.Component {
 
         webtask.run({
             method: method,
+            path: data.path,
             parse: !!this.state.parseBody,
             merge: !!this.state.mergeBody,
             headers: data.headers,
@@ -262,7 +359,11 @@ class TryWebtask extends React.Component {
                 });
             })
             .catch((err) => this.setState({error: err}))
-            .finally(() => this.setState({runningCode: false}));
+            .finally(() => {
+                this.setState({
+                    runningCode: false,
+                });
+            });
     }
 
     onHide() {
@@ -277,101 +378,127 @@ class TryWebtask extends React.Component {
     render () {
         const self = this;
         const loading = this.state.runningCode;
-        const methodInput = (
-            <Input
-                ref="httpMethod"
-                type="select"
-                label="Http method:"
-                labelClassName="col-xs-2"
-                wrapperClassName="col-xs-10"
-                onChange={() => self.setState({ httpMethod: self.refs.httpMethod.getValue() })}
-                value={self.state.httpMethod}>
-                <option value="get">GET</option>
-                <option value="put">PUT</option>
-                <option value="post">POST</option>
-                <option value="patch">PATCH</option>
-                <option value="delete">DELETE</option>
-            </Input>
-        );
 
-        return (
-            <Modal bsSize="lg" show={self.props.show} onHide={self.onHide.bind(self)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Try webtask</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    { self.state.error
-                        ? (<Alert
-                            bsStyle="danger">
-                            <p>{self.state.error.message}</p>
-                        </Alert>)
-                        : null
-                    }
-                    <div className="form-group form-group-grow">
-                        <label className="control-label">Edit webtask payload:</label>
-                        <AceEditor
-                            ref="data"
-                            name="data"
-                            className="form-control"
-                            mode="json"
-                            theme="textmate"
-                            value={self.state.json}
-                            height="200px"
-                            width=""
-                            onChange={loading ? null : (json) => self.setState({ json })}
-                            readOnly={loading}
-                            editorProps={{$blockScrolling: true}}
+        const copyButton = this.props.webtask
+            ?   (<ReactZeroClipboard text={this.props.webtask.url}>
+                    <Button>Copy</Button>
+                </ReactZeroClipboard>)
+            : null;
+
+        /*// Parked for now
+        const logsTable =
+                                    <table className="a0-logs table table-striped table-hover">
+                                        { self.state.logs.map((message) => (
+                                            <tbody>
+                                                <tr className="a0-logs-line" key={message.time + message.msg}>
+                                                    <td>{message.time}</td>
+                                                    <td>{message.msg}</td>
+                                                </tr>
+                                            </tbody>
+                                        ))}
+                                    </table>;*/
+
+
+        return self.props.webtask
+            ?   (
+                <Modal bsSize="lg" show={self.props.show} onHide={self.onHide.bind(self)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Try webtask</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        { self.state.error
+                            ? (<Alert
+                                bsStyle="danger">
+                                {self.state.error.message}
+                            </Alert>)
+                            : null
+                        }
+                        <Input
+                            type="text"
+                            disabled
+                            label="Webtask url:"
+                            buttonAfter={copyButton}
+                            value={self.props.webtask.url}
+                            help="This is the url of the temporary webtask created to this playground."
                         />
-                    </div>
+                        <div className="form-group form-group-grow">
+                            <label className="control-label">Edit webtask payload:</label>
+                            <AceEditor
+                                ref="data"
+                                name="data"
+                                className="form-control"
+                                mode="json"
+                                theme="textmate"
+                                value={self.state.json}
+                                height=""
+                                width=""
+                                maxLines={12}
+                                onChange={loading ? null : (json) => self.setState({ json })}
+                                readOnly={loading}
+                                editorProps={{$blockScrolling: true}}
+                            />
+                        </div>
 
-                    { self.state.result
-                        ?   <div>
-                                <label className="control-label">Result:</label>
-                                <Inspector data={self.state.result} search={false} />
-                            </div>
-                        : null
-                    }
+                        { self.state.result
+                            ?   <div>
+                                    <label className="control-label">Result:</label>
+                                    <Inspector data={self.state.result} search={null} />
+                                </div>
+                            : null
+                        }
 
-                    <div className="btn-list text-right">
-                        <Button
-                            type="submit"
-                            bsStyle="primary"
-                            disabled={loading}
-                            onClick={loading ? null : self.run.bind(self, 'get')}>
-                            GET
-                        </Button>
-                        <Button
-                            type="submit"
-                            bsStyle="primary"
-                            disabled={loading}
-                            onClick={loading ? null : self.run.bind(self, 'put')}>
-                            PUT
-                        </Button>
-                        <Button
-                            type="submit"
-                            bsStyle="primary"
-                            disabled={loading}
-                            onClick={loading ? null : self.run.bind(self, 'post')}>
-                            POST
-                        </Button>
-                        <Button
-                            type="submit"
-                            bsStyle="primary"
-                            disabled={loading}
-                            onClick={loading ? null : self.run.bind(self, 'patch')}>
-                            PATCH
-                        </Button>
-                        <Button
-                            type="submit"
-                            bsStyle="primary"
-                            disabled={loading}
-                            onClick={loading ? null : self.run.bind(self, 'delete')}>
-                            DELETE
-                        </Button>
-                    </div>
-                </Modal.Body>
-            </Modal>
-        );
+                        { self.state.logs && self.state.logs.length
+                            ?   <div>
+                                    <label className="control-label">Logs:</label>
+                                    <pre className="a0-logs">
+                                        { self.state.logs.map((line) => `${line.msg}\n` ) }
+                                    </pre>
+                                </div>
+                            : null
+                        }
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <div className="btn-list text-right">
+                            <Button
+                                type="submit"
+                                bsStyle="primary"
+                                disabled={loading}
+                                onClick={loading ? null : self.run.bind(self, 'get')}>
+                                GET
+                            </Button>
+                            <Button
+                                type="submit"
+                                bsStyle="primary"
+                                disabled={loading}
+                                onClick={loading ? null : self.run.bind(self, 'put')}>
+                                PUT
+                            </Button>
+                            <Button
+                                type="submit"
+                                bsStyle="primary"
+                                disabled={loading}
+                                onClick={loading ? null : self.run.bind(self, 'post')}>
+                                POST
+                            </Button>
+                            <Button
+                                type="submit"
+                                bsStyle="primary"
+                                disabled={loading}
+                                onClick={loading ? null : self.run.bind(self, 'patch')}>
+                                PATCH
+                            </Button>
+                            <Button
+                                type="submit"
+                                bsStyle="primary"
+                                disabled={loading}
+                                onClick={loading ? null : self.run.bind(self, 'delete')}>
+                                DELETE
+                            </Button>
+                        </div>
+                    </Modal.Footer>
+                </Modal>)
+            : null;
     }
 }
 
@@ -469,9 +596,9 @@ class SecretEditor extends React.Component {
         return (
             <div className="secret-editor">
                 <label className="label">Edit secrets:</label>
-                <table className="table table-hover">
+                <table className="secret-editor-table">
                     <tbody>
-                        {self.state.secrets.map(({key, value}, i) => (
+                        { self.state.secrets.map(({key, value}, i) => (
                             <tr className="secret-editor-row" key={i}>
                                 <td>
                                     <Input
@@ -499,6 +626,7 @@ class SecretEditor extends React.Component {
                                     <Button
                                         bsStyle="danger"
                                         bsSize="sm"
+                                        disabled={self.state.secrets.length === 1 && !self.state.secrets[0].key && !self.state.secrets[0].value}
                                         onClick={() => self.removeSecret(i)}
                                     >
                                         Remove
@@ -511,6 +639,7 @@ class SecretEditor extends React.Component {
                                 <Button
                                     bsStyle="link"
                                     bsSize="sm"
+                                    disabled={self.state.secrets.length === 1 && !self.state.secrets[0].key && !self.state.secrets[0].value}
                                     onClick={self.addSecret.bind(self)}
                                 >
                                     Add...
@@ -520,120 +649,6 @@ class SecretEditor extends React.Component {
                     </tbody>
                 </table>
             </div>
-        );
-    }
-}
-
-class CreateWebtask extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            error: null,
-            creatingWebtask: false,
-        };
-    }
-
-
-    render() {
-        const self = this;
-        const loading = this.state.creatingWebtask;
-
-        // Parked for future reference
-        const webtaskName = (
-            <Input
-                type="text"
-                value={this.state.webtaskName}
-                disabled={loading}
-                placeholder="Name"
-                label="Webtask name"
-                ref="webtaskName"
-            />
-        );
-
-        return (
-            <Panel className="a0-editor" header="Create a webtask">
-                { self.state.error
-                    ? (<Alert
-                        bsStyle="danger">
-                        <p>{self.state.error.message}</p>
-                    </Alert>)
-                    : null
-                }
-                <TryWebtask
-                    show={self.state.tryingWebtask}
-                    onHide={self.setState.bind(self, { tryingWebtask: false })}
-                    code={self.state.code}
-                    webtask={self.state.webtask}
-                />
-                <div className="form-group form-group-grow">
-                    <label className="control-label">Edit webtask code:</label>
-                    <AceEditor
-                        ref="ace"
-                        name="code"
-                        className="form-control"
-                        mode="javascript"
-                        theme="textmate"
-                        value={this.state.code}
-                        height=""
-                        width=""
-                        readOnlyq={loading}
-                        onChange={self.onChange.bind(self)}
-                        editorProps={{$blockScrolling: true}}
-                    />
-                </div>
-                <div className="form-group">
-                    <label className="checkbox-inline">
-                        <input
-                            ref="parseBody"
-                            type="checkbox"
-                            onChange={(e) => self.setState({parseBody: e.target.checked})}
-                            disabled={loading}
-                            checked={this.state.parseBody}
-                        />
-                        parse body
-                    </label>
-                    <label className="checkbox-inline">
-                        <input
-                            ref="mergeBody"
-                            type="checkbox"
-                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
-                            disabled={loading}
-                            checked={this.state.mergeBody}
-                        />
-                        merge body
-                    </label>
-                </div>
-
-                <div className="form-group">
-                    <SecretEditor />
-                </div>
-
-                <div className="btn-list text-right">
-                    <Button
-                        bsStyle="link"
-                        type="button"
-                        disabled={loading || true}
-                        onClick={loading ? null : self.editSecrets.bind(self)}>
-                        {self.state.editingSecrets ? 'Editing secrets...' : 'Edit secrets'}
-                    </Button>
-
-                    <Button
-                        type="submit"
-                        disabled={loading}
-                        onClick={loading ? null : self.tryWebtask.bind(self)}>
-                        {self.state.creatingToken ? 'Creating...' : 'Try'}
-                    </Button>
-
-                    <Button
-                        bsStyle="primary"
-                        type="submit"
-                        disabled={loading || true}
-                        onClick={loading ? null : self.createWebtask.bind(self)}>
-                        {self.state.creatingWebtask ? 'Creating...' : 'Create'}
-                    </Button>
-                </div>
-            </Panel>
         );
     }
 }

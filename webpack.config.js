@@ -33,6 +33,9 @@ module.exports = {
                 test: /\.less$/,
                 loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'less-loader'],
             }, {
+                test: /\.styl$/,
+                loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'stylus-loader'],
+            }, {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader?limit=10000&mimetype=application/font-woff'
             }, {
@@ -50,6 +53,9 @@ module.exports = {
             }, {
                 test: require.resolve('localforage'),
                 loaders: ['exports-loader?localforage', 'script-loader'],
+            }, {
+                test: require.resolve('zeroclipboard'),
+                loaders: ['expose-loader?ZeroClipboard'],
             }
         ],
         noParse: [

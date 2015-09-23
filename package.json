@@ -15,8 +15,10 @@
     "react-bootstrap": "^0.25.2",
     "react-json-inspector": "^5.2.1",
     "react-mixin": "^2.0.2",
-    "sandboxjs": "^1.1.2",
-    "superagent": "^1.4.0"
+    "react-zeroclipboard": "^2.0.1",
+    "sandboxjs": "^1.1.3",
+    "superagent": "^1.4.0",
+    "zeroclipboard": "^2.2.0"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
@@ -25,6 +27,7 @@
     "code": "^1.5.0",
     "css-loader": "^0.18.0",
     "exports-loader": "^0.6.2",
+    "expose-loader": "^0.7.0",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
     "json-loader": "^0.5.2",
@@ -35,6 +38,8 @@
     "react-hot-loader": "^1.3.0",
     "script-loader": "^0.6.1",
     "style-loader": "^0.12.3",
+    "stylus": "^0.52.4",
+    "stylus-loader": "^1.3.0",
     "uglifyjs": "^2.4.10",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.1",

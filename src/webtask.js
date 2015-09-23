@@ -2,6 +2,7 @@ import Bluebird from 'bluebird';
 import LocalForage from 'localforage';
 import React from 'react';
 import Theme from 'common/theme.less';
+import Styleguide from 'common/auth0.styl';
 
 import {editor} from 'components/editor';
 import {login} from 'components/login';
