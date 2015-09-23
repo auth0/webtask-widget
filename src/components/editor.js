@@ -24,9 +24,10 @@ class Editor extends React.Component {
 
         this.state = {
             code: props.code || defaultCode,
+            secrets: {},
             creatingToken: false,
             editingSecrets: false,
-            savingWebtask: false,
+            creatingWebtask: false,
             tryingWebtask: false,
             mergeBody: true,
             parseBody: true,
@@ -42,8 +43,8 @@ class Editor extends React.Component {
         window.removeEventListener("resize", () => this.refs.ace.editor.resize());
     }
 
-    editSecrets () {
-
+    toggleSecrets () {
+        this.setState({ editingSecrets: !this.state.editingSecrets });
     }
 
     tryWebtask () {
@@ -54,6 +55,7 @@ class Editor extends React.Component {
         sandbox.create(this.state.code, {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
+            secret: this.state.secrets,
         })
             .then((webtask) => this.setState({
                 webtask,
@@ -62,7 +64,7 @@ class Editor extends React.Component {
             .finally(() => this.setState({ creatingToken: false }));
     }
 
-    saveWebtask () {
+    createWebtask () {
 
     }
 
@@ -75,8 +77,7 @@ class Editor extends React.Component {
     render() {
         const self = this;
         const loading = this.state.creatingToken
-            || this.state.editingSecrets
-            || this.state.savingWebtask
+            || this.state.creatingWebtask
             || this.state.tryingWebtask;
 
         // Parked for future reference
@@ -117,7 +118,7 @@ class Editor extends React.Component {
                         value={this.state.code}
                         height=""
                         width=""
-                        readOnly={loading}
+                        readOnlyq={loading}
                         onChange={self.onChange.bind(self)}
                         editorProps={{$blockScrolling: true}}
                     />
@@ -145,13 +146,26 @@ class Editor extends React.Component {
                     </label>
                 </div>
 
+                { self.state.editingSecrets
+                    ?   <div className="form-group">
+                            <SecretEditor
+                                ref="secrets"
+                                secrets={self.state.secrets}
+                                onChange={() => self.setState({
+                                    secrets: self.refs.secrets.getValue()
+                                })}
+                            />
+                        </div>
+                    : null
+                }
+
                 <div className="btn-list text-right">
                     <Button
                         bsStyle="link"
                         type="button"
-                        disabled={loading || true}
-                        onClick={loading ? null : self.editSecrets.bind(self)}>
-                        {self.state.editingSecrets ? 'Editing secrets...' : 'Edit secrets'}
+                        disabled={loading}
+                        onClick={loading ? null : self.toggleSecrets.bind(self)}>
+                        {self.state.editingSecrets ? 'Hide secrets' : 'Edit secrets'}
                     </Button>
 
                     <Button
@@ -165,8 +179,8 @@ class Editor extends React.Component {
                         bsStyle="primary"
                         type="submit"
                         disabled={loading || true}
-                        onClick={loading ? null : self.saveWebtask.bind(self)}>
-                        {self.state.savingWebtask ? 'Saving...' : 'Save'}
+                        onClick={loading ? null : self.createWebtask.bind(self)}>
+                        {self.state.creatingWebtask ? 'Creating...' : 'Create'}
                     </Button>
                 </div>
             </Panel>
@@ -321,30 +335,35 @@ class TryWebtask extends React.Component {
                     <div className="btn-list text-right">
                         <Button
                             type="submit"
+                            bsStyle="primary"
                             disabled={loading}
                             onClick={loading ? null : self.run.bind(self, 'get')}>
                             GET
                         </Button>
                         <Button
                             type="submit"
+                            bsStyle="primary"
                             disabled={loading}
                             onClick={loading ? null : self.run.bind(self, 'put')}>
                             PUT
                         </Button>
                         <Button
                             type="submit"
+                            bsStyle="primary"
                             disabled={loading}
                             onClick={loading ? null : self.run.bind(self, 'post')}>
                             POST
                         </Button>
                         <Button
                             type="submit"
+                            bsStyle="primary"
                             disabled={loading}
                             onClick={loading ? null : self.run.bind(self, 'patch')}>
                             PATCH
                         </Button>
                         <Button
                             type="submit"
+                            bsStyle="primary"
                             disabled={loading}
                             onClick={loading ? null : self.run.bind(self, 'delete')}>
                             DELETE
@@ -355,6 +374,270 @@ class TryWebtask extends React.Component {
         );
     }
 }
+
+class SecretEditor extends React.Component {
+    constructor(props) {
+        super(props);
+
+        const secrets = Object.keys(props.secrets)
+            .reduce((secrets, key) => secrets.concat([{
+                key: key,
+                value: props.secrets[key]
+            }]), []);
+
+        // Add an empty one for good measure
+        if (!secrets.length) secrets.push({
+            key: '',
+            value: '',
+        });
+
+        this.state = {
+            error: null,
+            secrets,
+        };
+
+        this.keyRefs = [];
+        this.valueRefs = [];
+    }
+
+    static get defaultProps () {
+        return {
+            secrets: {},
+            onChange: null,
+        };
+    }
+
+    static get propTypes () {
+        return {
+            secrets: React.PropTypes.object,
+            onChange: React.PropTypes.func,
+        };
+    }
+
+    getValue() {
+        return this.state.secrets.reduce((secrets, {key, value}) => {
+            if (key) secrets[key] = value;
+
+            return secrets;
+        }, {});
+    }
+
+    addSecret() {
+        const secrets = this.state.secrets.slice();
+
+        secrets.push({
+            key: '',
+            value: '',
+        });
+
+        this.setState({ secrets });
+
+        if (this.props.onChange) this.props.onChange();
+    }
+
+    removeSecret(i) {
+        const secrets = this.state.secrets.slice();
+
+        secrets.splice(i, 1);
+
+        // Keep at least one secret row visible
+        if (!secrets.length) {
+            secrets.push({
+                key: '',
+                value: '',
+            });
+        }
+
+        this.setState({ secrets });
+
+        if (this.props.onChange) this.props.onChange();
+    }
+
+    updateSecret(i, field, value) {
+        const secrets = this.state.secrets.slice();
+
+        secrets[i][field] = value;
+
+        this.setState({ secrets });
+
+        if (this.props.onChange) this.props.onChange();
+    }
+
+    render() {
+        const self = this;
+
+        return (
+            <div className="secret-editor">
+                <label className="label">Edit secrets:</label>
+                <table className="table table-hover">
+                    <tbody>
+                        {self.state.secrets.map(({key, value}, i) => (
+                            <tr className="secret-editor-row" key={i}>
+                                <td>
+                                    <Input
+                                        type="text"
+                                        bsSize="small"
+                                        placeholder="Key"
+                                        name="key"
+                                        ref={(c) => self.keyRefs[i] = c}
+                                        value={key}
+                                        onChange={() => self.updateSecret(i, 'key', self.keyRefs[i].getValue())}
+                                    />
+                                </td>
+                                <td>
+                                    <Input
+                                        type="text"
+                                        bsSize="small"
+                                        placeholder="Value"
+                                        name="value"
+                                        ref={(c) => self.valueRefs[i] = c}
+                                        value={value}
+                                        onChange={() => self.updateSecret(i, 'value', self.valueRefs[i].getValue())}
+                                    />
+                                </td>
+                                <td>
+                                    <Button
+                                        bsStyle="danger"
+                                        bsSize="sm"
+                                        onClick={() => self.removeSecret(i)}
+                                    >
+                                        Remove
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                        <tr>
+                            <td colSpan="3">
+                                <Button
+                                    bsStyle="link"
+                                    bsSize="sm"
+                                    onClick={self.addSecret.bind(self)}
+                                >
+                                    Add...
+                                </Button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+}
+
+class CreateWebtask extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            error: null,
+            creatingWebtask: false,
+        };
+    }
+
+
+    render() {
+        const self = this;
+        const loading = this.state.creatingWebtask;
+
+        // Parked for future reference
+        const webtaskName = (
+            <Input
+                type="text"
+                value={this.state.webtaskName}
+                disabled={loading}
+                placeholder="Name"
+                label="Webtask name"
+                ref="webtaskName"
+            />
+        );
+
+        return (
+            <Panel className="a0-editor" header="Create a webtask">
+                { self.state.error
+                    ? (<Alert
+                        bsStyle="danger">
+                        <p>{self.state.error.message}</p>
+                    </Alert>)
+                    : null
+                }
+                <TryWebtask
+                    show={self.state.tryingWebtask}
+                    onHide={self.setState.bind(self, { tryingWebtask: false })}
+                    code={self.state.code}
+                    webtask={self.state.webtask}
+                />
+                <div className="form-group form-group-grow">
+                    <label className="control-label">Edit webtask code:</label>
+                    <AceEditor
+                        ref="ace"
+                        name="code"
+                        className="form-control"
+                        mode="javascript"
+                        theme="textmate"
+                        value={this.state.code}
+                        height=""
+                        width=""
+                        readOnlyq={loading}
+                        onChange={self.onChange.bind(self)}
+                        editorProps={{$blockScrolling: true}}
+                    />
+                </div>
+                <div className="form-group">
+                    <label className="checkbox-inline">
+                        <input
+                            ref="parseBody"
+                            type="checkbox"
+                            onChange={(e) => self.setState({parseBody: e.target.checked})}
+                            disabled={loading}
+                            checked={this.state.parseBody}
+                        />
+                        parse body
+                    </label>
+                    <label className="checkbox-inline">
+                        <input
+                            ref="mergeBody"
+                            type="checkbox"
+                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
+                            disabled={loading}
+                            checked={this.state.mergeBody}
+                        />
+                        merge body
+                    </label>
+                </div>
+
+                <div className="form-group">
+                    <SecretEditor />
+                </div>
+
+                <div className="btn-list text-right">
+                    <Button
+                        bsStyle="link"
+                        type="button"
+                        disabled={loading || true}
+                        onClick={loading ? null : self.editSecrets.bind(self)}>
+                        {self.state.editingSecrets ? 'Editing secrets...' : 'Edit secrets'}
+                    </Button>
+
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        onClick={loading ? null : self.tryWebtask.bind(self)}>
+                        {self.state.creatingToken ? 'Creating...' : 'Try'}
+                    </Button>
+
+                    <Button
+                        bsStyle="primary"
+                        type="submit"
+                        disabled={loading || true}
+                        onClick={loading ? null : self.createWebtask.bind(self)}>
+                        {self.state.creatingWebtask ? 'Creating...' : 'Create'}
+                    </Button>
+                </div>
+            </Panel>
+        );
+    }
+}
+
 
 export function editor (container, options = {}) {
     console.log('editor', container, Object.assign({container}, options));

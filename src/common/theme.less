@@ -114,6 +114,8 @@ body {
         display: flex;
         flex-direction: column;
         align-content: stretch;
+        
+        overflow-y: auto;
 
         .form-group-grow {
             display: flex;
@@ -126,5 +128,21 @@ body {
                 overflow: hidden;
             }
         }
+    }
+}
+
+tr.secret-editor-row>td {
+    padding: 0.2em 0.5em;
+
+    &:first-child {
+        padding-left: 0;
+    }
+
+    &:last-child {
+        padding-right: 0;
+    }
+
+    .form-group {
+        margin: 0;
     }
 }
