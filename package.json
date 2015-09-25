@@ -47,10 +47,9 @@
     "webpack-dev-server": "^1.11.0"
   },
   "scripts": {
-    "build": "webpack -c ./webpack.build.js",
-    "start": "webpack-dev-server --inline --hot",
-    "test": "lab -v",
-    "watch": "webpack --watch"
+    "build": "webpack -p --output-filename=build.min.js",
+    "develop": "webpack-dev-server -w -d",
+    "test": "lab -v"
   },
   "author": "Geoff Goodman",
   "license": "MIT"

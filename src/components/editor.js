@@ -218,7 +218,7 @@ class Editor extends React.Component {
                             : null
                         }
 
-                        { self.state.showWebtaskUrl
+                        { self.props.showWebtaskUrl
                             ?   (<Input
                                     type="text"
                                     disabled

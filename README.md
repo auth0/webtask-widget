@@ -1,15 +1,29 @@
 # Auth0 Webtask Widget
 
-## Run example
+## Build
+
+### Development workflow
 
 ```shell
 git clone git@github.com:auth0/auth0-webtask-widget.git
 cd auth0-webtask-widget
 npm install
-npm start
+npm run develop
 ```
 
-You can now open the running example in your browser at http://localhost:8080
+This creates an unminified build at `./build/build.js`.
+
+You can now open the running example in your browser at http://localhost:8080.
+The script will watch all dependencies and recompile on changes. Everything is
+served with source-maps.
+
+### Production build
+
+```shell
+npm run build
+```
+
+This creates a minified build at `./build/build.min.js`.
 
 ## Usage
 
@@ -34,20 +48,20 @@ webtaskWidget.open(containerEl, {
 #### `webtaskWidget.open (containerEl, [options])`
 
 
-Option | Default | Description
---- | --- | ---
-url | `CLUSTER_URL` | The url of the webtask cluster
-token |  | The current user's webtask token.
-container |   | The current user's container.
-readProfile |  | A function that is expected to return a [profile](#profile) or a Promise that will resolve to a profile.
-writeProfile |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
-storeProfile | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
-storageKey | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
-showWebtaskUrl | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
-showTryWebtaskUrl | true | Toggle whether the temporary testing webtask's url should be shown.
-code | `'module.exports = ...'` | Overwrite the code that will be displayed in the editor.
-tryParams | `{ ... }` | Overwrite the params that will be shown in the 'try' dialog.
-onSave | `null` | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
+Option | Type | Default | Description
+--- | --- | --- | ---
+url | `String` | `CLUSTER_URL` | The url of the webtask cluster
+token | `String` |  | The current user's webtask token.
+container | `String` |   | The current user's container.
+readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
+writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
+storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
+storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+showWebtaskUrl | `Boolean` | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
+showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webtask's url should be shown.
+code | `String` |   | Overwrite the default code that will be displayed in the editor.
+tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
+onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
 
 
 ## Concepts
