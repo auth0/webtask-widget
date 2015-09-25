@@ -43,10 +43,11 @@
     "uglifyjs": "^2.4.10",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.1",
+    "webpack-build": "^0.14.0",
     "webpack-dev-server": "^1.11.0"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -c ./webpack.build.js",
     "start": "webpack-dev-server --inline --hot",
     "test": "lab -v",
     "watch": "webpack --watch"

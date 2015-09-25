@@ -25,7 +25,7 @@ class Editor extends React.Component {
         super(props);
 
         this.state = {
-            code: props.code || defaultCode,
+            code: props.code,
             secrets: {},
             creatingToken: false,
             showAdvanced: false,
@@ -88,6 +88,7 @@ class Editor extends React.Component {
             secret: this.state.secrets,
             name: this.state.name,
         })
+            .tap(this.props.onSave)
             .then((webtask) => this.setState({
                 webtask,
                 successMessage: 'Webtask successfully created',
@@ -129,6 +130,8 @@ class Editor extends React.Component {
                         onHide={self.setState.bind(self, { tryingWebtask: false })}
                         code={self.state.code}
                         webtask={self.state.testWebtask}
+                        showTryWebtaskUrl={self.props.showTryWebtaskUrl}
+                        tryParams={self.props.tryParams}
                     />)
                     : null
                 }
@@ -152,7 +155,7 @@ class Editor extends React.Component {
                 </div>
 
                 { self.state.showAdvanced
-                    ?   <div class="a0-advanced">
+                    ?   <div className="a0-advanced">
                             <label className="control-label">Advaned options:</label>
                             <div className="form-group">
                                 <label className="checkbox-inline">
@@ -215,13 +218,17 @@ class Editor extends React.Component {
                             : null
                         }
 
-                        <Input
-                            type="text"
-                            disabled
-                            label="Webtask url:"
-                            buttonAfter={copyButton}
-                            value={self.state.webtask.url}
-                        />
+                        { self.state.showWebtaskUrl
+                            ?   (<Input
+                                    type="text"
+                                    disabled
+                                    label="Webtask url:"
+                                    buttonAfter={copyButton}
+                                    value={self.state.webtask.url}
+                                />)
+                            : null
+                        }
+
                         </div>)
                     : null
                 }
@@ -268,18 +275,7 @@ class TryWebtask extends React.Component {
             parseBody: true,
             mergeBody: true,
             logs: [],
-            json: JSON.stringify({
-                path: '',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                query: {
-                    hello: 'world',
-                },
-                body: {
-                    hint: 'Only sent for PUT, POST and PATCH requests',
-                },
-            }, null, 4),
+            json: JSON.stringify(props.tryParams, null, 4),
             result: null,
         };
     }
@@ -413,14 +409,19 @@ class TryWebtask extends React.Component {
                             </Alert>)
                             : null
                         }
-                        <Input
-                            type="text"
-                            disabled
-                            label="Webtask url:"
-                            buttonAfter={copyButton}
-                            value={self.props.webtask.url}
-                            help="This is the url of the temporary webtask created to this playground."
-                        />
+
+                        { self.props.showTryWebtaskUrl
+                            ?   (<Input
+                                    type="text"
+                                    disabled
+                                    label="Webtask url:"
+                                    buttonAfter={copyButton}
+                                    value={self.props.webtask.url}
+                                    help="This is the url of the temporary webtask created to this playground."
+                                />)
+                            : null
+                        }
+
                         <div className="form-group form-group-grow">
                             <label className="control-label">Edit webtask payload:</label>
                             <AceEditor
@@ -655,8 +656,6 @@ class SecretEditor extends React.Component {
 
 
 export function editor (container, options = {}) {
-    console.log('editor', container, Object.assign({container}, options));
-
     const promise = new Bluebird((resolve, reject) => {
         const props = Object.assign({resolve, reject, container}, options);
 
@@ -664,8 +663,6 @@ export function editor (container, options = {}) {
             <Editor container={this} {...props}></Editor>
         ), container);
     });
-
-    // container.classList.add('a0-editor');
 
     return promise
         .finally(() => {
