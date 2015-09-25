@@ -13,7 +13,7 @@ npm run develop
 
 This creates an unminified build at `./build/build.js`.
 
-You can now open the running example in your browser at http://localhost:8080.
+You can now open the running example in your browser at [http://localhost:8080](http://localhost:8080).
 The script will watch all dependencies and recompile on changes. Everything is
 served with source-maps.
 
@@ -84,4 +84,4 @@ A webtask token is a JSON Web Token that encodes a user's claims to perform acti
 ### Webtask
 
 A webtask is a claim to run code at a url where that code will have access to any secrets embedded in the webtask.
-Webtask objects [expose several properties and methods](/auth0/sandboxjs).
+Webtask objects [expose several properties and methods](https://github.com/auth0/sandboxjs).
