@@ -4,6 +4,7 @@
   "description": "Embeddable webtask toolkit",
   "main": "index.js",
   "dependencies": {
+    "auth0-styleguide": "auth0/styleguide",
     "bluebird": "^2.10.0",
     "bootstrap": "^3.3.5",
     "brace": "^0.5.1",
