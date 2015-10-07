@@ -54,6 +54,8 @@ url | `String` | `CLUSTER_URL` | The url of the webtask cluster
 token | `String` |  | The current user's webtask token.
 container | `String` |   | The current user's container.
 name | `String` | `''` | The default name of the webtask.
+mergeBody | `Boolean` | `true` | Set the initial value of the merge body setting.
+parseBody | `Boolean` | `true` | Set the initial value of the parse body setting.
 autoSaveOnLoad | `Boolean` | `false` | Automatically trigger a save when the widget loads.
 autoSaveOnChange | `Boolean` | `false` | Automatically trigger a save when the code changes.
 autoSaveInterval | `Number` | `1000` | Adjust how frequently a save will be triggered if `autoSaveOnChange` is `true`.

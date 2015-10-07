@@ -14,16 +14,18 @@ require('brace/mode/javascript');
 require('brace/mode/json');
 require('brace/theme/textmate');
 
-const defaultCode = `
-module.exports = function (ctx, cb) {
-    cb(null, 'Hello ' + ctx.query.hello);
-};
-`.trim();
+const defaultIntro = <span>
+    This tool allows you to create
+</span>;
 
 
 class Editor extends React.Component {
     constructor(props) {
         super(props);
+
+        const intro = props.intro === true
+            ? defaultIntro
+            : props.intro;
 
         this.state = {
             code: props.code,
@@ -32,8 +34,8 @@ class Editor extends React.Component {
             showAdvanced: false,
             savingWebtask: false,
             tryingWebtask: false,
-            mergeBody: true,
-            parseBody: true,
+            mergeBody: props.mergeBody,
+            parseBody: props.parseBody,
             name: props.name,
             successMessage: '',
         };
@@ -370,7 +372,8 @@ class TryWebtask extends React.Component {
             body: data.body,
         })
             .then((res) => {
-                if (res.error) throw new Error(res.error);
+                console.log('Res', res);
+                if (res.serverError) throw new Error(res.error);
 
                 const headers = res.header;
                 const auth0HeaderRx = /^x-auth0/;
