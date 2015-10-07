@@ -6,7 +6,7 @@ import React from 'react';
 import Sandbox from 'sandboxjs';
 // import ZeroClipboard from 'zeroclipboard';
 
-import {Alert, Button, Collapse, Input, Modal, Panel} from 'react-bootstrap';
+import {Alert, Button, Collapse, Input, Modal, OverlayTrigger, Panel, Tooltip} from 'react-bootstrap';
 import Inspector from 'react-json-inspector';
 import ReactZeroClipboard from 'react-zeroclipboard';
 
@@ -134,6 +134,18 @@ class Editor extends React.Component {
                 </ReactZeroClipboard>)
             : null;
 
+        const parseBodyHelp = <Tooltip>
+            This will attempt to parse the body of incoming requests and expose
+            the parsed body at&nbsp;<code>context.body</code>. Do not enable this if
+            you are using any server frameworks with&nbsp;
+            <a href="https://github.com/auth0/webtask-tools" target="_blank">webtask-tools</a>.
+        </Tooltip>;
+
+        const mergeBodyHelp = <Tooltip>
+            This will merge any parameters from the parsed body into
+            &nbsp;<code>context.data</code>.
+        </Tooltip>;
+
         return (
             <Panel className="a0-editor" header="Create a webtask">
                 { self.state.error
@@ -177,26 +189,30 @@ class Editor extends React.Component {
                     ?   <div className="a0-advanced">
                             <label className="control-label">Advaned options:</label>
                             <div className="form-group">
-                                <label className="checkbox-inline">
-                                    <input
-                                        ref="parseBody"
-                                        type="checkbox"
-                                        onChange={(e) => self.setState({parseBody: e.target.checked})}
-                                        disabled={loading}
-                                        checked={self.state.parseBody}
-                                    />
-                                    parse body
-                                </label>
-                                <label className="checkbox-inline">
-                                    <input
-                                        ref="mergeBody"
-                                        type="checkbox"
-                                        onChange={(e) => self.setState({mergeBody: e.target.checked})}
-                                        disabled={loading}
-                                        checked={self.state.mergeBody}
-                                    />
-                                    merge body
-                                </label>
+                                <OverlayTrigger placement="top" overlay={parseBodyHelp}>
+                                    <label className="checkbox-inline">
+                                        <input
+                                            ref="parseBody"
+                                            type="checkbox"
+                                            onChange={(e) => self.setState({parseBody: e.target.checked})}
+                                            disabled={loading}
+                                            checked={self.state.parseBody}
+                                        />
+                                        Automatically parse the request body into  <code>context.body</code>
+                                    </label>
+                                </OverlayTrigger>
+                                <OverlayTrigger placement="top" overlay={mergeBodyHelp}>
+                                    <label className="checkbox-inline">
+                                        <input
+                                            ref="mergeBody"
+                                            type="checkbox"
+                                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
+                                            disabled={loading}
+                                            checked={self.state.mergeBody}
+                                        />
+                                        Merge the parsed body into <code>context.data</code>
+                                    </label>
+                                </OverlayTrigger>
                             </div>
 
                             <Input
