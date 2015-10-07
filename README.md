@@ -53,6 +53,7 @@ Option | Type | Default | Description
 url | `String` | `CLUSTER_URL` | The url of the webtask cluster
 token | `String` |  | The current user's webtask token.
 container | `String` |   | The current user's container.
+name | `String` | `''` | The default name of the webtask.
 readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
 writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
 storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.

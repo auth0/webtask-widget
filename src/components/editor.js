@@ -33,7 +33,7 @@ class Editor extends React.Component {
             tryingWebtask: false,
             mergeBody: true,
             parseBody: true,
-            name: '',
+            name: props.name,
             successMessage: '',
         };
     }
