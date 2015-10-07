@@ -41,6 +41,10 @@ class Editor extends React.Component {
     componentDidMount() {
         this.refs.ace.editor.resize();
         window.addEventListener("resize", () => this.refs.ace.editor.resize());
+
+        if (this.props.autoSaveOnLoad) {
+            this.saveWebtask({ hideSuccessMessage: true });
+        }
     }
 
     componentWillUnmount() {
@@ -74,7 +78,7 @@ class Editor extends React.Component {
             .finally(() => this.setState({ creatingToken: false }));
     }
 
-    saveWebtask () {
+    saveWebtask ({hideSuccessMessage = false}) {
         this.setState({
             savingWebtask: true,
             successMessage: '',
@@ -89,9 +93,11 @@ class Editor extends React.Component {
             name: this.state.name,
         })
             .tap(this.props.onSave)
-            .then((webtask) => this.setState({
-                webtask,
+            .tap(() => !hideSuccessMessage && this.setState({
                 successMessage: 'Webtask successfully created',
+            }))
+            .tap((webtask) => this.setState({
+                webtask,
             }))
             .finally(() => this.setState({ savingWebtask: false }));
     }
