@@ -1,6 +1,7 @@
 import AceEditor from 'react-ace';
 import Bluebird from 'bluebird';
 import Brace from 'brace';
+import Debounce from 'lodash.debounce';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 // import ZeroClipboard from 'zeroclipboard';
@@ -36,6 +37,10 @@ class Editor extends React.Component {
             name: props.name,
             successMessage: '',
         };
+
+        const debounceInterval = Math.max(1000, Number(props.autoSaveInterval));
+
+        this.autoSave = Debounce(() => this.saveWebtask(), debounceInterval);
     }
 
     componentDidMount() {
@@ -78,7 +83,10 @@ class Editor extends React.Component {
             .finally(() => this.setState({ creatingToken: false }));
     }
 
-    saveWebtask ({hideSuccessMessage = false}) {
+    saveWebtask ({hideSuccessMessage = false} = {}) {
+        // Cancel any pending autoSaves
+        this.autoSave.cancel();
+
         this.setState({
             savingWebtask: true,
             successMessage: '',
@@ -106,6 +114,12 @@ class Editor extends React.Component {
         this.setState({
             code: code,
         });
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+        if (prevState.code !== this.state.code && this.props.autoSaveOnChange) {
+            this.autoSave();
+        }
     }
 
     render() {
@@ -154,7 +168,6 @@ class Editor extends React.Component {
                         maxLines={15}
                         height=""
                         width=""
-                        readOnlyq={loading}
                         onChange={self.onChange.bind(self)}
                         editorProps={{$blockScrolling: true}}
                     />
