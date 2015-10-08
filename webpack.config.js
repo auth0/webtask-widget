@@ -6,12 +6,14 @@ module.exports = {
     cache: true,
     devtool: 'source-map',
     context: Path.join(__dirname, 'src'),
-    entry: [
-        './webtask.js',
-    ],
+    entry: {
+        'webtask': './webtask.js',
+        'webtask-bootstrap': './webtask.bootstrap.js',
+    },
     output: {
         path: Path.join(__dirname, 'build'),
-        filename: 'build.js',
+        filename: '[name].js',
+        chunkFilename: '[name].js',
         publicPath: '/build/',
         hash: true,
         library: 'webtaskWidget',

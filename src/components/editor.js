@@ -192,28 +192,32 @@ class Editor extends React.Component {
                             <label className="control-label">Advaned options:</label>
                             <div className="form-group">
                                 <OverlayTrigger placement="top" overlay={parseBodyHelp}>
-                                    <label className="checkbox-inline">
-                                        <input
-                                            ref="parseBody"
-                                            type="checkbox"
-                                            onChange={(e) => self.setState({parseBody: e.target.checked})}
-                                            disabled={loading}
-                                            checked={self.state.parseBody}
-                                        />
-                                        Automatically parse the request body into  <code>context.body</code>
-                                    </label>
+                                    <div className="checkbox">
+                                        <label>
+                                            <input
+                                                ref="parseBody"
+                                                type="checkbox"
+                                                onChange={(e) => self.setState({parseBody: e.target.checked})}
+                                                disabled={loading}
+                                                checked={self.state.parseBody}
+                                            />
+                                            Automatically parse the request body into  <code>context.body</code>
+                                        </label>
+                                    </div>
                                 </OverlayTrigger>
                                 <OverlayTrigger placement="top" overlay={mergeBodyHelp}>
-                                    <label className="checkbox-inline">
-                                        <input
-                                            ref="mergeBody"
-                                            type="checkbox"
-                                            onChange={(e) => self.setState({mergeBody: e.target.checked})}
-                                            disabled={loading}
-                                            checked={self.state.mergeBody}
-                                        />
-                                        Merge the parsed body into <code>context.data</code>
-                                    </label>
+                                    <div className="checkbox">
+                                        <label>
+                                            <input
+                                                ref="mergeBody"
+                                                type="checkbox"
+                                                onChange={(e) => self.setState({mergeBody: e.target.checked})}
+                                                disabled={loading}
+                                                checked={self.state.mergeBody}
+                                            />
+                                            Merge the parsed body into <code>context.data</code>
+                                        </label>
+                                    </div>
                                 </OverlayTrigger>
                             </div>
 
@@ -481,7 +485,7 @@ class TryWebtask extends React.Component {
                         { self.state.result
                             ?   <div>
                                     <label className="control-label">Result:</label>
-                                    <Inspector data={self.state.result} search={null} />
+                                    <Inspector className="well" data={self.state.result} search={null} />
                                 </div>
                             : null
                         }
@@ -489,7 +493,7 @@ class TryWebtask extends React.Component {
                         { self.state.logs && self.state.logs.length
                             ?   <div>
                                     <label className="control-label">Logs:</label>
-                                    <pre className="a0-logs">
+                                    <pre className="a0-logs well">
                                         { self.state.logs.map((line) => `${line.msg}\n` ) }
                                     </pre>
                                 </div>

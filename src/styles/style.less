@@ -1,0 +1,144 @@
+@import (less) "~react-json-inspector/json-inspector.css";
+
+.a0-webtask-widget {
+    .json-inspector {
+        max-height: 200px;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .json-inspector__value {
+        word-wrap: break-word;
+    }
+
+    .json-inspector__line:after {
+        z-index: auto;
+    }
+
+    .btn-list > .btn {
+        margin: 0 1em 0 0;
+
+        &:first-child {
+            margin: 0;
+        }
+    }
+
+    .btn-list.text-right > .btn {
+        margin: 0 0 0 1em;
+
+        &:first-child {
+            margin: 0;
+        }
+    }
+
+    .modal .modal-dialog.modal-lg {
+        max-width: inherit;
+    }
+
+
+    .a0-container {
+        position: relative;
+    }
+
+    .a0-layer {
+        display: none;
+    }
+
+    .a0-layer:last-child {
+        display: block;
+    }
+
+    .panel {
+        // .modal-content();
+        // .modal-body();
+
+        // Override some inherited defaults
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .panel-heading {
+        // .modal-header();
+        // .modal-title();
+
+        font-size: 1.3rem;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 0;
+        color: #000;
+    }
+
+    .panel-body {
+        // .modal-body();
+
+        overflow-y: auto;
+    }
+
+    .a0-editor.panel {
+        height: 100%;
+
+        // display: flex;
+        // flex-direction: column;
+        // align-content: stretch;
+
+        .panel-heading {
+            // flex: 0 0 initial;
+        }
+
+        .panel-body {
+            // flex: 1 1 auto;
+
+            // display: flex;
+            // flex-direction: column;
+            // align-content: stretch;
+
+            .form-group-grow {
+                // display: flex;
+                // flex-direction: column;
+                // flex: 1 1 auto;
+                position: relative;
+
+                .ace_editor {
+                    // flex: 1 0 auto;
+                    overflow: hidden;
+                    min-height: 100px;
+                }
+            }
+        }
+    }
+
+    .secret-editor-table {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    tr.secret-editor-row>td {
+        padding: 0.2em 0.5em;
+
+        &:first-child {
+            padding-left: 0;
+        }
+
+        &:last-child {
+            padding-right: 0;
+            width: 73.5px;
+        }
+
+        .form-group {
+            margin: 0;
+        }
+    }
+
+    .a0-logs {
+        // .well();
+
+        margin: 0 0 20px 0;
+        word-wrap: break-word;
+
+        max-height: 200px;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}

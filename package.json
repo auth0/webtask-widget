@@ -1,6 +1,6 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Embeddable webtask toolkit",
   "main": "index.js",
   "dependencies": {
@@ -49,7 +49,7 @@
     "webpack-dev-server": "^1.11.0"
   },
   "scripts": {
-    "build": "webpack -p --output-filename=build.min.js",
+    "build": "webpack -p --output-filename='[name].min.js'",
     "develop": "webpack-dev-server -w -d",
     "test": "lab -v"
   },
