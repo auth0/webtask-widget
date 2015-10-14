@@ -1,16 +1,16 @@
 import Bluebird from 'bluebird';
 import LocalForage from 'localforage';
-import React from 'react';
-import Style from './styles/style.less';
 
-import {editor} from './components/editor';
-import {login} from './components/login';
+import {showLogin} from '../widgets/login';
 
+import Editor from '../components/editor';
 
+import ComponentStack from '../lib/componentStack';
+import dedent from '../lib/dedent';
 
-
-export default function open ({
-    element = null,
+export function showEditor ({
+    mount = null,
+    componentStack = null,
     url = 'https://webtask.it.auth0.com',
     token = null,
     container = null,
@@ -47,7 +47,7 @@ export default function open ({
     onSave = (webtask) => webtask,
 } = {}) {
     
-    if (element) element.classList.add('a0-webtask-widget');
+    if (!componentStack) componentStack = new ComponentStack(mount);
 
     // If we bootstrap the widget with a token, we need to be sure that we have
     // all the necessary information to constitute a valid Profile.
@@ -66,7 +66,7 @@ export default function open ({
     } else if (storeProfile) {
         readProfile = (options) => LocalForage.getItem(storageKey)
             .then((profile) => {
-                if (!profile) return login(options);
+                if (!profile) return showLogin(options);
 
                 try {
                     return validateProfile(profile);
@@ -86,14 +86,15 @@ export default function open ({
             });
         }
     } else {
-        readProfile = (options) => login(options);
+        readProfile = (options) => showLogin(options);
     }
 
     // By default, a noop.
     if (!writeProfile) writeProfile = (profile) => Bluebird.resolve(profile);
 
     const options = {
-        element,
+        mount,
+        componentStack,
         url,
         token,
         container,
@@ -117,7 +118,7 @@ export default function open ({
 
     return readProfile(options)
         .then(writeProfile)
-        .then((profile) => editor(Object.assign({}, options, {profile})));
+        .then((profile) => componentStack.push(Editor, Object.assign({}, options, {profile})));
 
     function validateProfile (profile) {
         if (!profile.container) throw new Error('Invalid profile: missing container');
@@ -126,33 +127,4 @@ export default function open ({
 
         return profile;
     }
-}
-
-function dedent (callSite, ...args) {
-
-    function format(str) {
-
-        let size = -1;
-
-        return str.replace(/\n(\s+)/g, (m, m1) => {
-
-            if (size < 0)
-                size = m1.replace(/\t/g, "    ").length;
-
-            return "\n" + m1.slice(Math.min(m1.length, size));
-        });
-    }
-
-    if (typeof callSite === "string")
-        return format(callSite);
-
-    if (typeof callSite === "function")
-        return (...args) => format(callSite(...args));
-
-    let output = callSite
-        .slice(0, args.length + 1)
-        .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
-        .join("");
-
-    return format(output);
 }

@@ -1,3 +1,7 @@
+import {showEditor} from './widgets/editor';
+import {showLogin} from './widgets/login';
+
 module.exports = {
-    open: require('./open'),
+    showEditor,
+    showLogin,
 };

@@ -45,11 +45,12 @@ webtaskWidget.open(containerEl, {
 
 ## API
 
-#### `webtaskWidget.open (containerEl, [options])`
+#### `webtaskWidget.showEditor ([options])`
 
 
 Option | Type | Default | Description
 --- | --- | --- | ---
+mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 url | `String` | `CLUSTER_URL` | The url of the webtask cluster
 token | `String` |  | The current user's webtask token.
 container | `String` |   | The current user's container.
@@ -68,6 +69,14 @@ showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webt
 code | `String` |   | Overwrite the default code that will be displayed in the editor.
 tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
 onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
+
+
+#### `webtaskWidget.showLogin ([options])`
+
+
+Option | Type | Default | Description
+--- | --- | --- | ---
+mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 
 
 ## Concepts

@@ -5,12 +5,23 @@
         <title>Webtask in a box demo</title>
         <script type="text/javascript" src="build/webtask.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"></link>
+        <style>
+            body {
+            }
+            
+            #content {
+                margin: 80px auto 0;
+                width: 50%;
+                min-width: 400px;
+            }
+        </style>
     </head>
 
     <body>
         <div id="content"></div>
         <script>
-            window.webtaskWidget.open(document.getElementById('content'), {
+            window.webtaskWidget.showEditor({
+                // element: document.getElementById('content'),
                 storeProfile: true,
                 code: "var Express = require('express');\nvar Webtask = require('webtask-tools');\n\n\nvar app = Express();\n\napp.use(require('body-parser').json());\n\napp.use(function (req, res, next) {\n    console.log(req.method, req.path);\n    next();\n});\n\napp.get('/', function (req, res) {\n    res.end('GET /');\n});\n\napp.get('/hello', function (req, res) {\n    res.end('GET /hello');\n});\n\napp.put('/hello', function (req, res) {\n    res.end('PUT /hello');\n});\n\n// DELETE\napp.delete('/hello', function (req, res) {\n    res.end('DELETE /hello');\n});\n\n// expose this express app as a webtask-compatible function\nmodule.exports = Webtask.fromExpress(app);",
                 mergeBody: false,
