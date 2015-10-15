@@ -1,65 +1,65 @@
 import React from 'react';
-import {Panel} from 'react-bootstrap';
 
 export default class A0Logs extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = {
-      error: null,
-      logs: []
-    };
+        this.state = {
+            error: null,
+            logs: []
+        };
+    }
 
-    if(!props.webtask)
-      this.state.error = 'Must supply webtask to inspect'
-  }
+    componentDidMount() {
+        const logStream = this.props.webtask.createLogStream();
 
-  componentDidMount() {
-    const logStream = this.props.webtask.createLogStream();
+        logStream.on('error', (e) => {
+            console.error(e);
 
-    logStream.on('error', (e) => {
-        console.error(e);
-
-        this.setState({
-            error: new Error(e.message),
+            this.setState({
+                error: new Error(e.message),
+            });
         });
-    });
 
-    logStream.on('data', (msg) => {
-        const logs = this.state.logs.slice();
+        logStream.on('data', (msg) => {
+            const logs = this.state.logs.slice();
 
-        if (msg.name === 'sandbox-logs') {
-            logs.push(msg);
-            logs.sort((a, b) => new Date(b) - new Date(a));
+            if (msg.name === 'sandbox-logs') {
+                logs.push(msg);
+                logs.sort((a, b) => new Date(b) - new Date(a));
 
-            this.setState({ logs });
-        }
-    });
+                this.setState({ logs });
+            }
+        });
 
-    this.logStream = logStream;
-  }
+        this.logStream = logStream;
+    }
 
-  componentWillUnmount() {
-      this.logStream.destroy();
-  }
+    componentWillUnmount() {
+        this.logStream.destroy();
+    }
 
-  render() {
-    const panelHeader = 'Logs for ' + this.props.webtask.container;
+    render() {
+        const panelHeader = 'Logs for ' + this.props.webtask.container;
 
-    const panelBody = !this.state.logs.length ?
-        <p>Nothing to report</p> :
-        <div>
+        const logs = !this.state.logs.length ?
+            <p>Nothing to report</p> :
             <pre className="a0-logs well">
                 {
                     this.state.logs.map(line => line.msg + '\n')
                 }
             </pre>
-        </div>
 
-    return (
-      <Panel header={panelHeader}>
-        {panelBody}
-      </Panel>
-    );
-  }
+        return (
+            <div>
+                {this.state.error || panelBody}
+            </div>
+        );
+    }
 }
+
+A0Logs.title = 'View webtask logs';
+
+A0Logs.propTypes = {
+    webtask: React.PropTypes.object.isRequired
+};

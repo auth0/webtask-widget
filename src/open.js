@@ -6,9 +6,6 @@ import Style from './styles/style.less';
 import {editor} from './components/editor';
 import {login} from './components/login';
 
-
-
-
 export default function open ({
     element = null,
     url = 'https://webtask.it.auth0.com',

@@ -13,7 +13,6 @@ export function showLogs ({
         /*
          * TODO Get one
          * */
-        throw new Error('TODO No webtask passed'):
     }
 
     const options = {
