@@ -1,9 +1,7 @@
 import React from 'react';
 import {Panel} from 'react-bootstrap';
 
-const WEBTASK_CLUSTER_URL = 'https://webtask.it.auth0.com';
-
-export default class Logs extends React.Component {
+export default class A0Logs extends React.Component {
   constructor(props) {
     super(props);
 
