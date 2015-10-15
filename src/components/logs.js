@@ -1,4 +1,5 @@
 import React from 'react';
+import EventSource from 'event-source-stream';
 
 export default class A0Logs extends React.Component {
     constructor(props) {
@@ -11,7 +12,13 @@ export default class A0Logs extends React.Component {
     }
 
     componentDidMount() {
-        const logStream = this.props.webtask.createLogStream();
+        const { url, container, token } = this.props.profile;
+
+        const streamUrl = url + '/api/logs/tenant/'
+            + container
+            + '?key=' + token;
+
+        const logStream = EventSource(streamUrl, { json: true });
 
         logStream.on('error', (e) => {
             console.error(e);
@@ -31,17 +38,9 @@ export default class A0Logs extends React.Component {
                 this.setState({ logs });
             }
         });
-
-        this.logStream = logStream;
-    }
-
-    componentWillUnmount() {
-        this.logStream.destroy();
     }
 
     render() {
-        const panelHeader = 'Logs for ' + this.props.webtask.container;
-
         const logs = !this.state.logs.length ?
             <p>Nothing to report</p> :
             <pre className="a0-logs well">
@@ -52,7 +51,7 @@ export default class A0Logs extends React.Component {
 
         return (
             <div>
-                {this.state.error || panelBody}
+                {this.state.error || logs}
             </div>
         );
     }
@@ -61,5 +60,5 @@ export default class A0Logs extends React.Component {
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
-    webtask: React.PropTypes.object.isRequired
+    profile: React.PropTypes.object.isRequired
 };

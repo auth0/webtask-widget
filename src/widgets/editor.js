@@ -7,6 +7,7 @@ import Editor from '../components/editor';
 
 import ComponentStack from '../lib/componentStack';
 import dedent from '../lib/dedent';
+import {getProfile, saveProfile} from '../lib/profileManagement';
 
 export function showEditor ({
     mount = null,
@@ -62,35 +63,16 @@ export function showEditor ({
             container: container,
             token: token,
             url: url,
+        })
+        .then((profile) => {
+            if(writeProfile)
+                return saveProfile(storageKey, profile);
         });
     } else if (storeProfile) {
-        readProfile = (options) => LocalForage.getItem(storageKey)
-            .then((profile) => {
-                if (!profile) return showLogin(options);
-
-                try {
-                    return validateProfile(profile);
-                } catch (__) {
-                    return writeProfile(null);
-                }
-            });
-
-        // When the 'storeProfile' options is provided, we set a default
-        // 'writeProfile' handler to save the profile to the indicated (or default)
-        // 'storageKey'.
-        if (!writeProfile) {
-            writeProfile = (profile) => LocalForage.setItem(storageKey, {
-                url: profile.url,
-                container: profile.container,
-                token: profile.token,
-            });
-        }
+        readProfile = getProfile;
     } else {
-        readProfile = (options) => showLogin(options);
+        readProfile = Bluebird.resolve();
     }
-
-    // By default, a noop.
-    if (!writeProfile) writeProfile = (profile) => Bluebird.resolve(profile);
 
     const options = {
         mount,
@@ -116,15 +98,11 @@ export function showEditor ({
         onSave,
     };
 
-    return readProfile(options)
-        .then(writeProfile)
-        .then((profile) => componentStack.push(Editor, Object.assign({}, options, {profile})));
+    return readProfile(storageKey)
+        .then((profile) => {
+            if(!profile)
+                return showLogin(options);
 
-    function validateProfile (profile) {
-        if (!profile.container) throw new Error('Invalid profile: missing container');
-        if (!profile.token) throw new Error('Invalid profile: missing token');
-        if (!profile.url) throw new Error('Invalid profile: missing url');
-
-        return profile;
-    }
+            componentStack.push(Editor, Object.assign({}, options, {profile}))
+        });
 }
