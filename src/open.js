@@ -6,10 +6,8 @@ import Style from './styles/style.less';
 import {editor} from './components/editor';
 import {login} from './components/login';
 
-
-
-
-export default function open (target, {
+export default function open ({
+    element = null,
     url = 'https://webtask.it.auth0.com',
     token = null,
     container = null,
@@ -46,7 +44,7 @@ export default function open (target, {
     onSave = (webtask) => webtask,
 } = {}) {
     
-    target.classList.add('a0-webtask-widget');
+    if (element) element.classList.add('a0-webtask-widget');
 
     // If we bootstrap the widget with a token, we need to be sure that we have
     // all the necessary information to constitute a valid Profile.
@@ -65,7 +63,7 @@ export default function open (target, {
     } else if (storeProfile) {
         readProfile = (options) => LocalForage.getItem(storageKey)
             .then((profile) => {
-                if (!profile) return login(target, options);
+                if (!profile) return login(options);
 
                 try {
                     return validateProfile(profile);
@@ -85,13 +83,14 @@ export default function open (target, {
             });
         }
     } else {
-        readProfile = (options) => login(target, options);
+        readProfile = (options) => login(options);
     }
 
     // By default, a noop.
     if (!writeProfile) writeProfile = (profile) => Bluebird.resolve(profile);
 
     const options = {
+        element,
         url,
         token,
         container,
@@ -115,7 +114,7 @@ export default function open (target, {
 
     return readProfile(options)
         .then(writeProfile)
-        .then((profile) => editor(target, Object.assign({}, options, {profile})));
+        .then((profile) => editor(Object.assign({}, options, {profile})));
 
     function validateProfile (profile) {
         if (!profile.container) throw new Error('Invalid profile: missing container');

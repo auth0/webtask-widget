@@ -45,11 +45,12 @@ webtaskWidget.open(containerEl, {
 
 ## API
 
-#### `webtaskWidget.open (containerEl, [options])`
+#### `webtaskWidget.showEditor ([options])`
 
 
 Option | Type | Default | Description
 --- | --- | --- | ---
+mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 url | `String` | `CLUSTER_URL` | The url of the webtask cluster
 token | `String` |  | The current user's webtask token.
 container | `String` |   | The current user's container.
@@ -65,9 +66,18 @@ storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeP
 storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
 showWebtaskUrl | `Boolean` | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
 showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webtask's url should be shown.
+secrets | `Object` |  `{}` | Set default secrets for the editor.
 code | `String` |   | Overwrite the default code that will be displayed in the editor.
 tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
 onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
+
+
+#### `webtaskWidget.showLogin ([options])`
+
+
+Option | Type | Default | Description
+--- | --- | --- | ---
+mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 
 
 ## Concepts
