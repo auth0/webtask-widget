@@ -1,15 +1,25 @@
-import React from 'react';
 import Debounce from 'lodash.debounce';
+import React from 'react';
+import Sandbox from 'sandboxjs';
 
 import {Modal} from 'react-bootstrap';
+import ReactZeroClipboard from 'react-zeroclipboard';
 
 import AceEditor from '../components/ace';
 import AdvancedEditorOptions from '../components/advancedEditorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
+import Input from '../components/input';
 
 import ComponentStack from '../lib/componentStack';
 
+
+import '../styles/editor.less';
+
+
+const defaultWebtask = function (ctx, cb) {
+    cb(null, 'Hello world');
+};
 
 export default class A0Editor extends React.Component {
     constructor(props) {
@@ -40,11 +50,21 @@ export default class A0Editor extends React.Component {
         const loading = state.creatingToken
             || state.savingWebtask
             || state.tryingWebtask;
-        const onChange = this.onChange.bind(this);
+        const onChangeCode = this.onChangeCode.bind(this);
+        const onChangeAdvancedOptions = this.onChangeAdvancedOptions.bind(this);
         const saveWebtask = this.saveWebtask.bind(this);
+        const setState = this.setState.bind(this);
         const toggleSecrets = this.toggleSecrets.bind(this);
         const tryWebtask = this.tryWebtask.bind(this);
         
+        const copyButton = this.state.webtask
+            ?   (
+                    <ReactZeroClipboard text={ state.webtask.url }>
+                        <Button>Copy</Button>
+                    </ReactZeroClipboard>
+                )
+            :   null;
+
         return (
             <div className="a0-editor">
                 { state.error
@@ -66,9 +86,10 @@ export default class A0Editor extends React.Component {
                         theme="textmate"
                         value={ state.code }
                         maxLines={ 15 }
+                        minLines={ 5 }
                         height=""
                         width=""
-                        onChange={ onChange }
+                        onChange={ onChangeCode }
                         editorProps={ { $blockScrolling: true } }
                     />
                 </div>
@@ -76,12 +97,52 @@ export default class A0Editor extends React.Component {
                 { state.showAdvanced
                 ?   (
                         <AdvancedEditorOptions
-                            secrets={ state.secrets }
+                            ref="advancedOptions"
+                            name={ props.name }
+                            mergeBody={ props.mergeBody }
+                            parseBody={ props.parseBody }
+                            secrets={ props.secrets }
+                            loading={ loading }
+                            onChange={ onChangeAdvancedOptions }
                         />
                     )
                 :   null
                 }
 
+                { state.webtask
+                ?   (
+                        <div>
+                            { state.successMessage
+                            ?   (
+                                    <Alert
+                                        bsStyle="success"
+                                        onDismiss={ () => setState({ successMessage: '' }) }
+                                        dismissAfter={ 2000 }
+                                        >
+                                        { state.successMessage }
+                                    </Alert>
+                                )
+                            :   null
+                            }
+    
+                            { props.showWebtaskUrl
+                            ?   (
+                                    <Input
+                                        type="text"
+                                        disabled
+                                        label="Webtask url:"
+                                        buttonAfter={ copyButton }
+                                        value={ state.webtask.url }
+                                    />
+                                )
+                            :   null
+                            }
+    
+                        </div>
+                    )
+                :   null
+                }
+                
                 <div className="btn-list text-right">
                     <Button
                         bsStyle="link"
@@ -114,13 +175,37 @@ export default class A0Editor extends React.Component {
         );
     }
     
-    onChange(code) {
+    onChangeAdvancedOptions({ name, mergeBody, parseBody, secrets }) {
+        this.setState({ name, mergeBody, parseBody, secrets });
+    }
+    
+    onChangeCode(code) {
         this.setState({ code });
     }
     
-    saveWebtask(e) {
-        e.preventDefault();
+    saveWebtask ({hideSuccessMessage = false} = {}) {
+        // Cancel any pending autoSaves
+        this.autoSave.cancel();
+
+        this.setState({
+            savingWebtask: true,
+            successMessage: '',
+        });
         
+        this.props.profile.create(this.state.code, {
+            merge: this.state.mergeBody,
+            parse: this.state.parseBody,
+            secret: this.state.secrets,
+            name: this.state.name,
+        })
+            .tap(this.props.onSave)
+            .tap(() => !hideSuccessMessage && this.setState({
+                successMessage: 'Webtask successfully created',
+            }))
+            .tap((webtask) => this.setState({
+                webtask,
+            }))
+            .finally(() => this.setState({ savingWebtask: false }));
     }
     
     toggleSecrets(e) {
@@ -141,6 +226,7 @@ A0Editor.title = 'Create a webtask';
 
 A0Editor.propTypes = {
     componentStack:         React.PropTypes.instanceOf(ComponentStack).isRequired,
+    profile:                React.PropTypes.instanceOf(Sandbox).isRequired,
     name:                   React.PropTypes.string,
     mergeBody:              React.PropTypes.bool,
     parseBody:              React.PropTypes.bool,
@@ -150,7 +236,7 @@ A0Editor.propTypes = {
     showWebtaskUrl:         React.PropTypes.bool,
     showTryWebtaskUrl:      React.PropTypes.bool,
     secrets:                React.PropTypes.object,
-    code:                   React.PropTypes.string.isRequired,
+    code:                   React.PropTypes.string,
     tryParams:              React.PropTypes.object,
     onSave:                 React.PropTypes.func.isRequired,
 };
@@ -165,6 +251,7 @@ A0Editor.defaultProps = {
     showWebtaskUrl:         true,
     showTryWebtaskUrl:      true,
     secrets:                {},
+    code:                   `module.exports = ${defaultWebtask.toString()};\n\n`,
     tryParams:              {
                                 path: '',
                                 headers: {

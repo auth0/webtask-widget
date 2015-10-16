@@ -97,7 +97,7 @@ export default class A0SecretsEditor extends React.Component {
 
     getValue() {
         return this.state.secrets.reduce((secrets, {key, value}) => {
-            if (key) secrets[key] = value;
+            if (key) secrets[key.trim()] = value;
 
             return secrets;
         }, {});

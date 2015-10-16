@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal';
 import React from 'react';
 
 import {OverlayTrigger} from 'react-bootstrap';
@@ -16,14 +17,30 @@ export default class A0AdvanedEditorOptions extends React.Component {
         super(props);
         
         this.state = {
+            name: props.name,
+            mergeBody: props.mergeBody,
+            parseBody: props.parseBody,
             secrets: props.secrets,
         };
     }
     
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.onChange && !isEqual(this.state, prevState))
+            this.props.onChange({
+                name: this.state.name,
+                mergeBody: this.state.mergeBody,
+                parseBody: this.state.parseBody,
+                secrets: this.state.secrets,
+            });
+    }
+    
     render() {
-        const self = this;
         const props = this.props;
         const state = this.state;
+        
+        const setState = this.setState.bind(this);
+        const getName = () => this.refs.name.getValue();
+        const getSecrets = () => this.refs.secrets.getValue();
 
         const parseBodyHelp = <Tooltip>
             This will attempt to parse the body of incoming requests and expose
@@ -37,40 +54,40 @@ export default class A0AdvanedEditorOptions extends React.Component {
             &nbsp;<code>context.data</code>.
         </Tooltip>;
         
-        const loading = false;
+        const loading = props.loading;
 
         return (
             <div className="a0-advanced">
                 <label className="control-label">Advanced options:</label>
                 <div className="form-group">
-                    <OverlayTrigger placement="top" overlay={parseBodyHelp}>
-                        <div className="checkbox">
+                    <div className="checkbox">
+                        <OverlayTrigger placement="top" overlay={ parseBodyHelp }>
                             <label>
                                 <input
                                     ref="parseBody"
                                     type="checkbox"
-                                    onChange={ (e) => self.setState({parseBody: e.target.checked}) }
+                                    onChange={ (e) => setState({ parseBody: e.target.checked }) }
                                     disabled={ loading }
                                     checked={ state.parseBody }
                                 />
                                 Automatically parse the request body into  <code>context.body</code>
                             </label>
-                        </div>
-                    </OverlayTrigger>
-                    <OverlayTrigger placement="top" overlay={ mergeBodyHelp} >
-                        <div className="checkbox">
+                        </OverlayTrigger>
+                    </div>
+                    <div className="checkbox">
+                        <OverlayTrigger placement="top" overlay={ mergeBodyHelp} >
                             <label>
                                 <input
                                     ref="mergeBody"
                                     type="checkbox"
-                                    onChange={ (e) => self.setState({mergeBody: e.target.checked}) }
+                                    onChange={ (e) => setState({ mergeBody: e.target.checked }) }
                                     disabled={ loading }
                                     checked={ state.mergeBody }
                                 />
                                 Merge the parsed body into <code>context.data</code>
                             </label>
-                        </div>
-                    </OverlayTrigger>
+                        </OverlayTrigger>
+                    </div>
                 </div>
 
                 <Input
@@ -81,8 +98,8 @@ export default class A0AdvanedEditorOptions extends React.Component {
                     name="key"
                     ref="name"
                     value={ state.name }
-                    onChange={ () => self.setState({
-                        name: self.refs.name.getValue(),
+                    onChange={ () => setState({
+                        name: getName(),
                     }) }
                 />
 
@@ -90,16 +107,29 @@ export default class A0AdvanedEditorOptions extends React.Component {
                     <SecretsEditor
                         ref="secrets"
                         secrets={ state.secrets }
-                        onChange={ () => self.setState({
-                            secrets: self.refs.secrets.getValue()
+                        onChange={ () => setState({
+                            secrets: getSecrets()
                         }) }
                     />
                 </div>
             </div>
         );
     }
+    
+    getValue() {
+        return {
+            name: this.state.name,
+            mergeBody: this.state.mergeBody,
+            parseBody: this.state.parseBody,
+            secrets: this.state.secrets,
+        };
+    }
 }
 
 A0AdvanedEditorOptions.propTypes = {
+    name: React.PropTypes.string.isRequired,
+    mergeBody: React.PropTypes.bool.isRequired,
+    parseBody: React.PropTypes.bool.isRequired,
     secrets: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func.isRequired,
 };
