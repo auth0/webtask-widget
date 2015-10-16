@@ -1,7 +1,6 @@
 import React from 'react';
-import EventSource from 'event-source-stream';
 
-import Alert from './alert';
+import Alert from '../components/alert';
 
 export default class A0Logs extends React.Component {
     constructor(props) {
@@ -14,13 +13,7 @@ export default class A0Logs extends React.Component {
     }
 
     componentDidMount() {
-        const { url, container, token } = this.props.profile;
-
-        const streamUrl = url + '/api/logs/tenant/'
-            + container
-            + '?key=' + token;
-
-        const logStream = EventSource(streamUrl, { json: true });
+        const logStream = this.props.profile.createLogStream();
 
         logStream.on('error', (e) => {
             console.error(e);

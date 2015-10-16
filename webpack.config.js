@@ -68,23 +68,18 @@ var baseConfig = {
         alias: {},
     },
 };
-function mergeHandler(a, b) {
-    if (_.isArray(a)) {
-        return a.concat(b);
-    }
-}
 
 module.exports = [
-    _.merge({}, [baseConfig, {
+    _.merge({}, baseConfig, {
         entry: './webtask.js',
         output: {
             filename: 'webtask.js',
         },
-    }], mergeHandler),
-    _.merge({}, [baseConfig, {
+    }),
+    _.merge({}, baseConfig, {
         entry: './webtask-bootstrap.js',
         output: {
             filename: 'webtask-bootstrap.js',
         },
-    }], mergeHandler),
+    }),
 ];

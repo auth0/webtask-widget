@@ -1,12 +1,13 @@
 import Bluebird from 'bluebird';
 import LocalForage from 'localforage';
+import Sandbox from 'sandboxjs';
 
 function validateProfile (profile) {
     if (!profile.container) throw new Error('Invalid profile: missing container');
     if (!profile.token) throw new Error('Invalid profile: missing token');
     if (!profile.url) throw new Error('Invalid profile: missing url');
 
-    return profile;
+    return Sandbox.init(profile);
 }
 
 //
@@ -16,7 +17,7 @@ function validateProfile (profile) {
 export function getProfile(key) {
     return LocalForage.getItem(key)
         .then((profile) => {
-            if(!profile) return Bluebird.resolve(null);
+            if (!profile) return Bluebird.resolve(null);
 
             try {
                 return validateProfile(profile);

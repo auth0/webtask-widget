@@ -104,6 +104,6 @@ export function showEditor ({
             if(!profile)
                 return showLogin(options);
 
-            componentStack.push(Editor, Object.assign({}, options, {profile}))
+            componentStack.push(Editor, Object.assign({}, options, {profile}));
         });
 }
