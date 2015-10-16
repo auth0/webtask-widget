@@ -65,8 +65,7 @@ export function showEditor ({
             url: url,
         })
         .then((profile) => {
-            if(writeProfile)
-                return saveProfile(storageKey, profile);
+            return writeProfile ? saveProfile(storageKey, profile) : profile;
         });
     } else if (storeProfile) {
         readProfile = getProfile;
