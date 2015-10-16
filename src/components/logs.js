@@ -1,6 +1,8 @@
 import React from 'react';
 import EventSource from 'event-source-stream';
 
+import Alert from './alert';
+
 export default class A0Logs extends React.Component {
     constructor(props) {
         super(props);
@@ -41,17 +43,27 @@ export default class A0Logs extends React.Component {
     }
 
     render() {
-        const logs = !this.state.logs.length ?
-            <p>Nothing to report</p> :
-            <pre className="a0-logs well">
+        const error = this.state.error ?
+                     'Error: ' + this.state.error.message :
+                     null;
+
+        const logs = this.state.logs.length ?
+            <pre className="well">
                 {
                     this.state.logs.map(line => line.msg + '\n')
                 }
-            </pre>
+            </pre> :
+            <Alert bsStyle="info">
+                Nothing to report
+            </Alert>
 
         return (
-            <div>
-                {this.state.error || logs}
+            <div className="a0-logs">
+                <Alert bsStyle={this.state.error ? 'danger' : 'success'}>
+                  {error || 'Connected to ' + this.props.profile.container}
+                </Alert>
+
+                {this.state.error ? null : logs}
             </div>
         );
     }

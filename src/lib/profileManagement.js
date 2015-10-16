@@ -16,12 +16,12 @@ function validateProfile (profile) {
 export function getProfile(key) {
     return LocalForage.getItem(key)
         .then((profile) => {
-            if(!profile) return Bluebird.resolve();
+            if(!profile) return Bluebird.resolve(null);
 
             try {
                 return validateProfile(profile);
             } catch (__) {
-                return Bluebird.resolve();
+                return Bluebird.resolve(null);
             }
         });
 }
