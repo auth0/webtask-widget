@@ -1,5 +1,5 @@
 import React from 'react';
-import EventSource from 'event-source-stream';
+import Sandbox from 'sandboxjs';
 
 import Alert from './alert';
 
@@ -14,15 +14,11 @@ export default class A0Logs extends React.Component {
     }
 
     componentDidMount() {
-        const { url, container, token } = this.props.profile;
+        const sandbox = new Sandbox(this.props.profile);
 
-        const streamUrl = url + '/api/logs/tenant/'
-            + container
-            + '?key=' + token;
+        this.logStream = sandbox.createLogStream();
 
-        const logStream = EventSource(streamUrl, { json: true });
-
-        logStream.on('error', (e) => {
+        this.logStream.on('error', (e) => {
             console.error(e);
 
             this.setState({
@@ -30,7 +26,7 @@ export default class A0Logs extends React.Component {
             });
         });
 
-        logStream.on('data', (msg) => {
+        this.logStream.on('data', (msg) => {
             const logs = this.state.logs.slice();
 
             if (msg.name === 'sandbox-logs') {
@@ -40,6 +36,10 @@ export default class A0Logs extends React.Component {
                 this.setState({ logs });
             }
         });
+    }
+
+    componentWillUnmount() {
+        this.logStream.destroy();
     }
 
     render() {
