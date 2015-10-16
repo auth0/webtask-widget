@@ -1,10 +1,12 @@
-import AceEditor from 'react-ace';
 import React from 'react';
 import Debounce from 'lodash.debounce';
 
 import {Modal} from 'react-bootstrap';
 
+import AceEditor from '../components/ace';
+import AdvancedEditorOptions from '../components/advancedEditorOptions';
 import Alert from '../components/alert';
+import Button from '../components/button';
 
 import ComponentStack from '../lib/componentStack';
 
@@ -39,6 +41,9 @@ export default class A0Editor extends React.Component {
             || state.savingWebtask
             || state.tryingWebtask;
         const onChange = this.onChange.bind(this);
+        const saveWebtask = this.saveWebtask.bind(this);
+        const toggleSecrets = this.toggleSecrets.bind(this);
+        const tryWebtask = this.tryWebtask.bind(this);
         
         return (
             <div className="a0-editor">
@@ -68,12 +73,67 @@ export default class A0Editor extends React.Component {
                     />
                 </div>
                 
+                { state.showAdvanced
+                ?   (
+                        <AdvancedEditorOptions
+                            secrets={ state.secrets }
+                        />
+                    )
+                :   null
+                }
+
+                <div className="btn-list text-right">
+                    <Button
+                        bsStyle="link"
+                        className="pull-left"
+                        type="button"
+                        disabled={ loading }
+                        onClick={ loading ? null : toggleSecrets }
+                    >
+                        { state.showAdvanced ? 'Hide advanced' : 'Show advanced' }
+                    </Button>
+
+                    <Button
+                        type="submit"
+                        disabled={ loading }
+                        onClick={ loading ? null : tryWebtask }
+                    >
+                        { state.creatingToken ? 'Sending...' : 'Try'}
+                    </Button>
+
+                    <Button
+                        bsStyle="primary"
+                        type="submit"
+                        disabled={ loading }
+                        onClick={ loading ? null : saveWebtask }
+                    >
+                        { state.savingWebtask ? 'Saving...' : 'Save' }
+                    </Button>
+                </div>
             </div>
         );
     }
     
     onChange(code) {
         this.setState({ code });
+    }
+    
+    saveWebtask(e) {
+        e.preventDefault();
+        
+    }
+    
+    toggleSecrets(e) {
+        e.preventDefault();
+        
+        this.setState({
+            showAdvanced: !this.state.showAdvanced
+        });
+    }
+    
+    tryWebtask(e) {
+        e.preventDefault();
+        
     }
 }
 

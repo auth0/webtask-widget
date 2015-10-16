@@ -1,19 +1,15 @@
 var Path = require('path');
 var Package = require('./package.json');
 var Webpack = require('webpack');
+var _ = require('lodash');
 
-module.exports = {
+var baseConfig = {
     cache: true,
     devtool: 'source-map',
     context: Path.join(__dirname, 'src'),
-    entry: {
-        'webtask': './webtask.js',
-        'webtask-bootstrap': './webtask.bootstrap.js',
-    },
     output: {
         path: Path.join(__dirname, 'build'),
         filename: '[name].js',
-        chunkFilename: '[name].js',
         publicPath: '/build/',
         hash: true,
         library: 'webtaskWidget',
@@ -63,8 +59,8 @@ module.exports = {
         ],
     },
     plugins: [
-        new Webpack.optimize.DedupePlugin(),
         new Webpack.optimize.OccurenceOrderPlugin(),
+        new Webpack.optimize.DedupePlugin(),
     ],
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
@@ -72,3 +68,23 @@ module.exports = {
         alias: {},
     },
 };
+function mergeHandler(a, b) {
+    if (_.isArray(a)) {
+        return a.concat(b);
+    }
+}
+
+module.exports = [
+    _.merge({}, [baseConfig, {
+        entry: './webtask.js',
+        output: {
+            filename: 'webtask.js',
+        },
+    }], mergeHandler),
+    _.merge({}, [baseConfig, {
+        entry: './webtask-bootstrap.js',
+        output: {
+            filename: 'webtask-bootstrap.js',
+        },
+    }], mergeHandler),
+];
