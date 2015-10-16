@@ -10,6 +10,7 @@ import AdvancedEditorOptions from '../components/advancedEditorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
+import TryWebtask from '../components/tryWebtask';
 
 import ComponentStack from '../lib/componentStack';
 
@@ -31,7 +32,6 @@ export default class A0Editor extends React.Component {
             creatingToken: false,
             showAdvanced: false,
             savingWebtask: false,
-            tryingWebtask: false,
             mergeBody: props.mergeBody,
             parseBody: props.parseBody,
             name: props.name,
@@ -48,8 +48,7 @@ export default class A0Editor extends React.Component {
         const state = this.state;
         
         const loading = state.creatingToken
-            || state.savingWebtask
-            || state.tryingWebtask;
+            || state.savingWebtask;
         const onChangeCode = this.onChangeCode.bind(this);
         const onChangeAdvancedOptions = this.onChangeAdvancedOptions.bind(this);
         const saveWebtask = this.saveWebtask.bind(this);
@@ -219,6 +218,17 @@ export default class A0Editor extends React.Component {
     tryWebtask(e) {
         e.preventDefault();
         
+        const tryWebtaskProps = {
+            profile: this.props.profile,
+            name: this.state.name,
+            mergeBody: this.state.mergeBody,
+            parseBody: this.state.parseBody,
+            secrets: this.state.secrets,
+            code: this.state.code,
+            tryParams: this.props.tryParams,
+        };
+        
+        this.props.componentStack.push(TryWebtask, tryWebtaskProps);
     }
 }
 

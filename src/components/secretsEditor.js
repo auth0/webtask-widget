@@ -38,7 +38,7 @@ export default class A0SecretsEditor extends React.Component {
 
         return (
             <div className="a0-secreteditor">
-                <label className="label">Edit secrets:</label>
+                <label className="control-label">Edit secrets:</label>
                 <table className="a0-secreteditor-table">
                     <tbody>
                         { state.secrets.map(({key, value}, i) => (

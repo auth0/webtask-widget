@@ -71,15 +71,9 @@ var baseConfig = {
 
 module.exports = [
     _.merge({}, baseConfig, {
-        entry: './webtask.js',
-        output: {
-            filename: 'webtask.js',
-        },
+        entry: { 'webtask': './webtask.js', },
     }),
     _.merge({}, baseConfig, {
-        entry: './webtask-bootstrap.js',
-        output: {
-            filename: 'webtask-bootstrap.js',
-        },
+        entry: { 'webtask-bootstrap': './webtask.js', },
     }),
 ];

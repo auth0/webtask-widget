@@ -12,7 +12,7 @@ import SecretsEditor from '../components/secretsEditor';
 import Tooltip from '../components/tooltip';
 
 
-export default class A0AdvanedEditorOptions extends React.Component {
+export default class A0AdvancedEditorOptions extends React.Component {
     constructor(props) {
         super(props);
         
@@ -126,7 +126,7 @@ export default class A0AdvanedEditorOptions extends React.Component {
     }
 }
 
-A0AdvanedEditorOptions.propTypes = {
+A0AdvancedEditorOptions.propTypes = {
     name: React.PropTypes.string.isRequired,
     mergeBody: React.PropTypes.bool.isRequired,
     parseBody: React.PropTypes.bool.isRequired,

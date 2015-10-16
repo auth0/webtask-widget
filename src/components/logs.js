@@ -1,4 +1,5 @@
 import React from 'react';
+import Sandbox from 'sandboxjs';
 
 import Alert from '../components/alert';
 
@@ -65,5 +66,5 @@ export default class A0Logs extends React.Component {
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
-    profile: React.PropTypes.object.isRequired
+    profile: React.PropTypes.instanceOf(Sandbox).isRequired
 };
