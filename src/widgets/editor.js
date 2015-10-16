@@ -28,6 +28,7 @@ export function showEditor ({
     storageKey = 'webtask.profile',
     showWebtaskUrl = true,
     showTryWebtaskUrl = true,
+    secrets = {},
     code = dedent`
         module.exports = function (ctx, cb) {
             cb(null, 'Hello ' + ctx.query.hello);
@@ -92,6 +93,7 @@ export function showEditor ({
         storageKey,
         showWebtaskUrl,
         showTryWebtaskUrl,
+        secrets,
         code,
         tryParams,
         onSave,

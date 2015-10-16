@@ -66,6 +66,7 @@ storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeP
 storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
 showWebtaskUrl | `Boolean` | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
 showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webtask's url should be shown.
+secrets | `Object` |  `{}` | Set default secrets for the editor.
 code | `String` |   | Overwrite the default code that will be displayed in the editor.
 tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
 onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
