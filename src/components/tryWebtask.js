@@ -124,10 +124,10 @@ export default class A0TryWebtask extends React.Component {
                 :   null
                 }
     
-                { state.result
-                ?   <Logs profile={ props.profile } />
-                :   null
-                }
+                <div>
+                    <label className="control-label">Logs:</label>
+                    <Logs profile={ props.profile } />
+                </div>
                 
                 <div className="btn-list text-right">
                     <Button
