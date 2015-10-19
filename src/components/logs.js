@@ -7,6 +7,7 @@ export default class A0Logs extends React.Component {
     constructor(props) {
         super(props);
 
+        this.logStream = null;
         this.state = {
             error: null,
             logs: []
@@ -14,9 +15,9 @@ export default class A0Logs extends React.Component {
     }
 
     componentDidMount() {
-        const logStream = this.props.profile.createLogStream();
+        this.logStream = this.props.profile.createLogStream();
 
-        logStream.on('error', (e) => {
+        this.logStream.on('error', (e) => {
             console.error(e);
 
             this.setState({
@@ -24,7 +25,7 @@ export default class A0Logs extends React.Component {
             });
         });
 
-        logStream.on('data', (msg) => {
+        this.logStream.on('data', (msg) => {
             const logs = this.state.logs.slice();
 
             if (msg.name === 'sandbox-logs') {
@@ -43,21 +44,30 @@ export default class A0Logs extends React.Component {
             logs.scrollTop = logs.scrollHeight;
         }
     }
+    
+    componentWillUnmount() {
+        this.logStream.destroy();
+        this.logStream = null;
+    }
 
     render() {
-        const error = this.state.error ?
-                     'Error: ' + this.state.error.message :
-                     null;
+        const error = this.state.error
+            ? 'Error: ' + this.state.error.message
+            : null;
 
-        const logs = this.state.logs.length ?
-            <pre className="well pre-scrollable" ref="log-view">
-                {
-                    this.state.logs.map(line => line.msg + '\n')
-                }
-            </pre> :
-            <Alert bsStyle="info">
-                Nothing to report
-            </Alert>
+        const logs = this.state.logs.length
+        ?   (
+                <pre className="well pre-scrollable" ref="log-view">
+                    {
+                        this.state.logs.map(line => line.msg + '\n')
+                    }
+                </pre>
+            )
+        :   (
+                <Alert bsStyle="info">
+                    Nothing to report
+                </Alert>
+            );
 
         return (
             <div className="a0-logs">
@@ -65,7 +75,10 @@ export default class A0Logs extends React.Component {
                   {error || 'Connected to ' + this.props.profile.container}
                 </Alert>
 
-                {this.state.error ? null : logs}
+                { this.state.error
+                ?   null
+                :   logs
+                }
             </div>
         );
     }
