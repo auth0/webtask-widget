@@ -36,13 +36,21 @@ export default class A0Logs extends React.Component {
         });
     }
 
+    componentDidUpdate() {
+        if(this.refs['log-view']) {
+            let logs = this.refs['log-view'].getDOMNode();
+
+            logs.scrollTop = logs.scrollHeight;
+        }
+    }
+
     render() {
         const error = this.state.error ?
                      'Error: ' + this.state.error.message :
                      null;
 
         const logs = this.state.logs.length ?
-            <pre className="well">
+            <pre className="well pre-scrollable" ref="log-view">
                 {
                     this.state.logs.map(line => line.msg + '\n')
                 }

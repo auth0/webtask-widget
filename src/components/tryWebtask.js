@@ -116,18 +116,15 @@ export default class A0TryWebtask extends React.Component {
                     />
                 </div>
     
-                { state.result
-                ?   <div>
-                        <label className="control-label">Result:</label>
-                        <Inspector className="well" data={ state.result } search={ null } />
-                    </div>
-                :   null
-                }
+                <div>
+                    <label className="control-label">Result:</label>
+                    <Inspector className="well" data={ state.result || {} } search={ null } />
+                </div>
     
-                { state.result
-                ?   <Logs profile={ props.profile } />
-                :   null
-                }
+                <div>
+                    <label className="control-label">Logs:</label>
+                    <Logs profile={ props.profile } />
+                </div>
                 
                 <div className="btn-list text-right">
                     <Button
