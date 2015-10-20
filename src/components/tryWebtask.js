@@ -126,7 +126,7 @@ export default class A0TryWebtask extends React.Component {
                     <Logs profile={ props.profile } />
                 </div>
                 
-                <div className="btn-list text-right">
+                <div className="btn-list text-right clearfix">
                     <Button
                         className="pull-left"
                         type="button"

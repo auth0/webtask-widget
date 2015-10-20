@@ -39,7 +39,7 @@ export default class A0VerifyConfirmationCode extends React.Component {
                         ref="verificationCode"
                     />
 
-                    <div className="btn-list text-right">
+                    <div className="btn-list text-right clearfix">
                         <Button
                             type="button"
                             onClick={ cancel }>

@@ -142,7 +142,7 @@ export default class A0Editor extends React.Component {
                 :   null
                 }
                 
-                <div className="btn-list text-right">
+                <div className="btn-list text-right clearfix">
                     <Button
                         bsStyle="link"
                         className="pull-left"
