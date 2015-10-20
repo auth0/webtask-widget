@@ -14,14 +14,6 @@ export default class Widget extends EventEmitter {
             this.eventQueue
                 .forEach((e) => this.emit(e.name, e.data));
         });
-
-        if(options && options.methods)
-            options.methods
-                .forEach((method) => {
-                    this[method] = (data) => {
-                        this.emit(method, data);
-                    };
-                });
     }
 
     emit(name, data) {

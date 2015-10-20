@@ -8,6 +8,24 @@ import ComponentStack from '../lib/componentStack';
 import Widget from '../lib/widget';
 import dedent from '../lib/dedent';
 
+class EditorWidget extends Widget {
+    constructor(options) {
+        super(Editor, options);
+
+        this.on('save', options.onSave);
+    }
+
+    save(cb) {
+        return Bluebird.resolve(this.onSave)
+            .then(function (result) {
+                if(cb)
+                    cb(result);
+
+                return result;
+            })
+    }
+}
+
 export function createEditor({
     mount = null,
     componentStack = null,
@@ -64,19 +82,9 @@ export function createEditor({
         onSave,
     };
 
-    const editorWidget = new Widget(Editor, Object.assign({}, options, {
-        methods: ['save']
-    }));
+    const editorWidget = new EditorWidget(options);
 
-    editorWidget.on('save', options.onSave);
-
-    options.readProfile(storageKey)
-        .then((profile) => {
-            if(!profile)
-                return showLogin(options);
-
-            options.componentStack.push(editorWidget.component, Object.assign({}, options, {profile}));
-        })
+    options.componentStack.push(editorWidget.component, Object.assign({}, options, {profile}))
         .then((result) => {
             editorWidget.emit('ready');
 
