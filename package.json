@@ -19,7 +19,7 @@
     "react-json-inspector": "^5.2.1",
     "react-mixin": "^2.0.2",
     "react-zeroclipboard": "^2.0.1",
-    "sandboxjs": "^1.2.1",
+    "sandboxjs": "^1.2.2",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },

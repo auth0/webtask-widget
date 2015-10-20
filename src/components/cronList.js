@@ -3,10 +3,14 @@ import Sandbox from 'sandboxjs';
 
 import ComponentStack from '../lib/componentStack';
 
+import Alert from '../components/alert';
 import Button from '../components/button';
+import CronView from '../components/cronView';
+
+import '../styles/cronList.less';
 
 
-export default class A0CronJobs extends React.Component {
+export default class A0CronJobList extends React.Component {
     constructor(props) {
         super(props);
 
@@ -33,7 +37,7 @@ export default class A0CronJobs extends React.Component {
         const loadingBody = (
             <tbody className="a0-conlist-loading">
                 <tr>
-                    <td className="a0-cronlist-colspan" colspan="99">Loading cron jobs...</td>
+                    <td className="a0-cronlist-colspan" colSpan="99">Loading cron jobs...</td>
                 </tr>
             </tbody>
         );
@@ -50,21 +54,23 @@ export default class A0CronJobs extends React.Component {
                 }
                 <table className="table table-hover">
                     <thead>
-                        <th>Job name</th>
-                        <th>Created at</th>
-                        <th>Next run</th>
-                        <th>State</th>
-                        <th>Last result</th>
+                        <tr>
+                            <th>Job name</th>
+                            <th>Created at</th>
+                            <th>Next run</th>
+                            <th>State</th>
+                            <th>Last result</th>
+                        </tr>
                     </thead>
                     { loading
                     ?   loadingBody
                     :   (
                             <tbody>
                                 { state.jobs && state.jobs.length
-                                ?   state.jobs.map((job) => <JobRow key={ job.name } job={ job } onClick={ viewJob(job) } />)
+                                ?   state.jobs.map((job) => <A0CronJobRow key={ job.name } job={ job } onClick={ viewJob(job) } />)
                                 :   (
                                         <tr className="a0-cronlist-empty">
-                                            <td className="a0-cronlist-colspan" collSpan="99">
+                                            <td className="a0-cronlist-colspan" colSpan="99">
                                                 No jobs found.
                                                 
                                                 <Button
@@ -116,21 +122,23 @@ export default class A0CronJobs extends React.Component {
     viewJob(e, job) {
         if (e) e.preventDefault();
         
-        alert(`WIP: viewJob('${job.name}')`);
+        this.props.componentStack.push(CronView, Object.assign({}, this.props, { job }))
+            .catch(e => e)
+            .finally(() => this.refreshJobs());
     }
 }
 
-A0CronJobs.propTypes = {
+A0CronJobList.propTypes = {
     componentStack:         React.PropTypes.instanceOf(ComponentStack).isRequired,
     profile:                React.PropTypes.instanceOf(Sandbox).isRequired,
     showCreateButton:       React.PropTypes.bool,
 };
 
-A0CronJobs.defaultProps = {
+A0CronJobList.defaultProps = {
     showCreateButton:       true,
 };
 
-class JobRow extends React.Component {
+class A0CronJobRow extends React.Component {
     render() {
         const props = this.props;
         

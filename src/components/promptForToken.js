@@ -48,7 +48,7 @@ export default class A0PromptForToken extends React.Component {
                         ref="token"
                     />
 
-                    <div className="btn-list text-right">
+                    <div className="btn-list text-right clearfix">
                         <Button
                             type="button"
                             onClick={ cancel }>

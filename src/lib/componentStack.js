@@ -31,7 +31,7 @@ export default class ComponentStack {
         const state = {};
         
         state.promise = new Bluebird((resolve, reject)  => {
-            const childProps = Object.assign({resolve, reject}, props);
+            const childProps = Object.assign({}, props, {resolve, reject});
             
             state.wrapper = document.createElement('div');
             state.wrapper.className = 'a0-stack-element';
@@ -44,6 +44,7 @@ export default class ComponentStack {
         
         return state.promise
             .finally(function () {
+                console.log('unmounting', state.wrapper)
                 React.unmountComponentAtNode(state.wrapper);
                 setTimeout(() => state.wrapper.remove());
             });
