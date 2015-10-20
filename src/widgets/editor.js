@@ -7,14 +7,11 @@ import Editor from '../components/editor';
 
 import ComponentStack from '../lib/componentStack';
 import dedent from '../lib/dedent';
-import {getProfile, saveProfile} from '../lib/profileManagement';
 
 export function showEditor ({
     mount = null,
     componentStack = null,
-    url = 'https://webtask.it.auth0.com',
-    token = null,
-    container = null,
+    profile = null,
     name = '',
     showIntro = false,
     mergeBody = true,
@@ -22,10 +19,6 @@ export function showEditor ({
     autoSaveOnLoad = false,
     autoSaveOnChange = false,
     autoSaveInterval = 1000,
-    readProfile = null,
-    writeProfile = null,
-    storeProfile = false,
-    storageKey = 'webtask.profile',
     showWebtaskUrl = true,
     showTryWebtaskUrl = true,
     secrets = {},
@@ -49,37 +42,13 @@ export function showEditor ({
     onSave = (webtask) => webtask,
 } = {}) {
     
+    if (!profile) throw new Error('This widget requires an instance of a Sandboxjs Profile.');
     if (!componentStack) componentStack = new ComponentStack(mount);
-
-    // If we bootstrap the widget with a token, we need to be sure that we have
-    // all the necessary information to constitute a valid Profile.
-    if (token) {
-        if (!container) throw new Error(`When passing a 'token' to
-            webtaskWidget.open, you must also pass in a 'container' option.`);
-
-        if (readProfile) throw new Error(`The 'readProfile' option
-            cannot be present when specifying a 'token'.`);
-
-        readProfile = () => Bluebird.resolve({
-            container: container,
-            token: token,
-            url: url,
-        })
-        .then((profile) => {
-            return writeProfile ? saveProfile(storageKey, profile) : profile;
-        });
-    } else if (storeProfile) {
-        readProfile = getProfile;
-    } else {
-        readProfile = Bluebird.resolve();
-    }
 
     const options = {
         mount,
         componentStack,
-        url,
-        token,
-        container,
+        profile,
         name,
         mergeBody,
         parseBody,
@@ -87,10 +56,6 @@ export function showEditor ({
         autoSaveOnLoad,
         autoSaveOnChange,
         autoSaveInterval,
-        readProfile,
-        writeProfile,
-        storeProfile,
-        storageKey,
         showWebtaskUrl,
         showTryWebtaskUrl,
         secrets,
@@ -99,11 +64,5 @@ export function showEditor ({
         onSave,
     };
 
-    return readProfile(storageKey)
-        .then((profile) => {
-            if(!profile)
-                return showLogin(options);
-
-            componentStack.push(Editor, Object.assign({}, options, {profile}));
-        });
+    return componentStack.push(Editor, options);
 }
