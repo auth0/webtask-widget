@@ -12,11 +12,13 @@ class EditorWidget extends Widget {
     constructor(options) {
         super(Editor, options);
 
-        this.on('save', options.onSave);
+        this.onSave = options.onSave;
+
+        this.on('save', this.onSave);
     }
 
     save(cb) {
-        return Bluebird.resolve(this.onSave)
+        return Bluebird.resolve(this.onSave())
             .then(function (result) {
                 if(cb)
                     cb(result);
