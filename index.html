@@ -10,13 +10,21 @@
                 box-sizing: border-box;
             }
             
-            #editor, #logs {
+            #cron-jobs, #editor, #logs {
                 margin: 80px auto 0;
                 width: 50%;
                 min-width: 400px;
                 
                 padding: 10px;
                 border: 2px dashed #ccc;
+            }
+            
+            #cron-jobs:before {
+                content: 'webtaskWidget.showCronJobs()';
+                margin: 0 0 10px;
+                font-weight: bold;
+                display: block;
+                color: #999;
             }
             
             #editor:before {
@@ -38,9 +46,15 @@
     </head>
 
     <body>
+        <div id="cron-jobs"></div>
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
+            window.webtaskWidget.showCronJobs({
+                mount: document.getElementById('cron-jobs'),
+                storeProfile: true,
+            });
+            
             window.webtaskWidget.showEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
