@@ -32,7 +32,7 @@ export function createLogs ({
             if(!profile)
                 return showLogin(options);
 
-            componentStack.push(logsWidget, Object.assign({}, options, {profile}));
+            componentStack.push(logsWidget.component, Object.assign({}, options, {profile}));
         })
         .then((result) => {
             logsWidget.emit('ready');
