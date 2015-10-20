@@ -11,10 +11,6 @@ import dedent from '../lib/dedent';
 class EditorWidget extends Widget {
     constructor(options) {
         super(Editor, options);
-
-        this.onSave = options.onSave;
-
-        this.on('save', this.onSave);
     }
 
     save(cb) {
@@ -22,6 +18,8 @@ class EditorWidget extends Widget {
             .then(function (result) {
                 if(cb)
                     cb(result);
+
+                this.emit('save', result);
 
                 return result;
             })

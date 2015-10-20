@@ -32,7 +32,7 @@ export default class A0Logs extends React.Component {
                 logs.push(msg);
                 logs.sort((a, b) => new Date(b) - new Date(a));
 
-                this.setState({ logs });
+                this.setState({ logs }, () => this.props.emit ? this.props.emit('data', msg) : null);
             }
         });
     }
@@ -87,5 +87,6 @@ export default class A0Logs extends React.Component {
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
-    profile: React.PropTypes.instanceOf(Sandbox).isRequired
+    profile: React.PropTypes.instanceOf(Sandbox).isRequired,
+    emit: React.PropTypes.func.isRequired,
 };

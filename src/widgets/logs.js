@@ -5,6 +5,12 @@ import Logs from '../components/logs';
 import ComponentStack from '../lib/componentStack';
 import Widget from '../lib/widget';
 
+class LogsWidget extends Widget {
+    constructor(options) {
+        super(Logs, options);
+    }
+}
+
 export function createLogs ({
   mount = null,
   componentStack = null,
@@ -19,13 +25,14 @@ export function createLogs ({
         profile,
     };
 
-    const logsWidget = new Widget(Logs, options);
+    const logsWidget = new LogsWidget(options);
 
     Bluebird.resolve(profile)
         .then((profile) => {
-            return componentStack.push(logsWidget.component, Object.assign({}, options, {profile}))
-        })
-        .then(() => logsWidget.emit('ready'));
+            componentStack.push(logsWidget.component, Object.assign({}, options, {profile, emit: logsWidget.emit.bind(logsWidget)}))
+
+            logsWidget.emit('ready');
+        });
 
     return logsWidget;
 }
