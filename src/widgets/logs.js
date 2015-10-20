@@ -22,14 +22,15 @@ export function showLogs ({
 
     };
 
-    if (profile)
-        return componentStack.push(Logs, options)
+    if (profile) {
+        return componentStack.push(Logs, Object.assign({}, options, { profile }));
+    }
 
     return getProfile(storageKey)
         .then((profile) => {
             if(!profile)
                 return showLogin(options);
 
-            componentStack.push(Logs, Object.assign({}, options, {profile}));
+            return componentStack.push(Logs, Object.assign({}, options, { profile }));
         });
 }
