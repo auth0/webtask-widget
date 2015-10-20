@@ -98,13 +98,9 @@ export function createEditor({
         onSave,
     };
 
-    const editorWidget = new Widget(Editor, options);
-
-    editorWidget.save = () => {
-        editorWidget.emit('save');
-
-        return editorWidget;
-    }
+    const editorWidget = new Widget(Editor, Object.assign({}, options, {
+        methods: ['save']
+    }));
 
     editorWidget.on('save', options.onSave);
 
