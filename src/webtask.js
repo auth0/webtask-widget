@@ -76,12 +76,11 @@ function decorateWithLogin(decoratedWidget) {
             storageKey,
         };
         
-        return Bluebird.resolve(readProfile(options))
+        const profile = Bluebird.resolve(readProfile(options))
             .then(validateProfile)
-            .tap(writeProfile)
-            .then((profile) => {
-                return decoratedWidget(Object.assign({}, options, { profile }));
-            });
+            .tap(writeProfile);
+
+        return decoratedWidget(Object.assign({}, options, {profile}));
     
         function validateProfile (profile) {
             if (!profile.container) throw new Error('Invalid profile: missing container');

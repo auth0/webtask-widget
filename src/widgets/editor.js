@@ -84,7 +84,10 @@ export function createEditor({
 
     const editorWidget = new EditorWidget(options);
 
-    options.componentStack.push(editorWidget.component, Object.assign({}, options, {profile}))
+    Bluebird.resolve(profile)
+        .then((profile) => {
+            return componentStack.push(editorWidget.component, Object.assign({}, options, {profile}))
+        })
         .then((result) => {
             editorWidget.emit('ready');
 

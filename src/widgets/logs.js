@@ -1,4 +1,4 @@
-import {createLogin} from '../widgets/login';
+import Bluebird from 'bluebird';
 
 import Logs from '../components/logs';
 
@@ -10,7 +10,6 @@ export function createLogs ({
   componentStack = null,
   profile = null,
 } = {}) {
-
     if (!profile) throw new Error('This widget requires an instance of a Sandboxjs Profile.');
     if (!componentStack) componentStack = new ComponentStack(mount);
 
@@ -22,7 +21,10 @@ export function createLogs ({
 
     const logsWidget = new Widget(Logs, options);
 
-    componentStack.push(logsWidget.component, options)
+    Bluebird.resolve(profile)
+        .then((profile) => {
+            return componentStack.push(logsWidget.component, Object.assign({}, options, {profile}))
+        })
         .then(() => logsWidget.emit('ready'));
 
     return logsWidget;
