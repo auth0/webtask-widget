@@ -1,9 +1,9 @@
-import {showEditor} from './widgets/editor';
-import {showLogin} from './widgets/login';
-import {showLogs} from './widgets/logs';
+import {createEditor} from './widgets/editor';
+import {createLogin} from './widgets/login';
+import {createLogs} from './widgets/logs';
 
 module.exports = {
-    showEditor,
-    showLogin,
-    showLogs
+    createEditor,
+    createLogin,
+    createLogs
 };

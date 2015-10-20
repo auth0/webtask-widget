@@ -1,5 +1,5 @@
 import Bluebird from 'bluebird';
-import LocalForage from 'localforage';
+import EventEmitter from 'eventemitter3'
 
 import {showLogin} from '../widgets/login';
 
@@ -9,7 +9,7 @@ import ComponentStack from '../lib/componentStack';
 import dedent from '../lib/dedent';
 import {getProfile, saveProfile} from '../lib/profileManagement';
 
-export function showEditor ({
+export function createEditor({
     mount = null,
     componentStack = null,
     url = 'https://webtask.it.auth0.com',
@@ -47,8 +47,7 @@ export function showEditor ({
         },
     },
     onSave = (webtask) => webtask,
-} = {}) {
-    
+} = {}, cb) {
     if (!componentStack) componentStack = new ComponentStack(mount);
 
     // If we bootstrap the widget with a token, we need to be sure that we have
@@ -71,7 +70,7 @@ export function showEditor ({
     } else if (storeProfile) {
         readProfile = getProfile;
     } else {
-        readProfile = Bluebird.resolve();
+        readProfile = Bluebird.resolve(null);
     }
 
     const options = {
@@ -81,9 +80,9 @@ export function showEditor ({
         token,
         container,
         name,
+        showIntro,
         mergeBody,
         parseBody,
-        showIntro,
         autoSaveOnLoad,
         autoSaveOnChange,
         autoSaveInterval,
@@ -99,11 +98,40 @@ export function showEditor ({
         onSave,
     };
 
-    return readProfile(storageKey)
-        .then((profile) => {
-            if(!profile)
-                return showLogin(options);
+    const editorWidget = new EditorWidget(options);
 
-            componentStack.push(Editor, Object.assign({}, options, {profile}));
-        });
+    const promise = options.readProfile(storageKey)
+            .then((profile) => {
+                if(!profile)
+                    return showLogin(options);
+
+
+                options.componentStack.push(editorWidget, Object.assign({}, options, {profile}));
+            });
+
+        promise
+            .then((result) => {
+                editorWidget.emit('ready');
+
+                if(cb)
+                    cb(null, result);
+            })
+            .catch((err) => {
+                if(cb)
+                    cb(err);
+            });
+
+    return editorWidget;
+}
+
+class EditorWidget extends EventEmitter {
+    constructor(options) {
+        super();
+
+        this.on('save', options.onSave);
+    }
+
+    save() {
+        this.emit('save');
+    }
 }
