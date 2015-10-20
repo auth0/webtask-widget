@@ -4,44 +4,26 @@ import Logs from '../components/logs';
 
 import ComponentStack from '../lib/componentStack';
 import Widget from '../lib/widget';
-import {getProfile} from '../lib/profileManagement';
 
 export function createLogs ({
   mount = null,
   componentStack = null,
   profile = null,
-  storeProfile = false,
-  storageKey = 'webtask.profile',
-  readProfile = null,
-  writeProfile = null,
-} = {}, cb) {
+} = {}) {
+
+    if (!profile) throw new Error('This widget requires an instance of a Sandboxjs Profile.');
     if (!componentStack) componentStack = new ComponentStack(mount);
 
     const options = {
         mount,
         componentStack,
+        profile,
     };
 
     const logsWidget = new Widget(Logs, options);
 
-    if (profile)
-        return componentStack.push(LogsWidget.component, options)
+    componentStack.push(logsWidget.component, options)
+        .then(() => logsWidget.emit('ready'));
 
-    getProfile(storageKey)
-        .then((profile) => {
-            if(!profile)
-                return showLogin(options);
-
-            componentStack.push(logsWidget.component, Object.assign({}, options, {profile}));
-        })
-        .then((result) => {
-            logsWidget.emit('ready');
-
-            if(cb)
-                cb(null, result);
-        })
-        .catch((err) => {
-            if(cb)
-                cb(err);
-        });
+    return logsWidget;
 }

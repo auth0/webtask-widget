@@ -3,33 +3,20 @@ import {showLogin} from '../widgets/login';
 import CronList from '../components/cronList';
 
 import ComponentStack from '../lib/componentStack';
-import {getProfile} from '../lib/profileManagement';
 
 export function createCronJobs ({
   mount = null,
   componentStack = null,
   profile = null,
-  storeProfile = false,
-  storageKey = 'webtask.profile',
-  readProfile = null,
-  writeProfile = null,
 } = {}) {
+    if (!profile) throw new Error('This widget requires an instance of a Sandboxjs Profile.');
     if (!componentStack) componentStack = new ComponentStack(mount);
 
     const options = {
         mount,
         componentStack,
+        profile,
     };
 
-    if (profile) {
-        return componentStack.push(CronList, Object.assign({}, options, { profile }));
-    }
-
-    return getProfile(storageKey)
-        .then((profile) => {
-            if(!profile)
-                return showLogin(options);
-
-            return componentStack.push(CronList, Object.assign({}, options, { profile }));
-        });
+    return componentStack.push(CronList, options);
 }

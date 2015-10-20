@@ -26,8 +26,9 @@ export default class A0CronJobs extends React.Component {
         const state = this.state;
         
         const loading = state.loadingJobs;
-        const createCronJob = this.createCronJob.bind(this);
+        const createJob = this.createJob.bind(this);
         const refreshJobs = this.refreshJobs.bind(this);
+        const viewJob = job => e => this.viewJob(e, job);
         
         const loadingBody = (
             <tbody className="a0-conlist-loading">
@@ -47,7 +48,7 @@ export default class A0CronJobs extends React.Component {
                     )
                 :   null
                 }
-                <table className="table">
+                <table className="table table-hover">
                     <thead>
                         <th>Job name</th>
                         <th>Created at</th>
@@ -60,7 +61,7 @@ export default class A0CronJobs extends React.Component {
                     :   (
                             <tbody>
                                 { state.jobs && state.jobs.length
-                                ?   state.jobs.map((job) => <JobRow job={job} />)
+                                ?   state.jobs.map((job) => <JobRow key={ job.name } job={ job } onClick={ viewJob(job) } />)
                                 :   (
                                         <tr className="a0-cronlist-empty">
                                             <td className="a0-cronlist-colspan" collSpan="99">
@@ -84,7 +85,7 @@ export default class A0CronJobs extends React.Component {
                         <Button
                             bsStyle="primary"
                             block
-                            onClick={ createCronJob }
+                            onClick={ createJob }
                         >Create</Button>
                     )
                 : null
@@ -93,10 +94,12 @@ export default class A0CronJobs extends React.Component {
         );
     }
     
-    createCronJob(e) {
+    createJob(e) {
         if (e) e.preventDefault();
         
+        // this.props.componentStack.push();
         
+        alert('WIP: createJob()');
     }
     
     refreshJobs(e) {
@@ -108,6 +111,12 @@ export default class A0CronJobs extends React.Component {
             .then((jobs) => this.setState({ jobs }))
             .catch((error) => this.setState({ error }))
             .finally(() => this.setState({ loadingJobs: false }));
+    }
+    
+    viewJob(e, job) {
+        if (e) e.preventDefault();
+        
+        alert(`WIP: viewJob('${job.name}')`);
     }
 }
 
@@ -140,10 +149,10 @@ class JobRow extends React.Component {
         :   null;
         
         return (
-            <tr>
+            <tr onClick={ props.onClick }>
                 <td>{ job.name }</td>
-                <td>{ job.created_at }</td>
-                <td>{ job.last_scheduled_at || job.next_available_at }</td>
+                <td>{ new Date(job.created_at).toLocaleString() }</td>
+                <td>{ new Date(job.last_scheduled_at || job.next_available_at).toLocaleString() }</td>
                 <td>
                     <span className={ `label ${stateClasses[job.state]}` }>{ job.state }</span>
                 </td>
@@ -152,7 +161,7 @@ class JobRow extends React.Component {
                     ?   (
                             <div>
                                 <span className={ `label ${resultClasses[lastResult.type]}` }>{ lastResult.type }</span>
-                                <span>{ lastResult.started_at }</span>
+                                <span>{ new Date(lastResult.started_at).toLocaleString() }</span>
                             </div>
                         )
                     : null
