@@ -1,11 +1,12 @@
-import {showLogin} from '../widgets/login';
+import {createLogin} from '../widgets/login';
 
 import Logs from '../components/logs';
 
 import ComponentStack from '../lib/componentStack';
+import Widget from '../lib/widget';
 import {getProfile} from '../lib/profileManagement';
 
-export function showLogs ({
+export function createLogs ({
   mount = null,
   componentStack = null,
   profile = null,
@@ -13,23 +14,34 @@ export function showLogs ({
   storageKey = 'webtask.profile',
   readProfile = null,
   writeProfile = null,
-} = {}) {
+} = {}, cb) {
     if (!componentStack) componentStack = new ComponentStack(mount);
 
     const options = {
         mount,
         componentStack,
-
     };
 
-    if (profile)
-        return componentStack.push(Logs, options)
+    const logsWidget = new Widget(Logs, options);
 
-    return getProfile(storageKey)
+    if (profile)
+        return componentStack.push(LogsWidget, options)
+
+    getProfile(storageKey)
         .then((profile) => {
             if(!profile)
                 return showLogin(options);
 
-            componentStack.push(Logs, Object.assign({}, options, {profile}));
+            componentStack.push(logsWidget, Object.assign({}, options, {profile}));
+        })
+        .then((result) => {
+            editorWidget.emit('ready');
+
+            if(cb)
+                cb(null, result);
+        })
+        .catch((err) => {
+            if(cb)
+                cb(err);
         });
 }

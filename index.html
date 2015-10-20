@@ -41,14 +41,16 @@
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
-            window.webtaskWidget.showEditor({
+            var editor = window.webtaskWidget.createEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
             });
             
-            window.webtaskWidget.showLogs({
+            var logs = window.webtaskWidget.createLogs({
                 mount: document.getElementById('logs'),
             });
+
+            editor.save();
         </script>
     </body>
 

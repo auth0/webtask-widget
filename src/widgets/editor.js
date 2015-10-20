@@ -1,11 +1,11 @@
 import Bluebird from 'bluebird';
-import EventEmitter from 'eventemitter3'
 
-import {showLogin} from '../widgets/login';
+import {createLogin} from '../widgets/login';
 
 import Editor from '../components/editor';
 
 import ComponentStack from '../lib/componentStack';
+import Widget from '../lib/widget';
 import dedent from '../lib/dedent';
 import {getProfile, saveProfile} from '../lib/profileManagement';
 
@@ -98,40 +98,33 @@ export function createEditor({
         onSave,
     };
 
-    const editorWidget = new EditorWidget(options);
+    const editorWidget = new Widget(Editor, options);
 
-    const promise = options.readProfile(storageKey)
-            .then((profile) => {
-                if(!profile)
-                    return showLogin(options);
+    editorWidget.save = () => {
+        editorWidget.emit('save');
 
+        return editorWidget;
+    }
 
-                options.componentStack.push(editorWidget, Object.assign({}, options, {profile}));
-            });
+    editorWidget.on('save', options.onSave);
 
-        promise
-            .then((result) => {
-                editorWidget.emit('ready');
+    options.readProfile(storageKey)
+        .then((profile) => {
+            if(!profile)
+                return showLogin(options);
 
-                if(cb)
-                    cb(null, result);
-            })
-            .catch((err) => {
-                if(cb)
-                    cb(err);
-            });
+            options.componentStack.push(editorWidget, Object.assign({}, options, {profile}));
+        })
+        .then((result) => {
+            editorWidget.emit('ready');
+
+            if(cb)
+                cb(null, result);
+        })
+        .catch((err) => {
+            if(cb)
+                cb(err);
+        });
 
     return editorWidget;
-}
-
-class EditorWidget extends EventEmitter {
-    constructor(options) {
-        super();
-
-        this.on('save', options.onSave);
-    }
-
-    save() {
-        this.emit('save');
-    }
 }

@@ -5,5 +5,5 @@ import {createLogs} from './widgets/logs';
 module.exports = {
     createEditor,
     createLogin,
-    createLogs
+    createLogs,
 };
