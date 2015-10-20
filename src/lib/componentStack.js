@@ -26,7 +26,7 @@ export default class ComponentStack {
         this.element.classList.add('a0-stack-wrapper');
     }
     
-    push(widget, props) {
+    push(component, props) {
         const self = this;
         const state = {};
         
@@ -36,7 +36,7 @@ export default class ComponentStack {
             state.wrapper = document.createElement('div');
             state.wrapper.className = 'a0-stack-element';
             
-            React.render(this.wrapComponent(widget.component, childProps), state.wrapper);
+            React.render(this.wrapComponent(component, childProps), state.wrapper);
             
             self.stack.push(state);
             self.element.appendChild(state.wrapper);
@@ -44,9 +44,8 @@ export default class ComponentStack {
         .finally(function () {
             React.unmountComponentAtNode(state.wrapper);
             setTimeout(() => state.wrapper.remove());
-            widget.emit('ready');
         });
 
-        return widget;
+        return state.promise;
     }
 }

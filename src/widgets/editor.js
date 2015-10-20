@@ -113,7 +113,7 @@ export function createEditor({
             if(!profile)
                 return showLogin(options);
 
-            options.componentStack.push(editorWidget, Object.assign({}, options, {profile}));
+            options.componentStack.push(editorWidget.component, Object.assign({}, options, {profile}));
         })
         .then((result) => {
             editorWidget.emit('ready');

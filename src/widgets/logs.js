@@ -25,7 +25,7 @@ export function createLogs ({
     const logsWidget = new Widget(Logs, options);
 
     if (profile)
-        return componentStack.push(LogsWidget, options)
+        return componentStack.push(LogsWidget.component, options)
 
     getProfile(storageKey)
         .then((profile) => {
@@ -35,7 +35,7 @@ export function createLogs ({
             componentStack.push(logsWidget, Object.assign({}, options, {profile}));
         })
         .then((result) => {
-            editorWidget.emit('ready');
+            logsWidget.emit('ready');
 
             if(cb)
                 cb(null, result);
