@@ -1,14 +1,32 @@
 import Bluebird from 'bluebird';
-import LocalForage from 'localforage';
 
-import {showLogin} from '../widgets/login';
+import {createLogin} from '../widgets/login';
 
 import Editor from '../components/editor';
 
 import ComponentStack from '../lib/componentStack';
+import Widget from '../lib/widget';
 import dedent from '../lib/dedent';
 
-export function showEditor ({
+class EditorWidget extends Widget {
+    constructor(options) {
+        super(Editor, options);
+    }
+
+    save(cb) {
+        return Bluebird.resolve(this.onSave())
+            .then(function (result) {
+                if(cb)
+                    cb(result);
+
+                this.emit('save', result);
+
+                return result;
+            })
+    }
+}
+
+export function createEditor({
     mount = null,
     componentStack = null,
     profile = null,
@@ -50,9 +68,9 @@ export function showEditor ({
         componentStack,
         profile,
         name,
+        showIntro,
         mergeBody,
         parseBody,
-        showIntro,
         autoSaveOnLoad,
         autoSaveOnChange,
         autoSaveInterval,
@@ -64,5 +82,22 @@ export function showEditor ({
         onSave,
     };
 
-    return componentStack.push(Editor, options);
+    const editorWidget = new EditorWidget(options);
+
+    Bluebird.resolve(profile)
+        .then((profile) => {
+            return componentStack.push(editorWidget.component, Object.assign({}, options, {profile}))
+        })
+        .then((result) => {
+            editorWidget.emit('ready');
+
+            if(cb)
+                cb(null, result);
+        })
+        .catch((err) => {
+            if(cb)
+                cb(err);
+        });
+
+    return editorWidget;
 }

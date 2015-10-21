@@ -20,7 +20,7 @@
             }
             
             #cron-jobs:before {
-                content: 'webtaskWidget.showCronJobs()';
+                content: 'webtaskWidget.createCronJobs()';
                 margin: 0 0 10px;
                 font-weight: bold;
                 display: block;
@@ -28,7 +28,7 @@
             }
             
             #editor:before {
-                content: 'webtaskWidget.showEditor()';
+                content: 'webtaskWidget.createEditor()';
                 margin: 0 0 10px;
                 font-weight: bold;
                 display: block;
@@ -36,7 +36,7 @@
             }
             
             #logs:before {
-                content: 'webtaskWidget.showLogs()';
+                content: 'webtaskWidget.createLogs()';
                 margin: 0 0 10px;
                 font-weight: bold;
                 display: block;
@@ -50,18 +50,18 @@
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
-            window.webtaskWidget.showCronJobs({
-                mount: document.getElementById('cron-jobs'),
-                storeProfile: true,
-            });
-            
-            window.webtaskWidget.showEditor({
+            var editor = window.webtaskWidget.createEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
             });
-            
-            window.webtaskWidget.showLogs({
+
+            var logs = window.webtaskWidget.createLogs({
                 mount: document.getElementById('logs'),
+                storeProfile: true,
+            });
+
+            var cronJobs = window.webtaskWidget.createCronJobs({
+                mount: document.getElementById('cron-jobs'),
                 storeProfile: true,
             });
         </script>

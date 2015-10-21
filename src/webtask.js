@@ -2,16 +2,16 @@ import Bluebird from 'bluebird';
 import LocalForage from 'localforage';
 import Sandbox from 'sandboxjs';
 
-import {showCronJobs} from './widgets/cron';
-import {showEditor} from './widgets/editor';
-import {showLogin} from './widgets/login';
-import {showLogs} from './widgets/logs';
+import {createCronJobs} from './widgets/cron';
+import {createEditor} from './widgets/editor';
+import {createLogin} from './widgets/login';
+import {createLogs} from './widgets/logs';
 
 module.exports = {
-    showCronJobs: decorateWithLogin(showCronJobs),
-    showEditor: decorateWithLogin(showEditor),
-    showLogs: decorateWithLogin(showLogs),
-    showLogin,
+    createCronJobs: decorateWithLogin(createCronJobs),
+    createEditor: decorateWithLogin(createEditor),
+    createLogs: decorateWithLogin(createLogs),
+    createLogin,
 };
 
 function decorateWithLogin(decoratedWidget) {
@@ -76,12 +76,11 @@ function decorateWithLogin(decoratedWidget) {
             storageKey,
         };
         
-        return Bluebird.resolve(readProfile(options))
+        const profile = Bluebird.resolve(readProfile(options))
             .then(validateProfile)
-            .tap(writeProfile)
-            .then((profile) => {
-                return decoratedWidget(Object.assign({}, options, { profile }));
-            });
+            .tap(writeProfile);
+
+        return decoratedWidget(Object.assign({}, options, {profile}));
     
         function validateProfile (profile) {
             if (!profile.container) throw new Error('Invalid profile: missing container');
