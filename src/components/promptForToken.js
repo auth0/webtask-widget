@@ -9,6 +9,8 @@ import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
 
+import '../styles/promptForToken.less';
+
 
 export default class A0PromptForToken extends React.Component {
     constructor(props) {

@@ -22,7 +22,7 @@ class EditorWidget extends Widget {
                 this.emit('save', result);
 
                 return result;
-            })
+            });
     }
 }
 

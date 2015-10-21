@@ -5,7 +5,7 @@ import RequestVerification from '../components/requestVerification';
 import ComponentStack from '../lib/componentStack';
 
 
-export function showLogin ({
+export function createLogin ({
     mount = null,
     componentStack = null,
 } = {}) {

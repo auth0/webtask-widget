@@ -9,6 +9,8 @@ import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
 
+import '../styles/verifyConfirmationCode.less';
+
 
 export default class A0VerifyConfirmationCode extends React.Component {
     constructor(props) {

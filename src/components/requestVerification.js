@@ -10,6 +10,8 @@ import Input from '../components/input';
 import PromptForToken from '../components/promptForToken';
 import VerifyConfirmationCode from '../components/verifyConfirmationCode';
 
+import '../styles/requestVerification.less';
+
 
 export default class A0RequestVerification extends React.Component {
     constructor(props) {
