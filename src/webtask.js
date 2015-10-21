@@ -45,7 +45,7 @@ function decorateWithLogin(decoratedWidget) {
                 .then((profile) => {
                     return profile
                         ?   profile
-                        :   showLogin(arguments[0]);
+                        :   createLogin(arguments[0]);
                 });
     
             // When the 'storeProfile' options is provided, we set a default
@@ -59,7 +59,7 @@ function decorateWithLogin(decoratedWidget) {
                 });
             }
         } else {
-            readProfile = (options) => showLogin(arguments[0]);
+            readProfile = (options) => createLogin(arguments[0]);
         }
     
         // By default, a noop.

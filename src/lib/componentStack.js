@@ -44,7 +44,6 @@ export default class ComponentStack {
         
         return state.promise
             .finally(function () {
-                console.log('unmounting', state.wrapper)
                 React.unmountComponentAtNode(state.wrapper);
                 setTimeout(() => state.wrapper.remove());
             });

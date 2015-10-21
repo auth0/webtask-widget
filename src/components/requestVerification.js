@@ -54,7 +54,7 @@ export default class A0RequestVerification extends React.Component {
                         ref="phoneOrEmail"
                     />
 
-                    <div className="btn-list text-right clearfix">
+                    <div className="btn-list">
 
                         <Button
                             bsStyle="link"

@@ -97,7 +97,7 @@ export default class A0CronJobView extends React.Component {
                     </tbody>
                 </table>
                 
-                <div className="btn-list text-right clearfix">
+                <div className="btn-list">
                     <Button
                         className="pull-left"
                         type="button"
