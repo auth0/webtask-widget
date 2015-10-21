@@ -70,6 +70,11 @@ export default class A0VerifyConfirmationCode extends React.Component {
 
         const self = this;
         const verificationCode = this.refs.verificationCode.getValue().trim();
+        
+        if (!verificationCode) {
+            return this.props.reject(new Error('Please enter a verification code.'));
+        }
+        
         const query = {
             verification_code: verificationCode,
             [this.props.type]: this.props.value,
@@ -88,10 +93,8 @@ export default class A0VerifyConfirmationCode extends React.Component {
         return issueRequest(request)
             .get('body')
             .then(handleIssuanceResponse)
-            .catch((err) => self.setState({
-                error: err,
-                verifyingCode: false,
-            }));
+            .catch(handleIssuanceError)
+            .then(this.props.resolve, this.props.reject);
 
         function handleIssuanceResponse (data) {
             if (!data.id_token) throw new Error(`Server response missing 'id_token' claim.`);
@@ -102,12 +105,22 @@ export default class A0VerifyConfirmationCode extends React.Component {
                 throw new Error('Unexpected data received from server.');
             }
 
-            return self.props.resolve({
+            return {
                 url: claims.webtask.url,
                 container: claims.webtask.tenant,
                 containers: [claims.webtask.tenant, claims.webtask.subtenant],
                 token: claims.webtask.token,
-            });
+            };
+        }
+        
+        function handleIssuanceError(err) {
+            if (err.response) {
+                switch (err.response.statusCode) {
+                    case 400: throw new Error('Authentication failed. Please try again.');
+                }
+            }
+            
+            throw err;
         }
     }
 }

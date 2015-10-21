@@ -5,6 +5,8 @@ import createResponseError from '../lib/createResponseError';
 export default function issueRequest (request) {
     return Bluebird.resolve(request)
         .catch(function (err) {
+            if (err.response) throw err;
+            
             throw new Error('Error communicating with the webtask cluster: '
                 + err.message);
         })

@@ -11,5 +11,3 @@ module.exports = {
     createLogs: decorateWithLogin(createLogs, createLogin),
     createLogin,
 };
-
-
