@@ -1,7 +1,9 @@
 var Path = require('path');
 var Package = require('./package.json');
 var Webpack = require('webpack');
-var _ = require('lodash');
+
+
+var merge = require('lodash.merge');
 
 var baseConfig = {
     cache: true,
@@ -70,10 +72,10 @@ var baseConfig = {
 };
 
 module.exports = [
-    _.merge({}, baseConfig, {
+    merge({}, baseConfig, {
         entry: { 'webtask': './webtask.js', },
     }),
-    _.merge({}, baseConfig, {
+    merge({}, baseConfig, {
         entry: { 'webtask-bootstrap': './webtask.js', },
     }),
 ];
