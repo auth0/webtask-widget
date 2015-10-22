@@ -191,13 +191,19 @@ export default class A0Editor extends React.Component {
             successMessage: '',
         });
         
-        this.props.profile.create(this.state.code, {
+        let promise = this.props.profile.create(this.state.code, {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
             secret: this.state.secrets,
             name: this.state.name,
-        })
-            .tap(this.props.onSave)
+        });
+        
+        if (this.props.onSave) {
+            promise = promise
+                .tap(this.props.onSave);
+        }
+        
+        promise = promise
             .tap(() => !hideSuccessMessage && this.setState({
                 successMessage: 'Webtask successfully created',
             }))
@@ -248,7 +254,7 @@ A0Editor.propTypes = {
     secrets:                React.PropTypes.object,
     code:                   React.PropTypes.string,
     tryParams:              React.PropTypes.object,
-    onSave:                 React.PropTypes.func.isRequired,
+    onSave:                 React.PropTypes.func,
 };
 
 A0Editor.defaultProps = {

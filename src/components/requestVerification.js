@@ -173,3 +173,7 @@ export default class A0RequestVerification extends React.Component {
 }
 
 A0RequestVerification.title = 'Send verification code';
+
+// A0RequestVerification.propTypes = {
+//     onLogin
+// };

@@ -1,12 +1,14 @@
 import EventEmitter from 'eventemitter3';
 
-export default class Widget extends EventEmitter {
-    constructor(component, options) {
+export default class A0Widget extends EventEmitter {
+    constructor(Component, options) {
         super();
 
-        this.component = component;
+        // this.promise = this.componentStack.push()
         this.ready = false;
         this.eventQueue = [];
+        
+        options.componentStack.push(Component, options);
 
         this.on('ready', () => {
             this.ready = true;
