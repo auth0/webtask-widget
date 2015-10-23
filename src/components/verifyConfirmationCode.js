@@ -9,6 +9,8 @@ import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
 
+import '../styles/verifyConfirmationCode.less';
+
 
 export default class A0VerifyConfirmationCode extends React.Component {
     constructor(props) {
@@ -39,7 +41,7 @@ export default class A0VerifyConfirmationCode extends React.Component {
                         ref="verificationCode"
                     />
 
-                    <div className="btn-list text-right clearfix">
+                    <div className="btn-list">
                         <Button
                             type="button"
                             onClick={ cancel }>

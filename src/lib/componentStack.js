@@ -5,48 +5,74 @@ import React from 'react';
 
 import A0Modal from '../components/modal';
 
+class A0Wrapper extends React.Component {
+    render() {
+        const props = this.props;
+
+        const child = React.Children.only(props.children);
+        const clone = React.cloneElement(child, {
+            ref: 'child',
+        });
+        
+        return (
+            <div>{ clone }</div>
+        );
+    }
+}
+
 export default class ComponentStack {
     constructor(element) {
-        this.stack = [];
-        this.wrapComponent = (Component, props) => <Component stack={this} {...props} />;
+        this.useModal = false;
+        this.wrapComponent = (Component, props) => (
+            <A0Wrapper>
+                <Component {...props} />
+            </A0Wrapper>
+        );
         
         if (!element) {
-            element = document.createElement('div');
+            this.useModal = true;
             
             this.wrapComponent = (Component, props) => (
-                <A0Modal title={Component.title}>
-                    <Component stack={this} {...props} />
+                <A0Modal title={Component.title} onHide={ props.reject }>
+                    <Component {...props} />
                 </A0Modal>
             );
             
-            document.body.appendChild(element);
+            document.body.appendChild(element = document.createElement('div'));
         }
     
         this.element = element;
         this.element.classList.add('a0-stack-wrapper');
     }
     
-    push(component, props) {
-        const self = this;
-        const state = {};
-        
-        state.promise = new Bluebird((resolve, reject)  => {
-            const childProps = Object.assign({}, props, {resolve, reject});
-            
-            state.wrapper = document.createElement('div');
-            state.wrapper.className = 'a0-stack-element';
-            
-            React.render(this.wrapComponent(component, childProps), state.wrapper);
-            
-            self.stack.push(state);
-            self.element.appendChild(state.wrapper);
+    push(Component, props) {
+        const dfd = Bluebird.defer();
+        const wrapperEl = document.createElement('div');
+        const childProps = Object.assign({}, props, {
+            resolve: dfd.resolve.bind(dfd),
+            reject: dfd.reject.bind(dfd),
         });
         
-        return state.promise
-            .finally(function () {
-                console.log('unmounting', state.wrapper)
-                React.unmountComponentAtNode(state.wrapper);
-                setTimeout(() => state.wrapper.remove());
-            });
+        wrapperEl.classList.add('a0-stack-element');
+        
+        const wrapper = React.render(this.wrapComponent(Component, childProps), wrapperEl);
+        const unmount = () => {
+            if (!dfd.promise.isFulfilled()) dfd.reject(new Error('Widget was unmounted'));
+            
+            console.log('unmounting');
+            React.unmountComponentAtNode(wrapperEl);
+            setTimeout(() => wrapperEl.remove());
+        };
+        
+        dfd.promise
+            .finally(unmount);
+        
+        this.element.appendChild(wrapperEl);
+        
+        return {
+            promise: dfd.promise,
+            component: wrapper.refs.child,
+            unmount,
+        };
     }
 }

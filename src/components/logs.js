@@ -23,17 +23,23 @@ export default class A0Logs extends React.Component {
             this.setState({
                 error: new Error(e.message),
             });
+            
+            if (this.props.onError) this.props.onError(e);
         });
 
-        this.logStream.on('data', (msg) => {
+        this.logStream.on('data', (event) => {
             const logs = this.state.logs.slice();
 
-            if (msg.name === 'sandbox-logs') {
-                logs.push(msg);
+            if (event.name === 'sandbox-logs') {
+                logs.push(event);
                 logs.sort((a, b) => new Date(b) - new Date(a));
 
-                this.setState({ logs }, () => this.props.emit ? this.props.emit('data', msg) : null);
+                this.setState({ logs });
+                
+                if (this.props.onMessage) this.props.onMessage(event.msg);
             }
+            
+            if (this.props.onEvent) this.props.onEvent(event);
         });
     }
 
@@ -82,11 +88,19 @@ export default class A0Logs extends React.Component {
             </div>
         );
     }
+    
+    clear() {
+        this.setState({
+            logs: [],
+        });
+    }
 }
 
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
     profile: React.PropTypes.instanceOf(Sandbox).isRequired,
-    emit: React.PropTypes.func.isRequired,
+    onMessage: React.PropTypes.func,
+    onEvent: React.PropTypes.func,
+    onError: React.PropTypes.func,
 };

@@ -13,14 +13,10 @@ import Input from '../components/input';
 import TryWebtask from '../components/tryWebtask';
 
 import ComponentStack from '../lib/componentStack';
+import dedent from '../lib/dedent';
 
 
 import '../styles/editor.less';
-
-
-const defaultWebtask = function (ctx, cb) {
-    cb(null, 'Hello world');
-};
 
 export default class A0Editor extends React.Component {
     constructor(props) {
@@ -142,7 +138,7 @@ export default class A0Editor extends React.Component {
                 :   null
                 }
                 
-                <div className="btn-list text-right clearfix">
+                <div className="btn-list">
                     <Button
                         bsStyle="link"
                         className="pull-left"
@@ -191,13 +187,19 @@ export default class A0Editor extends React.Component {
             successMessage: '',
         });
         
-        this.props.profile.create(this.state.code, {
+        let promise = this.props.profile.create(this.state.code, {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
             secret: this.state.secrets,
             name: this.state.name,
-        })
-            .tap(this.props.onSave)
+        });
+        
+        if (this.props.onSave) {
+            promise = promise
+                .tap(this.props.onSave);
+        }
+        
+        promise = promise
             .tap(() => !hideSuccessMessage && this.setState({
                 successMessage: 'Webtask successfully created',
             }))
@@ -205,6 +207,8 @@ export default class A0Editor extends React.Component {
                 webtask,
             }))
             .finally(() => this.setState({ savingWebtask: false }));
+        
+        return promise;
     }
     
     toggleSecrets(e) {
@@ -248,7 +252,7 @@ A0Editor.propTypes = {
     secrets:                React.PropTypes.object,
     code:                   React.PropTypes.string,
     tryParams:              React.PropTypes.object,
-    onSave:                 React.PropTypes.func.isRequired,
+    onSave:                 React.PropTypes.func,
 };
 
 A0Editor.defaultProps = {
@@ -261,7 +265,11 @@ A0Editor.defaultProps = {
     showWebtaskUrl:         true,
     showTryWebtaskUrl:      true,
     secrets:                {},
-    code:                   `module.exports = ${defaultWebtask.toString()};\n\n`,
+    code:                   dedent`
+                                module.exports = function (ctx, cb) {
+                                    cb(null, 'Hello ' + ctx.query.hello);
+                                };
+                            `.trim(),
     tryParams:              {
                                 path: '',
                                 headers: {

@@ -3,7 +3,15 @@ import Bluebird from 'bluebird';
 import RequestVerification from '../components/requestVerification';
 
 import ComponentStack from '../lib/componentStack';
+import Widget from '../lib/widget';
 
+
+export class A0LoginWidget extends Widget {
+    constructor(props) {
+        super(RequestVerification, props);
+        this.promise = props.componentStack.pushPromise(RequestVerification, props);
+    }
+}
 
 export function createLogin ({
     mount = null,
@@ -12,10 +20,10 @@ export function createLogin ({
     
     if (!componentStack) componentStack = new ComponentStack(mount);
 
-    const options = {
+    const params = {
         mount,
         componentStack,
     };
-
-    return componentStack.push(RequestVerification, options);
+    
+    return new A0LoginWidget(params);
 }

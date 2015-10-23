@@ -10,6 +10,8 @@ import Input from '../components/input';
 import PromptForToken from '../components/promptForToken';
 import VerifyConfirmationCode from '../components/verifyConfirmationCode';
 
+import '../styles/requestVerification.less';
+
 
 export default class A0RequestVerification extends React.Component {
     constructor(props) {
@@ -54,7 +56,7 @@ export default class A0RequestVerification extends React.Component {
                         ref="phoneOrEmail"
                     />
 
-                    <div className="btn-list text-right clearfix">
+                    <div className="btn-list">
 
                         <Button
                             bsStyle="link"
@@ -93,7 +95,7 @@ export default class A0RequestVerification extends React.Component {
         
         this.setState({ promptingForToken: true });
         
-        this.props.componentStack.push(PromptForToken, {})
+        this.props.componentStack.push(PromptForToken, {}).promise
             .then(this.props.resolve)
             .catch(() => this.setState({ promptingForToken: false }));
     }
@@ -158,7 +160,7 @@ export default class A0RequestVerification extends React.Component {
         }
 
         function handleIssuanceResponse(data) {
-            return self.props.componentStack.push(VerifyConfirmationCode, { type, value, data })
+            return self.props.componentStack.push(VerifyConfirmationCode, { type, value, data }).promise
                 .then(self.props.resolve)
                 .catch(function (error) {
                     self.setState({
@@ -171,3 +173,7 @@ export default class A0RequestVerification extends React.Component {
 }
 
 A0RequestVerification.title = 'Send verification code';
+
+// A0RequestVerification.propTypes = {
+//     onLogin
+// };

@@ -7,14 +7,23 @@ export default class A0Modal extends React.Component {
         const props = this.props;
         const state = this.state;
         
-        const onHide = () => null;
+        const child = React.Children.only(props.children);
+        const clone = React.cloneElement(child, {
+            ref: 'child',
+        });
+        
+        const onHide = function () {
+            console.log('onHide', ...arguments, props);
+            
+            props.onHide(...arguments);
+        };
         
         return (
-            <Modal.Dialog onHide={ onHide }>
+            <Modal.Dialog show={ true } onHide={ onHide }>
                 <Modal.Header closeButton>
-                    <Modal.Title>{props.title}</Modal.Title>
+                    <Modal.Title>{ props.title }</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{props.children}</Modal.Body>
+                <Modal.Body>{ clone }</Modal.Body>
             </Modal.Dialog>
         );
     }
@@ -23,4 +32,5 @@ export default class A0Modal extends React.Component {
 A0Modal.propTypes = {
     children: React.PropTypes.element.isRequired,
     title: React.PropTypes.string.isRequired,
+    onHide: React.PropTypes.func.isRequired,
 };

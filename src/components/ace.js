@@ -1,15 +1,14 @@
-const React = require('react');
+import Ace from 'brace';
+import React from 'react';
 
+import 'brace/mode/javascript';
+import 'brace/mode/json';
+import 'brace/theme/textmate';
 
-const Ace = require('brace');
 const Editor = Ace.acequire('./editor').Editor;
 const EditSession = Ace.acequire('./edit_session').EditSession;
 const VirtualRenderer = Ace.acequire('./virtual_renderer').VirtualRenderer;
 const UndoManager = Ace.acequire('./undomanager').UndoManager;
-
-require('brace/mode/javascript');
-require('brace/mode/json');
-require('brace/theme/textmate');
 
 
 export default class AceEditorComponent extends React.Component {
@@ -57,7 +56,7 @@ export default class AceEditorComponent extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.renderer.setTheme(nextProps.theme);
+        this.renderer.setTheme(`ace/theme/${nextProps.theme}`);
         this.renderer.setShowGutter(nextProps.showGutter);
         
         if (this.editSession.getValue() !== nextProps.value) {
@@ -66,7 +65,7 @@ export default class AceEditorComponent extends React.Component {
             this.silent = false;
         }
         
-        this.editSession.setMode(nextProps.mode);
+        this.editSession.setMode(`ace/mode/${nextProps.mode}`);
         
         this.editor.setFontSize(nextProps.fontSize);
         this.editor.setOption('maxLines', nextProps.maxLines);

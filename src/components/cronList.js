@@ -52,6 +52,29 @@ export default class A0CronJobList extends React.Component {
                     )
                 :   null
                 }
+                <div className="btn-list">
+                    <Button
+                        disabled={ loading }
+                        onClick={ loading ? null : refreshJobs }
+                    >
+                        { state.loadingJobs
+                        ?   'Refreshing...'
+                        :   'Refresh'
+                        }
+                    </Button>
+
+                    { props.showCreateButton
+                    ?   (
+                            <Button
+                                bsStyle="primary"
+                                onClick={ createJob }
+                            >
+                                Create
+                            </Button>
+                        )
+                    : null
+                    }
+                </div>
                 <table className="table table-hover">
                     <thead>
                         <tr>
@@ -86,16 +109,6 @@ export default class A0CronJobList extends React.Component {
                         )
                     }
                 </table>
-                { props.showCreateButton
-                ?   (
-                        <Button
-                            bsStyle="primary"
-                            block
-                            onClick={ createJob }
-                        >Create</Button>
-                    )
-                : null
-                }
             </div>
         );
     }
@@ -113,8 +126,8 @@ export default class A0CronJobList extends React.Component {
         
         this.setState({ loadingJobs: true, jobs: [], error: null });
         
-        this.props.profile.listCronJobs()
-            .then((jobs) => this.setState({ jobs }))
+        return this.props.profile.listCronJobs()
+            .tap((jobs) => this.setState({ jobs }))
             .catch((error) => this.setState({ error }))
             .finally(() => this.setState({ loadingJobs: false }));
     }
@@ -157,7 +170,7 @@ class A0CronJobRow extends React.Component {
         :   null;
         
         return (
-            <tr onClick={ props.onClick }>
+            <tr className="a0-cronlist-job" onClick={ props.onClick }>
                 <td>{ job.name }</td>
                 <td>{ new Date(job.created_at).toLocaleString() }</td>
                 <td>{ new Date(job.last_scheduled_at || job.next_available_at).toLocaleString() }</td>
