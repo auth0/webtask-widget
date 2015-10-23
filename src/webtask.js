@@ -3,11 +3,6 @@ import { A0EditorWidget } from './widgets/editor';
 import { A0LogsWidget } from './widgets/logs';
 
 module.exports = {
-    // createCronJobs: decorateWithLogin(createCronJobs, createLogin),
-    // createEditor: decorateWithLogin(createEditor, createLogin),
-    // createLogs: decorateWithLogin(createLogs, createLogin),
-    // createLogin,
-    
     createCronListing: createWidget(A0CronListWidget),
     createEditor: createWidget(A0EditorWidget),
     createLogger: createWidget(A0LogsWidget),
