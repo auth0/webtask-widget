@@ -95,7 +95,7 @@ export default class A0RequestVerification extends React.Component {
         
         this.setState({ promptingForToken: true });
         
-        this.props.componentStack.push(PromptForToken, {})
+        this.props.componentStack.push(PromptForToken, {}).promise
             .then(this.props.resolve)
             .catch(() => this.setState({ promptingForToken: false }));
     }
@@ -160,7 +160,7 @@ export default class A0RequestVerification extends React.Component {
         }
 
         function handleIssuanceResponse(data) {
-            return self.props.componentStack.push(VerifyConfirmationCode, { type, value, data })
+            return self.props.componentStack.push(VerifyConfirmationCode, { type, value, data }).promise
                 .then(self.props.resolve)
                 .catch(function (error) {
                     self.setState({

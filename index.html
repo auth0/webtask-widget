@@ -20,7 +20,7 @@
             }
             
             #cron-jobs:before {
-                content: 'webtaskWidget.createCronJobs()';
+                content: 'webtaskWidget.createCronListing()';
                 margin: 0 0 10px;
                 font-weight: bold;
                 display: block;
@@ -36,7 +36,7 @@
             }
             
             #logs:before {
-                content: 'webtaskWidget.createLogs()';
+                content: 'webtaskWidget.createLogger()';
                 margin: 0 0 10px;
                 font-weight: bold;
                 display: block;
@@ -55,17 +55,15 @@
                 storeProfile: true,
             });
 
-            // var logs = window.webtaskWidget.createLogs({
-            //     mount: document.getElementById('logs'),
-            //     storeProfile: true,
-            // });
+            var logger = window.webtaskWidget.createLogger({
+                mount: document.getElementById('logs'),
+                storeProfile: true,
+            });
 
-            // var cronJobs = window.webtaskWidget.createCronJobs({
-            //     mount: document.getElementById('cron-jobs'),
-            //     storeProfile: true,
-            // });
-            
-            console.log('editor', editor);
+            var cronJobs = window.webtaskWidget.createCronListing({
+                mount: document.getElementById('cron-jobs'),
+                storeProfile: true,
+            });
         </script>
     </body>
 

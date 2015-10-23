@@ -126,8 +126,8 @@ export default class A0CronJobList extends React.Component {
         
         this.setState({ loadingJobs: true, jobs: [], error: null });
         
-        this.props.profile.listCronJobs()
-            .then((jobs) => this.setState({ jobs }))
+        return this.props.profile.listCronJobs()
+            .tap((jobs) => this.setState({ jobs }))
             .catch((error) => this.setState({ error }))
             .finally(() => this.setState({ loadingJobs: false }));
     }

@@ -13,14 +13,10 @@ import Input from '../components/input';
 import TryWebtask from '../components/tryWebtask';
 
 import ComponentStack from '../lib/componentStack';
+import dedent from '../lib/dedent';
 
 
 import '../styles/editor.less';
-
-
-const defaultWebtask = function (ctx, cb) {
-    cb(null, 'Hello world');
-};
 
 export default class A0Editor extends React.Component {
     constructor(props) {
@@ -211,6 +207,8 @@ export default class A0Editor extends React.Component {
                 webtask,
             }))
             .finally(() => this.setState({ savingWebtask: false }));
+        
+        return promise;
     }
     
     toggleSecrets(e) {
@@ -267,7 +265,11 @@ A0Editor.defaultProps = {
     showWebtaskUrl:         true,
     showTryWebtaskUrl:      true,
     secrets:                {},
-    code:                   `module.exports = ${defaultWebtask.toString()};\n\n`,
+    code:                   dedent`
+                                module.exports = function (ctx, cb) {
+                                    cb(null, 'Hello ' + ctx.query.hello);
+                                };
+                            `.trim(),
     tryParams:              {
                                 path: '',
                                 headers: {
