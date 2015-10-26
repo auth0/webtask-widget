@@ -23,6 +23,7 @@ export default class A0Editor extends React.Component {
         super(props);
         
         this.state = {
+            schedule: props.schedule,
             code: props.code,
             secrets: props.secrets,
             creatingToken: false,
@@ -51,6 +52,7 @@ export default class A0Editor extends React.Component {
         const setState = this.setState.bind(this);
         const toggleSecrets = this.toggleSecrets.bind(this);
         const tryWebtask = this.tryWebtask.bind(this);
+        const onChangeSchedule = this.onChangeSchedule.bind(this);
         
         const copyButton = this.state.webtask
             ?   (
@@ -99,6 +101,24 @@ export default class A0Editor extends React.Component {
                             secrets={ props.secrets }
                             loading={ loading }
                             onChange={ onChangeAdvancedOptions }
+                        />
+                    )
+                :   null
+                }
+                
+                { props.showScheduleInput
+                ?   (
+                        <Input
+                            ref="schedule"
+                            type="text"
+                            label="Schedule:"
+                            help={[
+                                'The schedule must be a valid ',
+                                <a key="schedule-help-link" href="http://crontab.guru/" target="_blank">cron expression</a>,
+                                '.',
+                            ]}
+                            value={ state.schedule }
+                            onChange={ onChangeSchedule }
                         />
                     )
                 :   null
@@ -178,6 +198,10 @@ export default class A0Editor extends React.Component {
         this.setState({ code });
     }
     
+    onChangeSchedule(schedule) {
+        this.setState({ schedule: this.refs.schedule.getValue() });
+    }
+    
     saveWebtask ({hideSuccessMessage = false} = {}) {
         // Cancel any pending autoSaves
         this.autoSave.cancel();
@@ -249,6 +273,8 @@ A0Editor.propTypes = {
     autoSaveOnLoad:         React.PropTypes.bool,
     showWebtaskUrl:         React.PropTypes.bool,
     showTryWebtaskUrl:      React.PropTypes.bool,
+    showScheduleInput:      React.PropTypes.bool,
+    schedule:               React.PropTypes.string,
     secrets:                React.PropTypes.object,
     code:                   React.PropTypes.string,
     tryParams:              React.PropTypes.object,
@@ -264,6 +290,8 @@ A0Editor.defaultProps = {
     autoSaveOnLoad:         false,
     showWebtaskUrl:         true,
     showTryWebtaskUrl:      true,
+    showScheduleInput:      false,
+    schedule:               '* * * * *',
     secrets:                {},
     code:                   dedent`
                                 module.exports = function (ctx, cb) {
