@@ -117,6 +117,9 @@ export default class A0Widget extends EventEmitter {
         
         return Bluebird.resolve(readProfile(options))
             .then(validateProfile)
+            .tap((profile) => {
+                this.emit('profile', profile);
+            })
             .tap(writeProfile)
             .then((profile) => {
                 return this._mount(Component, Object.assign({}, props, { profile }));

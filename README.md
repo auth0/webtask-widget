@@ -11,11 +11,9 @@ npm install
 npm run develop
 ```
 
-This creates an unminified build at `./build/build.js`.
-
-You can now open the running example in your browser at [http://localhost:8080](http://localhost:8080).
+This starts `webpack-dev-server` at [http://localhost:8080](http://localhost:8080).
 The script will watch all dependencies and recompile on changes. Everything is
-served with source-maps.
+served from memory with source-maps.
 
 ### Production build
 
@@ -23,47 +21,53 @@ served with source-maps.
 npm run build
 ```
 
-This creates a minified build at `./build/build.min.js`.
+This creates builds in the `./dist` folder.
+
+Two builds are created:
+
+1. `webtask-bootstrap.min.js` - This is a version with Bootstrap styles built-in.
+2. `webtask.min.js` - This is a version for use in contexts that already have Bootstrap available.
 
 ## Usage
 
 ```js
+// Get a reference to an existing HTMLElement instance
 var containerEl = document.getElementById('container');
 
 // Create a webtask widget in the element with id `container`.
 // The webtask widget will prompt the user for their phone # or email address
 // the first time they visit the page. Because `storeProfile` is enabled,
 // the user's credentials will be saved locally for the next time they visit.
-// The widget will invoke the `onSave` callback every time the webtask is saved.
-webtaskWidget.open(containerEl, {
+var editor = webtaskWidget.createEditor({
+    mount: containerEl,
     storeProfile: true,
-    onSave: function (webtask) {
-        console.log('webtask saved with url', webtask.url);
-    }
+});
+
+// The returned editor object is an instance of an A0EditorWidget class that 
+// emits certain events and gives programmatic access to some of the underlying
+// functionality of the widget.
+editor.on('save', function (webtask) {
+    console.log('I just saved a webtask that can be accessed at', webtask.url);
 });
 ```
 
 ## API
 
-#### `webtaskWidget.showEditor ([options])`
+#### `webtaskWidget.createEditor ([options])`
 
+Creates an instance of the Webtask Editor widget that allows users to easily create, edit and test webtasks.
+
+Returns an instance of [#EditorWidget](EditorWidget).
 
 Option | Type | Default | Description
 --- | --- | --- | ---
 mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
-url | `String` | `CLUSTER_URL` | The url of the webtask cluster
-token | `String` |  | The current user's webtask token.
-container | `String` |   | The current user's container.
 name | `String` | `''` | The default name of the webtask.
 mergeBody | `Boolean` | `true` | Set the initial value of the merge body setting.
 parseBody | `Boolean` | `true` | Set the initial value of the parse body setting.
 autoSaveOnLoad | `Boolean` | `false` | Automatically trigger a save when the widget loads.
 autoSaveOnChange | `Boolean` | `false` | Automatically trigger a save when the code changes.
 autoSaveInterval | `Number` | `1000` | Adjust how frequently a save will be triggered if `autoSaveOnChange` is `true`.
-readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
-writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
-storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
-storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
 showWebtaskUrl | `Boolean` | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
 showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webtask's url should be shown.
 secrets | `Object` |  `{}` | Set default secrets for the editor.
@@ -71,20 +75,67 @@ code | `String` |   | Overwrite the default code that will be displayed in the e
 tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
 onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
 
+The following options can be used to modify how the widget is bootstrapped with a valid [https://github.com/auth0/sandboxjs#Profile](Profile):
 
-#### `webtaskWidget.showLogin ([options])`
+Option | Type | Default | Description
+--- | --- | --- | ---
+url | `String` | `CLUSTER_URL` | The url of the webtask cluster
+token | `String` |  | The current user's webtask token.
+container | `String` |   | The current user's container.
+readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
+writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
+storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
+storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
 
+
+#### `webtaskWidget.createLogger ([options])`
+
+Creates an instance of the real-time logs widget that lets users stream logs directly from their webtask container to the browser.
 
 Option | Type | Default | Description
 --- | --- | --- | ---
 mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
+
+The following options can be used to modify how the widget is bootstrapped with a valid [#Profile](Profile)
+
+Option | Type | Default | Description
+--- | --- | --- | ---
+url | `String` | `CLUSTER_URL` | The url of the webtask cluster
+token | `String` |  | The current user's webtask token.
+container | `String` |   | The current user's container.
+readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
+writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
+storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
+storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+
+
+#### `webtaskWidget.createLogger ([options])`
+
+Creates an instance of the real-time logs widget that lets users stream logs directly from their webtask container to the browser.
+
+Option | Type | Default | Description
+--- | --- | --- | ---
+mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
+
+The following options can be used to modify how the widget is bootstrapped with a valid [https://github.com/auth0/sandboxjs#Profile](Profile):
+
+Option | Type | Default | Description
+--- | --- | --- | ---
+url | `String` | `CLUSTER_URL` | The url of the webtask cluster
+token | `String` |  | The current user's webtask token.
+container | `String` |   | The current user's container.
+readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
+writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
+storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
+storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+
 
 
 ## Concepts
 
 ### Profile
 
-A profile represents a user's claim to create and run webtasks on a webtask cluster.
+A profile represents a user's claim to create and run webtasks on a webtask cluster as defined by [https://github.com/auth0/sandboxjs#Profile](sandboxjs):
 
 Profiles are the combination of:
 
