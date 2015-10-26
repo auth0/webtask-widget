@@ -57,7 +57,7 @@ editor.on('save', function (webtask) {
 
 Creates an instance of the Webtask Editor widget that allows users to easily create, edit and test webtasks.
 
-Returns an instance of [#EditorWidget](EditorWidget).
+Returns an instance of [EditorWidget](#EditorWidget).
 
 Option | Type | Default | Description
 --- | --- | --- | ---
@@ -75,7 +75,7 @@ code | `String` |   | Overwrite the default code that will be displayed in the e
 tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
 onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
 
-The following options can be used to modify how the widget is bootstrapped with a valid [https://github.com/auth0/sandboxjs#Profile](Profile):
+The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile):
 
 Option | Type | Default | Description
 --- | --- | --- | ---
@@ -96,7 +96,7 @@ Option | Type | Default | Description
 --- | --- | --- | ---
 mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 
-The following options can be used to modify how the widget is bootstrapped with a valid [#Profile](Profile)
+The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile)
 
 Option | Type | Default | Description
 --- | --- | --- | ---
@@ -117,7 +117,7 @@ Option | Type | Default | Description
 --- | --- | --- | ---
 mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
 
-The following options can be used to modify how the widget is bootstrapped with a valid [https://github.com/auth0/sandboxjs#Profile](Profile):
+The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile):
 
 Option | Type | Default | Description
 --- | --- | --- | ---
@@ -135,7 +135,7 @@ storageKey | `String` | `'webtask.profile'` | The key at which the user's profil
 
 ### Profile
 
-A profile represents a user's claim to create and run webtasks on a webtask cluster as defined by [https://github.com/auth0/sandboxjs#Profile](sandboxjs):
+A profile represents a user's claim to create and run webtasks on a webtask cluster as defined by [sandboxjs](https://github.com/auth0/sandboxjs#Profile):
 
 Profiles are the combination of:
 
