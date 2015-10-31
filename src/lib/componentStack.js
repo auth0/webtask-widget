@@ -2,6 +2,7 @@ import '../styles/componentStack.less';
 
 import Bluebird from 'bluebird';
 import React from 'react';
+import {render as reactRender} from 'react-dom';
 
 import A0Modal from '../components/modal';
 
@@ -55,7 +56,7 @@ export default class ComponentStack {
         
         wrapperEl.classList.add('a0-stack-element');
         
-        const wrapper = React.render(this.wrapComponent(Component, childProps), wrapperEl);
+        const wrapper = reactRender(this.wrapComponent(Component, childProps), wrapperEl);
         const unmount = () => {
             if (!dfd.promise.isFulfilled()) dfd.reject(new Error('Widget was unmounted'));
             

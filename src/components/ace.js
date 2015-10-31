@@ -23,7 +23,7 @@ export default class AceEditorComponent extends React.Component {
     }
     
     componentDidMount() {
-        const node = this.refs[this.props.name].getDOMNode();
+        const node = this.refs[this.props.name];
         
         this.renderer = new VirtualRenderer(node, `ace/theme/${this.props.theme}`);
         this.undoManager = new UndoManager();
