@@ -46,7 +46,7 @@ export default class A0CronJobView extends React.Component {
         ?   normalizeCronResult(job.results[0])
         :   null;
         const onClickBack = this.props.reject.bind(null, new Error('User clicked back button.'));
-        const onClickViewHistory = e => e.preventDefault() + this.viewJobJistory();
+        const onClickViewHistory = e => e.preventDefault() + this.viewJobHistory();
         const onClickDestroy = e => e.preventDefault()
             + (
                 confirm('Are you sure you would like to delete this job?\n\nDeleting the job will not destroy the webtask; it will only stop the webtask from being executed on a schedule.')
@@ -105,12 +105,6 @@ export default class A0CronJobView extends React.Component {
                         Back
                     </Button>
                     <Button
-                        bsStyle="danger"
-                        type="button"
-                        onClick={ onClickDestroy }>
-                        Delete
-                    </Button>
-                    <Button
                         bsStyle="primary"
                         type="button"
                         onClick={ onClickViewHistory }>
@@ -121,14 +115,6 @@ export default class A0CronJobView extends React.Component {
         );
     }
     
-    destroyJob() {
-        this.setState({ destroyingJob: false });
-        
-        this.props.profile.removeCronJob({ name: this.props.job.name })
-            .then(job => this.props.reject(new Error('User destroyed job.')))
-            .catch(error => this.setState({ destroyingJob: false, error }));
-    }
-    
     refreshJob() {
         this.setState({ loadingJob: false });
         
@@ -137,10 +123,10 @@ export default class A0CronJobView extends React.Component {
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ loadingJob: false }));
     }
-    
-    viewJobJistory(e) {
+
+    viewJobHistory(e) {
         if (e) e.preventDefault();
-        
+
         alert(`WIP: viewJobHistory('${this.props.job.name}')`);
     }
 }

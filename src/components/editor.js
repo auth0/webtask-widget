@@ -183,7 +183,7 @@ export default class A0Editor extends React.Component {
                         disabled={ loading }
                         onClick={ loading ? null : saveWebtask }
                     >
-                        { state.savingWebtask ? 'Saving...' : 'Save' }
+                        { state.savingWebtask ? 'Deploying...' : 'Deploy' }
                     </Button>
                 </div>
             </div>

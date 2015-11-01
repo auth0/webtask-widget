@@ -90,7 +90,12 @@ export default class A0CronJobList extends React.Component {
                     :   (
                             <tbody>
                                 { state.jobs && state.jobs.length
-                                ?   state.jobs.map((job) => <A0CronJobRow key={ job.name } job={ job } onClick={ viewJob(job) } />)
+                                ?   state.jobs.map((job, index) => <A0CronJobRow
+                                                                key={ job.name } 
+                                                                job={ job } 
+                                                                onClick={ viewJob(job) } 
+                                                                removeCronJob={ props.profile.removeCronJob.bind(props.profile) }
+                                                                reject={ () => refreshJobs() } />)
                                 :   (
                                         <tr className="a0-cronlist-empty">
                                             <td className="a0-cronlist-colspan" colSpan="99">
@@ -138,6 +143,7 @@ export default class A0CronJobList extends React.Component {
         if (e) e.preventDefault();
         
         this.props.componentStack.push(CronView, Object.assign({}, this.props, { job }))
+            .promise
             .catch(e => e)
             .finally(() => this.refreshJobs());
     }
@@ -154,6 +160,22 @@ A0CronJobList.defaultProps = {
 };
 
 class A0CronJobRow extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            destroyingJob: false 
+        };
+    }
+    destroyJob() {
+        this.setState({ destroyingJob: true });
+        
+        this.props.removeCronJob({ name: this.props.job.name })
+            .tap(() => this.setState({ destroyingJob: false }))
+            .then(job => this.props.reject(new Error('User destroyed job.')))
+            .catch(error => this.setState({ error }));
+    }
+
     render() {
         const props = this.props;
         
@@ -170,9 +192,24 @@ class A0CronJobRow extends React.Component {
         const lastResult = job.results.length
         ?   job.results[0]
         :   null;
+
+        const onClickRow = e => {
+            // Stop inline buttons from triggering row click
+            if(e.target.tagName !== 'BUTTON')
+                return props.onClick(e);
+        };
+
+        const onClickDestroy = e => {
+            e.preventDefault()
+
+            confirm('Are you sure you would like to delete this job?\n\n' +
+                    'Deleting the job will not destroy the webtask; it will only stop the webtask from being executed on a schedule.')
+            && this.destroyJob();
+        }
+
         
         return (
-            <tr className="a0-cronlist-job" onClick={ props.onClick }>
+            <tr className="a0-cronlist-job" onClick={ onClickRow }>
                 <td>{ job.name }</td>
                 <td>{ new Date(job.created_at).toLocaleString() }</td>
                 <td>{ new Date(job.last_scheduled_at || job.next_available_at).toLocaleString() }</td>
@@ -189,6 +226,19 @@ class A0CronJobRow extends React.Component {
                         )
                     : null
                     }
+                </td>
+                <td>
+                    <Button
+                        bsSize="xsmall"
+                        bsStyle="danger"
+                        type="button"
+                        onClick={ onClickDestroy }>
+                        { this.state.destroyingJob ?
+                            'Deleting...' :
+                            'Delete'
+                            
+                        }
+                    </Button>
                 </td>
             </tr>
         );
