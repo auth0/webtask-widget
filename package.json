@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "auth0-styleguide": "auth0/styleguide",
-    "bluebird": "^3.0.2",
+    "bluebird": "^2.9.33",
     "bootstrap": "^3.3.5",
     "brace": "^0.5.1",
     "eventemitter3": "^1.1.1",
@@ -18,12 +18,11 @@
     "lodash.merge": "^3.3.2",
     "randexp": "^0.4.1",
     "react": "^0.14.1",
-    "react-ace": "^2.6.0",
     "react-bootstrap": "^0.27.3",
     "react-dom": "^0.14.1",
-    "react-json-inspector": "^5.4.0",
+    "react-json-inspector": "^6.0.0",
     "react-mixin": "^3.0.1",
-    "react-zeroclipboard": "^2.0.2",
+    "react-zeroclipboard": "^3.0.0",
     "sandboxjs": "^1.2.2",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"

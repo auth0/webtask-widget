@@ -45,7 +45,7 @@ export default class A0Logs extends React.Component {
 
     componentDidUpdate() {
         if(this.refs['log-view']) {
-            let logs = this.refs['log-view'].getDOMNode();
+            let logs = this.refs['log-view'];
 
             logs.scrollTop = logs.scrollHeight;
         }
