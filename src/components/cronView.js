@@ -53,7 +53,6 @@ export default class A0CronJobView extends React.Component {
                 confirm('Are you sure you would like to delete this job?\n\nDeleting the job will not destroy the webtask; it will only stop the webtask from being executed on a schedule.')
                 && this.destroyJob()
             );
-
         const inspect = history => {
             return e => {
                 e.preventDefault();
