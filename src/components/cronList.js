@@ -227,7 +227,6 @@ class A0CronJobRow extends React.Component {
                     ?   (
                             <div>
                                 <span className={ `label ${resultClasses[lastResult.type]}` }>{ lastResult.type }</span>
-                                <span>{ new Date(lastResult.started_at).toLocaleString() }</span>
                             </div>
                         )
                     : null
