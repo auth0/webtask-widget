@@ -13,18 +13,19 @@ export default class A0Modal extends React.Component {
         });
         
         const onHide = function () {
+            console.log('afdsfs');
             console.log('onHide', ...arguments, props);
             
             props.onHide(...arguments);
         };
         
         return (
-            <Modal.Dialog show={ true } onHide={ onHide }>
+            <Modal show={ true } onHide={ onHide }>
                 <Modal.Header closeButton>
                     <Modal.Title>{ props.title }</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>{ clone }</Modal.Body>
-            </Modal.Dialog>
+            </Modal>
         );
     }
 }

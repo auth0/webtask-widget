@@ -6,6 +6,7 @@ import normalizeCronResult from '../lib/normalizeCronResult';
 
 import Alert from '../components/alert';
 import Button from '../components/button';
+import A0Modal from '../components/modal';
 import Inspector from 'react-json-inspector';
 
 import '../styles/cronView.less';
@@ -17,10 +18,15 @@ export default class A0CronJobView extends React.Component {
 
         this.state = {
             job: props.job,
+            jobHistory: [],
             error: null,
             destroyingJob: false,
             loadingJob: false,
         };
+    }
+
+    componentDidMount() {
+        this.getHistory();
     }
     
     render() {
@@ -37,21 +43,23 @@ export default class A0CronJobView extends React.Component {
             success: 'label-success',
             error: 'label-danger',
         };
-        const stateClasses = {
-            active: 'label-success',
-            invalid: 'label-danger',
-            expired: 'label-warning',
+        const historyTypeClasses = {
+            success: 'label-success',
+            failure: 'label-danger',
         };
-        const lastResult = job.results.length
-        ?   normalizeCronResult(job.results[0])
-        :   null;
         const onClickBack = this.props.reject.bind(null, new Error('User clicked back button.'));
-        const onClickViewHistory = e => e.preventDefault() + this.viewJobJistory();
         const onClickDestroy = e => e.preventDefault()
             + (
                 confirm('Are you sure you would like to delete this job?\n\nDeleting the job will not destroy the webtask; it will only stop the webtask from being executed on a schedule.')
                 && this.destroyJob()
             );
+        const inspect = history => {
+            return e => {
+                e.preventDefault();
+
+                this.setState({ inspecting: history });
+            }
+        }
         
         return (
             <div className="a0-cronview">
@@ -63,39 +71,38 @@ export default class A0CronJobView extends React.Component {
                     )
                 :   null
                 }
-                <table className="table">
-                    <tbody>
+                <table className="table table-hover table-fixedheader">
+                    <thead>
                         <tr>
-                            <th style={ thStyle }>Job name</th>
-                            <td>{ job.name }</td>
+                            <th style={ thStyle }>Started</th>
+                            <th style={ thStyle }>Completed</th>
+                            <th style={ thStyle }>Result</th>
                         </tr>
-                        <tr>
-                            <th style={ thStyle }>Created at</th>
-                            <td>{ new Date(job.created_at).toLocaleString() }</td>
-                        </tr>
-                        <tr>
-                            <th style={ thStyle }>Next run</th>
-                            <td>{ new Date(job.last_scheduled_at || job.next_available_at).toLocaleString() }</td>
-                        </tr>
-                        <tr>
-                            <th style={ thStyle }>State</th>
-                            <td>
-                                <span className={ `label ${stateClasses[job.state]}` }>{ job.state }</span>
-                            </td>
-                        </tr>
-                        { lastResult
-                        ?   (
-                                <tr>
-                                    <th style={ thStyle }>Last result</th>
-                                    <td>
-                                        <Inspector className="well" data={ lastResult } search={ null } />
-                                    </td>
-                                </tr>
-                            )
-                        : null
+                    </thead>
+                    <tbody> 
+                        { this.state.jobHistory.map( (history, index) => (
+                            <tr key={index} className="a0-cronview-historyitem" data-index={index} onClick={ inspect(history) }>
+                                <td>
+                                    { new Date(history.started_at).toLocaleString() }
+                                </td>
+                                <td>
+                                    { new Date(history.completed_at).toLocaleString() }
+                                </td>
+                                <td>
+                                    <span className={ `label ${historyTypeClasses[history.type]}` }>{ history.type }</span>
+                                </td>
+                            </tr>
+                          ))
                         }
                     </tbody>
                 </table>
+
+                { this.state.inspecting ?
+                    <A0Modal title="Response" onHide={inspect(null)}>
+                        <Inspector className="well" data={ this.state.inspecting } search={ null }/>
+                    </A0Modal>
+                    : null
+                }
                 
                 <div className="btn-list">
                     <Button
@@ -104,29 +111,9 @@ export default class A0CronJobView extends React.Component {
                         onClick={ onClickBack }>
                         Back
                     </Button>
-                    <Button
-                        bsStyle="danger"
-                        type="button"
-                        onClick={ onClickDestroy }>
-                        Delete
-                    </Button>
-                    <Button
-                        bsStyle="primary"
-                        type="button"
-                        onClick={ onClickViewHistory }>
-                        Browse history
-                    </Button>
                 </div>
             </div>
         );
-    }
-    
-    destroyJob() {
-        this.setState({ destroyingJob: false });
-        
-        this.props.profile.removeCronJob({ name: this.props.job.name })
-            .then(job => this.props.reject(new Error('User destroyed job.')))
-            .catch(error => this.setState({ destroyingJob: false, error }));
     }
     
     refreshJob() {
@@ -137,11 +124,13 @@ export default class A0CronJobView extends React.Component {
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ loadingJob: false }));
     }
-    
-    viewJobJistory(e) {
+
+    getHistory(e) {
         if (e) e.preventDefault();
-        
-        alert(`WIP: viewJobHistory('${this.props.job.name}')`);
+
+        this.props.profile.getCronJobHistory({ name: this.props.job.name })
+            .then(history => this.setState({ jobHistory: history }))
+            .catch(e => console.error(e));
     }
 }
 

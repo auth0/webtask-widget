@@ -47,7 +47,7 @@ export default class ComponentStack {
     }
     
     push(Component, props) {
-        const dfd = Bluebird.defer();
+        const dfd = new Bluebird.defer();
         const wrapperEl = document.createElement('div');
         const childProps = Object.assign({}, props, {
             resolve: dfd.resolve.bind(dfd),
