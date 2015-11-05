@@ -201,6 +201,8 @@ class A0CronJobRow extends React.Component {
 
         const onClickRow = e => {
             // Stop inline buttons from triggering row click
+            e.stopPropagation();
+
             if(e.target.tagName !== 'BUTTON')
                 return props.onClick(e);
         };
