@@ -13,7 +13,6 @@ export default class A0Modal extends React.Component {
         });
         
         const onHide = function () {
-            console.log('afdsfs');
             console.log('onHide', ...arguments, props);
             
             props.onHide(...arguments);
