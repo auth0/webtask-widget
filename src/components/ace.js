@@ -72,6 +72,7 @@ export default class AceEditorComponent extends React.Component {
         this.editor.setOption('minLines', nextProps.minLines);
         this.editor.setOption('readOnly', nextProps.readOnly);
         this.editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
+        this.editor.setOption('highlightGutterLine', nextProps.highlightActiveLine);
         this.editor.setOption('tabSize', nextProps.tabSize);
         this.editor.setShowPrintMargin(nextProps.setShowPrintMargin);
     }

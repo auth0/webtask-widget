@@ -3,6 +3,8 @@ import Sandbox from 'sandboxjs';
 
 import Alert from '../components/alert';
 
+import '../styles/logs.less';
+
 export default class A0Logs extends React.Component {
     constructor(props) {
         super(props);
@@ -77,13 +79,8 @@ export default class A0Logs extends React.Component {
 
         return (
             <div className="a0-logs">
-                <Alert bsStyle={this.state.error ? 'danger' : 'success'}>
-                  {error || 'Connected to ' + this.props.profile.container}
-                </Alert>
-
-                { this.state.error
-                ?   null
-                :   logs
+                {
+                    this.state.logs.map(line => line.msg + '\n')
                 }
             </div>
         );

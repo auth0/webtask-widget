@@ -10,7 +10,9 @@ import AdvancedEditorOptions from '../components/advancedEditorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
+import Logs from '../components/logs';
 import ScheduleEditor from '../components/scheduleEditor';
+import SecretsEditor from '../components/secretsEditor';
 import TryWebtask from '../components/tryWebtask';
 
 import ComponentStack from '../lib/componentStack';
@@ -34,6 +36,7 @@ export default class A0Editor extends React.Component {
             parseBody: props.parseBody,
             name: props.name,
             successMessage: '',
+            pane: 'Logs',
         };
 
         const debounceInterval = Math.max(1000, Number(props.autoSaveInterval));
@@ -54,6 +57,7 @@ export default class A0Editor extends React.Component {
         const toggleSecrets = this.toggleSecrets.bind(this);
         const tryWebtask = this.tryWebtask.bind(this);
         const onChangeSchedule = this.onChangeSchedule.bind(this);
+        const getSecrets = () => this.refs.secrets.getValue();
         
         const copyButton = this.state.webtask
             ?   (
@@ -62,9 +66,118 @@ export default class A0Editor extends React.Component {
                     </ReactZeroClipboard>
                 )
             :   null;
+        
+        const panes = [
+            {
+                name: 'Secrets',
+                iconClass: '--key',
+                vdom: (
+                    <SecretsEditor
+                        ref="secrets"
+                        secrets={ state.secrets }
+                        onChange={ () => setState({
+                            secrets: getSecrets()
+                        }) }
+                    />
+                ),
+            },
+            {
+                name: 'Schedule',
+                iconClass: '--clock',
+                vdom: (
+                    <SecretsEditor
+                        ref="secrets"
+                        secrets={ state.secrets }
+                        onChange={ () => setState({
+                            secrets: getSecrets()
+                        }) }
+                    />
+                ),
+            },
+            {
+                name: 'Settings',
+                iconClass: '--gear',
+                vdom: (
+                    <SecretsEditor
+                        ref="secrets"
+                        secrets={ state.secrets }
+                        onChange={ () => setState({
+                            secrets: getSecrets()
+                        }) }
+                    />
+                ),
+            },
+            {
+                name: 'Logs',
+                iconClass: '--split',
+                vdom: (
+                    <Logs className="a0-editor-logs" profile={ props.profile } />
+                ),
+            },
+        ];
 
         return (
             <div className="a0-editor">
+                <div className="a0-editor-split">
+                    <div className="a0-editor-left">
+                        <div className="a0-editor-toolbar">
+                        </div>
+                        <div className="a0-editor-body">
+                            <AceEditor
+                                ref="ace"
+                                name="code"
+                                className="a0-editor-ace"
+                                mode="javascript"
+                                theme="textmate"
+                                value={ state.code }
+                                maxLines={ 15 }
+                                minLines={ 5 }
+                                height=""
+                                width=""
+                                onChange={ onChangeCode }
+                                highlightActiveLine={ false }
+                                editorProps={ { $blockScrolling: true } }
+                            />
+                        </div>
+                    </div>
+                    <div className="a0-editor-right">
+                        <div className="a0-editor-toolbar">
+                            {
+                                panes.map((pane) => {
+                                    const classNames = ['a0-icon-button', '--icon', pane.iconClass];
+                                    
+                                    if (pane.name === state.pane) classNames.push('--arrow-below');
+                                
+                                    return <button
+                                        className={ classNames.join(' ') }
+                                        onClick={ () => setState({ pane: pane.name }) }
+                                    >{ pane.name }</button>;
+                                })
+                            }
+                        </div>
+                        <div className="a0-editor-sidebar">
+                            {
+                                panes
+                                    .filter(pane => pane.name === state.pane)
+                                    .map(pane => pane.vdom)
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div className="a0-editor-footer">
+                    <div className="a0-webtask-url">
+                        <span className="a0-container-url">
+                            { props.profile.url + '/api/run/' + props.profile.container + '/' }
+                        </span>
+                        <input className="a0-name-input"
+                        />
+                        <button className="a0-icon-button --icon --copy"></button>
+                    </div>
+                    <div className="a0-footer-actions">
+                        <button className="a0-inline-button --primary">Save</button>
+                        <button className="a0-inline-button --success">Run</button>
+                    </div>
+                </div>
                 { state.error
                 ?   (
                         <Alert bsStyle="danger">
@@ -76,20 +189,6 @@ export default class A0Editor extends React.Component {
                 
                 <div className="form-group form-group-grow">
                     <label className="control-label">Edit webtask code:</label>
-                    <AceEditor
-                        ref="ace"
-                        name="code"
-                        className="form-control"
-                        mode="javascript"
-                        theme="textmate"
-                        value={ state.code }
-                        maxLines={ 15 }
-                        minLines={ 5 }
-                        height=""
-                        width=""
-                        onChange={ onChangeCode }
-                        editorProps={ { $blockScrolling: true } }
-                    />
                 </div>
                 
                 { state.showAdvanced
