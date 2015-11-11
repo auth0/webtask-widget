@@ -4,7 +4,7 @@ import Button from '../components/button';
 import Input from '../components/input';
 
 
-import Style from '../styles/secretsEditor.less';
+import '../styles/secretsEditor.less';
 
 
 export default class A0SecretsEditor extends React.Component {
@@ -14,13 +14,15 @@ export default class A0SecretsEditor extends React.Component {
         const secrets = Object.keys(props.secrets)
             .reduce((secrets, key) => secrets.concat([{
                 key: key,
-                value: props.secrets[key]
+                value: props.secrets[key],
+                editing: false,
             }]), []);
 
         // Add an empty one for good measure
-        if (!secrets.length) secrets.push({
+        secrets.push({
             key: '',
             value: '',
+            editing: true,
         });
         
         this.state = {
@@ -37,60 +39,17 @@ export default class A0SecretsEditor extends React.Component {
         const state = this.state;
 
         return (
-            <div className="a0-secreteditor">
-                <label className="control-label">Edit secrets:</label>
-                <table className="a0-secreteditor-table">
-                    <tbody>
-                        { state.secrets.map(({key, value}, i) => (
-                            <tr className="a0-secreteditor-row" key={ i }>
-                                <td>
-                                    <Input
-                                        type="text"
-                                        bsSize="small"
-                                        placeholder="Key"
-                                        name="key"
-                                        ref={ (c) => self.keyRefs[i] = c }
-                                        value={ key }
-                                        onChange={ () => self.updateSecret(i, 'key', self.keyRefs[i].getValue()) }
-                                    />
-                                </td>
-                                <td>
-                                    <Input
-                                        type="text"
-                                        bsSize="small"
-                                        placeholder="Value"
-                                        name="value"
-                                        ref={ (c) => self.valueRefs[i] = c }
-                                        value={ value }
-                                        onChange={ () => self.updateSecret(i, 'value', self.valueRefs[i].getValue()) }
-                                    />
-                                </td>
-                                <td>
-                                    <Button
-                                        bsStyle="danger"
-                                        bsSize="sm"
-                                        disabled={ self.state.secrets.length === 1 && !self.state.secrets[0].key && !self.state.secrets[0].value }
-                                        onClick={ () => self.removeSecret(i) }
-                                    >
-                                        Remove
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                        <tr>
-                            <td colSpan="3">
-                                <Button
-                                    bsStyle="link"
-                                    bsSize="sm"
-                                    disabled={ self.state.secrets.length === 1 && !self.state.secrets[0].key && !self.state.secrets[0].value }
-                                    onClick={ self.addSecret.bind(self) }
-                                >
-                                    Add...
-                                </Button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div className="a0-secrets-editor">
+                { state.secrets.map((secret, i) => (
+                    secret.editing
+                        ?   <A0SecretEditor secret={ secret } key={ i }
+                                onAccept={ (accepted) => this.updateSecret(i, accepted) }
+                            />
+                        :   <A0SecretView secret={ secret } key={ i } 
+                                onEdit={ () => this.editSecret(i) }
+                                onRemove={ () => this.removeSecret(i) }
+                            />
+                ))}
             </div>
         );
     }
@@ -102,6 +61,16 @@ export default class A0SecretsEditor extends React.Component {
             return secrets;
         }, {});
     }
+    
+    editSecret(i) {
+        const secrets = this.state.secrets.slice();
+        
+        secrets[i].editing = true;
+        
+        this.setState({ secrets });
+
+        if (this.props.onChange) this.props.onChange(this.getValue());
+    }
 
     addSecret() {
         const secrets = this.state.secrets.slice();
@@ -109,11 +78,12 @@ export default class A0SecretsEditor extends React.Component {
         secrets.push({
             key: '',
             value: '',
+            editing: true,
         });
 
         this.setState({ secrets });
 
-        if (this.props.onChange) this.props.onChange();
+        if (this.props.onChange) this.props.onChange(this.getValue());
     }
 
     removeSecret(i) {
@@ -126,22 +96,29 @@ export default class A0SecretsEditor extends React.Component {
             secrets.push({
                 key: '',
                 value: '',
+                editing: true,
             });
         }
 
         this.setState({ secrets });
 
-        if (this.props.onChange) this.props.onChange();
+        if (this.props.onChange) this.props.onChange(this.getValue());
     }
 
-    updateSecret(i, field, value) {
+    updateSecret(i, accepted) {
         const secrets = this.state.secrets.slice();
 
-        secrets[i][field] = value;
+        secrets[i] = {
+            key: accepted.key,
+            value: accepted.value,
+            editing: false,
+        };
 
-        this.setState({ secrets });
-
-        if (this.props.onChange) this.props.onChange();
+        this.setState({ secrets }, function () {
+            if (!secrets[secrets.length - 1].editing) this.addSecret();
+        });
+        
+        if (this.props.onChange) this.props.onChange(this.getValue());
     }
 }
 
@@ -149,3 +126,107 @@ export default class A0SecretsEditor extends React.Component {
 A0SecretsEditor.propTypes = {
     secrets: React.PropTypes.object.isRequired,
 };
+
+class A0SecretEditor extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            key: props.secret ? props.secret.key : '',
+            value: props.secret ? props.secret.value : '',
+        };
+    }
+    
+    render() {
+        const self = this;
+        const props = this.props;
+        const state = this.state;
+        
+        return (
+            <div className="a0-secret-editor">
+                <div className="a0-secret-inputs">
+                    <input className="a0-text-input -dark" placeholder="Key"
+                        onChange={ (e) => this.setState({ key: e.target.value }) }
+                        value={ state.key }
+                    />
+                    <input className="a0-text-input -dark" placeholder="Value"
+                        onChange={ (e) => this.setState({ value: e.target.value }) }
+                        value={ state.value }
+                    />
+                </div>
+                <div className="a0-actions">
+                    <button className="a0-icon-button -add -success"
+                        onClick={ (e) => this.onClickAccept() }
+                    ></button>
+                </div>
+            </div>
+        );
+    }
+        
+    captureEdit(field, value) {
+        const editing = this.state.editing;
+        
+        editing[field] = value;
+        
+        this.setState({ editing });
+    }
+    
+    onClickAccept() {
+        if (this.props.onAccept) this.props.onAccept(this.getValue());
+    }
+
+    getValue() {
+        return {
+            key: this.state.key,
+            value: this.state.value,
+        };
+    }
+}
+
+class A0SecretView extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    
+    render() {
+        const self = this;
+        const props = this.props;
+        const state = this.state;
+
+        return (
+            <div className="a0-secret-row">
+                <div className="a0-secret-inputs">
+                    <input className="a0-text-input -dark" disabled placeholder="Key"
+                        value={ props.secret.key }
+                    />
+                    <input className="a0-text-input -dark" disabled placeholder="Value"
+                        value={ props.secret.value }
+                    />
+                </div>
+                <div className="a0-actions">
+                    <button className="a0-icon-button -edit -inverted -success"
+                        onClick={ (e) => this.onClickEdit() }
+                    ></button>
+                    <button className="a0-icon-button -remove -inverted -muted "
+                        onClick={ (e) => this.onClickRemove() }
+                    ></button>
+                </div>
+            </div>
+        );
+    }
+    
+    onClickEdit() {
+        if (this.props.onEdit) this.props.onEdit();
+    }
+    
+    onClickRemove() {
+        if (this.props.onRemove) this.props.onRemove();
+    }
+
+    getValue() {
+        return {
+            key: this.state.key,
+            value: this.state.value,
+        };
+    }
+}

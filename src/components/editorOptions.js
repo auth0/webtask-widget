@@ -1,8 +1,6 @@
 import isEqual from 'lodash.isequal';
 import React from 'react';
-
 import {OverlayTrigger} from 'react-bootstrap';
-
 
 
 import Alert from '../components/alert';
@@ -12,25 +10,24 @@ import SecretsEditor from '../components/secretsEditor';
 import Tooltip from '../components/tooltip';
 
 
+import '../styles/editorOptions.less';
+
+
 export default class A0AdvancedEditorOptions extends React.Component {
     constructor(props) {
         super(props);
         
         this.state = {
-            name: props.name,
             mergeBody: props.mergeBody,
             parseBody: props.parseBody,
-            secrets: props.secrets,
         };
     }
     
     componentDidUpdate(prevProps, prevState) {
         if (this.props.onChange && !isEqual(this.state, prevState))
             this.props.onChange({
-                name: this.state.name,
                 mergeBody: this.state.mergeBody,
                 parseBody: this.state.parseBody,
-                secrets: this.state.secrets,
             });
     }
     
@@ -57,11 +54,9 @@ export default class A0AdvancedEditorOptions extends React.Component {
         const loading = props.loading;
 
         return (
-            <div className="a0-advanced">
-                <label className="control-label">Advanced options:</label>
+            <div className="a0-editor-options">
                 <div className="form-group">
                     <div className="checkbox">
-                        <OverlayTrigger placement="top" overlay={ parseBodyHelp }>
                             <label>
                                 <input
                                     ref="parseBody"
@@ -70,12 +65,14 @@ export default class A0AdvancedEditorOptions extends React.Component {
                                     disabled={ loading }
                                     checked={ state.parseBody }
                                 />
-                                Automatically parse the request body into  <code>context.body</code>
+                                Automatically parse the request body into 
+                                &nbsp;
+                                <OverlayTrigger placement="top" overlay={ parseBodyHelp }>
+                                    <code>context.body</code>
+                                </OverlayTrigger>
                             </label>
-                        </OverlayTrigger>
                     </div>
                     <div className="checkbox">
-                        <OverlayTrigger placement="top" overlay={ mergeBodyHelp} >
                             <label>
                                 <input
                                     ref="mergeBody"
@@ -84,33 +81,13 @@ export default class A0AdvancedEditorOptions extends React.Component {
                                     disabled={ loading }
                                     checked={ state.mergeBody }
                                 />
-                                Merge the parsed body into <code>context.data</code>
+                                Merge the parsed body into
+                                &nbsp;
+                                <OverlayTrigger placement="top" overlay={ mergeBodyHelp} >
+                                    <code>context.data</code>
+                                </OverlayTrigger>
                             </label>
-                        </OverlayTrigger>
                     </div>
-                </div>
-
-                <Input
-                    label="Webtask name (optional)"
-                    type="text"
-                    bsSize="small"
-                    placeholder="Name"
-                    name="key"
-                    ref="name"
-                    value={ state.name }
-                    onChange={ () => setState({
-                        name: getName(),
-                    }) }
-                />
-
-                <div className="form-group">
-                    <SecretsEditor
-                        ref="secrets"
-                        secrets={ state.secrets }
-                        onChange={ () => setState({
-                            secrets: getSecrets()
-                        }) }
-                    />
                 </div>
             </div>
         );
@@ -127,9 +104,7 @@ export default class A0AdvancedEditorOptions extends React.Component {
 }
 
 A0AdvancedEditorOptions.propTypes = {
-    name: React.PropTypes.string.isRequired,
     mergeBody: React.PropTypes.bool.isRequired,
     parseBody: React.PropTypes.bool.isRequired,
-    secrets: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func.isRequired,
 };

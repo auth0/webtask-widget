@@ -1,85 +1,4 @@
-@import (reference) "~styles/widget.less";
-@import url("https://cdn.auth0.com/styleguide/latest/lib/budicon/budicon.fixed.css");
-@import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=857b99c8-12c9-4d60-85ee-16ebd935d187");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
-
-@font-face {
-    font-family: "avenir-next-web_n2";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/5db267f9-3612-485c-ae18-5698d2692816.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/5db267f9-3612-485c-ae18-5698d2692816.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/5db267f9-3612-485c-ae18-5698d2692816.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/174d458a-81e0-4174-9473-35e3bf0a613c.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/57a79aa3-9b06-4ba7-a9a4-2b766d826ecf.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/733cb7bd-50e1-4dee-893a-0b40ef382b02.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/594135c6-6c4f-4880-a0d2-ba923b5ef38e.svg#594135c6-6c4f-4880-a0d2-ba923b5ef38e") format("svg");
-    font-weight: 200;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "avenir-next-web_i2";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/9e4f77ac-2ea3-4f4e-b592-290f5c4af932.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/9e4f77ac-2ea3-4f4e-b592-290f5c4af932.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/9e4f77ac-2ea3-4f4e-b592-290f5c4af932.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/69a545eb-cdd0-4c00-9035-0029d8cede28.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/642cb581-067a-4f15-9df9-55c49c6b5446.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/972d8132-0f21-4d94-b42d-8f4022e6aa17.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/670d40f3-affd-4e16-8ad8-055f11470e24.svg#670d40f3-affd-4e16-8ad8-055f11470e24") format("svg");
-    font-weight: 200;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: "avenir-next-web_n4";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/069faa0e-9913-48c4-9ef7-89a4bc080b65.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/069faa0e-9913-48c4-9ef7-89a4bc080b65.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/069faa0e-9913-48c4-9ef7-89a4bc080b65.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/7db1f672-3a8f-4d19-9c49-7f61aed450b5.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/4ab86b35-c0c2-42b5-98ad-4b6eba66b197.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/276b3566-1c3b-4bc1-8915-15314f091f29.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/5d02f5f4-46e7-453a-aef9-3e7106d7bb68.svg#5d02f5f4-46e7-453a-aef9-3e7106d7bb68") format("svg");
-    font-weight: 400;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "avenir-next-web_i4";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/78f55966-cc8e-4f4c-bf8b-8fe59be9fe96.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/78f55966-cc8e-4f4c-bf8b-8fe59be9fe96.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/78f55966-cc8e-4f4c-bf8b-8fe59be9fe96.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/b17468ea-cf53-4635-984b-4d930a68ed4d.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/4d1d0d0d-9ea6-4117-901f-8b32ca1ab936.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/66b50093-e606-427c-a42a-a44b2f9ff219.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/78695677-7ebb-4ef8-8996-eff09dc64f26.svg#78695677-7ebb-4ef8-8996-eff09dc64f26") format("svg");
-    font-weight: 400;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: "avenir-next-web_n5";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/c6970a14-8b0f-4629-9072-71c7e123908f.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/c6970a14-8b0f-4629-9072-71c7e123908f.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/c6970a14-8b0f-4629-9072-71c7e123908f.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/b0b84e4d-2164-45c7-a674-1662f19f3ba6.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/e91d1bbf-3fea-45e2-b003-a22b12ce6e5f.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/ead8b64b-1abd-4d5b-a642-a21dfe2f463b.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/e536e1c2-92a4-4db4-8a41-1c55354d11b7.svg#e536e1c2-92a4-4db4-8a41-1c55354d11b7") format("svg");
-    font-weight: 700;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "avenir-next-web_i5";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/1f022c78-180e-4c6b-b5ee-e1573f17e4b6.eot?#iefix") format("eot")
-}
-
-@font-face {
-    font-family: "avenir-next-web";
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/1f022c78-180e-4c6b-b5ee-e1573f17e4b6.eot?#iefix");
-    src: url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/1f022c78-180e-4c6b-b5ee-e1573f17e4b6.eot?#iefix") format("eot"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/349e5647-5161-46bb-a19f-8a609ae235e4.woff2") format("woff2"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/cc0a88c2-524b-4c90-b6f0-a80570222c30.woff") format("woff"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/03aefdc0-0198-4662-a9c7-640a4734063e.ttf") format("truetype"), url("https://cdn.auth0.com/styleguide/latest/lib/font/avenir-next/fonts/132a539d-37fa-48fb-92ec-1f4591f98ee1.svg#132a539d-37fa-48fb-92ec-1f4591f98ee1") format("svg");
-    font-weight: 700;
-    font-style: italic;
-}
+@import "~styles/widget.less";
 
 //    .a0-editor
 //        .a0-editor-split
@@ -109,12 +28,12 @@
     font-family: 'avenir-next-web', ;
     font-size: 14px;
     
-    .a0-editor-split {
+    & > .a0-editor-split {
         flex: 0 0 @toolbar-height + @editor-height;
         flex-order: 0;
     }
     
-    .a0-editor-footer {
+    & > .a0-editor-footer {
         flex: 0 0 @footer-height;
         flex-order: 2;
     }
@@ -124,12 +43,12 @@
     display: flex;
     flex-direction: row;
     
-    .a0-editor-left {
-        flex: 1 1 @editor-width;
+    & > .a0-editor-left {
+        flex: 1 1 auto;
     }
     
-    .a0-editor-right {
-        flex: 1 1 (100% - @editor-width);
+    & > .a0-editor-right {
+        flex: 0 0 auto;
     }
 }
 
@@ -137,11 +56,11 @@
     display: flex;
     flex-direction: column;
     
-    .a0-editor-toolbar {
+    & > .a0-editor-toolbar {
         flex: 0 0 @toolbar-height;
     }
     
-    .a0-editor-body, .a0-editor-sidebar {
+    & > .a0-editor-body, .a0-editor-sidebar {
         flex: 1 1;
         height: @editor-height;
     }
@@ -155,7 +74,7 @@
     
     background-color: @tb-bg-color;
     
-    .a0-icon-button {
+    & > .a0-icon-button {
         flex: 1 1 auto;
     }
 }
@@ -164,7 +83,7 @@
     display: flex;
     flex-direction: column;
     
-    .a0-editor-ace {
+    & > .a0-editor-ace {
         flex: 1 1;
     }
 }
@@ -186,8 +105,21 @@
     background-color: @sidebar-bg-color;
     color: @sidebar-fg-color;
     
-    .a0-logs {
+    & > .a0-sidebar-pane {
         flex: 1 1;
+    }
+}
+
+.a0-sidebar-pane {
+    display: none;
+    
+    & > * {
+        flex: 1 1 auto;
+    }
+    
+    &.-active {
+        display: flex;
+        flex-direction: column;
     }
 }
 
@@ -208,12 +140,12 @@
     
     background-color: @tb-bg-color;
     
-    .a0-webtask-url {
+    & > .a0-webtask-url {
         flex: 1 1 auto;
         flex-order: 0;
     }
     
-    .a0-footer-actions {
+    & > .a0-footer-actions {
         flex: 0 0 auto;
         flex-order: 1;
     }
@@ -224,20 +156,20 @@
     flex-direction: row;
     align-items: center;
     
-    .a0-container-url {
+    & > .a0-container-url {
         flex: 0 0 auto;
         flex-order: 0;
         
         margin-left: 1em;
     }
-    .a0-name-input {
+    & > .a0-name-input {
         flex: 0 1 10em;
         flex-order: 1;
         
         margin-left: 4px;
     }
     
-    .a0-copy-button {
+    & > .a0-copy-button {
         flex: 0 0 20px;
         flex-order: 2;
         
@@ -263,117 +195,11 @@
 
 .a0-footer-actions {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row;
+    justify-content: flex-end;
     
-    .a0-inline-button {
+    & > .a0-inline-button {
         flex: 0 0 auto;
         margin-right: 1em;
-    }
-}
-
-.a0-icon-button {
-    border: none;
-    background: transparent;
-    color: inherit;
-    line-height: 28px;
-    margin: 0;
-    padding: 0 0.5em;
-    
-    &:focus {
-        outline: none;
-    }
-    
-    &.--arrow-below {
-        position: relative;
-        
-        @triangle-size: 6px;
-        
-        &:after {
-            top: 100%;
-            left: 50%;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-            border: solid transparent;
-            border-bottom-color: @sidebar-bg-color;
-            border-width: @triangle-size;
-            margin-left: -@triangle-size;
-            margin-top: -(2* @triangle-size);
-        }
-        
-        &.--logs:after {
-            border-bottom-color: @logs-bg-color;
-        }
-    }
-}
-
-.a0-inline-button {
-    border: none;
-    border-radius: 16px;
-    background: transparent;
-    color: inherit;
-    height: 32px;
-    line-height: 32px;
-    margin: 0;
-    padding: 0 2em;
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 95%;
-    
-    &:focus {
-        outline: none;
-    }
-
-    &.--primary {
-        background-color: @primary-bg-color;
-        color: @primary-fg-color;
-    }
-    
-    &.--success {
-        background-color: @success-bg-color;
-        color: @success-fg-color;
-    }
-}
-
-.--icon {
-    &:before{
-        font-family: "budicon-font" !important;
-        content: attr(data-icon);
-        font-style: normal !important;
-        font-weight: normal !important;
-        font-variant: normal !important;
-        text-transform: none !important;
-        speak: none;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        vertical-align: middle;
-        font-size: 110%;
-    }
-    
-    &:not(:empty):before {
-        padding-right: 0.5em;
-    }
-
-
-    &.--copy:before {
-        content: "";
-    }
-    
-    &.--key:before {
-        content: "";
-    }
-    
-    &.--clock:before {
-        content: "";
-    }
-    
-    &.--gear:before {
-        content: "";
-    }
-    
-    &.--split:before {
-        content: "";
     }
 }

@@ -1,4 +1,5 @@
 import Debounce from 'lodash.debounce';
+import Genid from 'genid';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
@@ -6,7 +7,7 @@ import {Modal} from 'react-bootstrap';
 import ReactZeroClipboard from 'react-zeroclipboard';
 
 import AceEditor from '../components/ace';
-import AdvancedEditorOptions from '../components/advancedEditorOptions';
+import EditorOptions from '../components/editorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
 import Input from '../components/input';
@@ -42,6 +43,56 @@ export default class A0Editor extends React.Component {
         const debounceInterval = Math.max(1000, Number(props.autoSaveInterval));
 
         this.autoSave = Debounce(() => this.saveWebtask(), debounceInterval);
+        
+        const secretPane = {
+            name: 'Secrets',
+            iconClass: '-key',
+            vdom: (
+                <SecretsEditor
+                    ref="secrets"
+                    secrets={ this.state.secrets }
+                    onChange={ (secrets) => this.setState({ secrets }) }
+                />
+            ),
+        };
+        
+        const schedulePane = {
+            name: 'Schedule',
+            iconClass: '-clock',
+            vdom: (
+                <ScheduleEditor
+                    ref="schedule"
+                    secrets={ this.state.secrets }
+                    onChange={ (schedule) => this.setState({ schedule }) }
+                />
+            ),
+        };
+        
+        const settingsPane = {
+            name: 'Settings',
+            iconClass: '-gear',
+            vdom: (
+                <EditorOptions
+                    ref="settings"
+                    mergeBody={ this.state.mergeBody }
+                    parseBody={ this.state.parseBody }
+                    onChange={ (options) => this.setState(options) }
+                />
+            ),
+        };
+        
+        const logsPane = {
+            name: 'Logs',
+            iconClass: '-split',
+            vdom: (
+                <Logs
+                    ref="logs"
+                    profile={ this.props.profile }
+                />
+            ),
+        };
+        
+        this.panes = [secretPane, schedulePane, settingsPane, logsPane];
     }
     
     render() {
@@ -66,55 +117,6 @@ export default class A0Editor extends React.Component {
                     </ReactZeroClipboard>
                 )
             :   null;
-        
-        const panes = [
-            {
-                name: 'Secrets',
-                iconClass: '--key',
-                vdom: (
-                    <SecretsEditor
-                        ref="secrets"
-                        secrets={ state.secrets }
-                        onChange={ () => setState({
-                            secrets: getSecrets()
-                        }) }
-                    />
-                ),
-            },
-            {
-                name: 'Schedule',
-                iconClass: '--clock',
-                vdom: (
-                    <SecretsEditor
-                        ref="secrets"
-                        secrets={ state.secrets }
-                        onChange={ () => setState({
-                            secrets: getSecrets()
-                        }) }
-                    />
-                ),
-            },
-            {
-                name: 'Settings',
-                iconClass: '--gear',
-                vdom: (
-                    <SecretsEditor
-                        ref="secrets"
-                        secrets={ state.secrets }
-                        onChange={ () => setState({
-                            secrets: getSecrets()
-                        }) }
-                    />
-                ),
-            },
-            {
-                name: 'Logs',
-                iconClass: '--split',
-                vdom: (
-                    <Logs className="a0-editor-logs" profile={ props.profile } />
-                ),
-            },
-        ];
 
         return (
             <div className="a0-editor">
@@ -143,13 +145,14 @@ export default class A0Editor extends React.Component {
                     <div className="a0-editor-right">
                         <div className="a0-editor-toolbar">
                             {
-                                panes.map((pane) => {
-                                    const classNames = ['a0-icon-button', '--icon', pane.iconClass];
+                                this.panes.map((pane) => {
+                                    const classNames = ['a0-icon-button', '-icon', pane.iconClass];
                                     
-                                    if (pane.name === state.pane) classNames.push('--arrow-below');
+                                    if (pane.name === state.pane) classNames.push('-arrow-below');
                                 
                                     return <button
                                         className={ classNames.join(' ') }
+                                        key={ pane.name }
                                         onClick={ () => setState({ pane: pane.name }) }
                                     >{ pane.name }</button>;
                                 })
@@ -157,9 +160,12 @@ export default class A0Editor extends React.Component {
                         </div>
                         <div className="a0-editor-sidebar">
                             {
-                                panes
-                                    .filter(pane => pane.name === state.pane)
-                                    .map(pane => pane.vdom)
+                                this.panes
+                                    .map(pane => (
+                                        <div key={ pane.name } className={ 'a0-sidebar-pane ' + (pane.name === state.pane ? '-active' : '') }>
+                                            { pane.vdom }
+                                        </div>
+                                    ))
                             }
                         </div>
                     </div>
@@ -169,122 +175,18 @@ export default class A0Editor extends React.Component {
                         <span className="a0-container-url">
                             { props.profile.url + '/api/run/' + props.profile.container + '/' }
                         </span>
-                        <input className="a0-name-input"
+                        <input className="a0-name-input -inline"
+                            value={ this.state.name }
+                            onChange={ (e) => this.setState({ name: e.target.value }) }
                         />
-                        <button className="a0-icon-button --icon --copy"></button>
+                        <button className="a0-icon-button -copy"></button>
                     </div>
                     <div className="a0-footer-actions">
-                        <button className="a0-inline-button --primary">Save</button>
-                        <button className="a0-inline-button --success">Run</button>
+                        <button className="a0-inline-button -primary">Save</button>
+                        <button className="a0-inline-button -success"
+                            onClick={ e => this.onClickRun() }
+                        >Run</button>
                     </div>
-                </div>
-                { state.error
-                ?   (
-                        <Alert bsStyle="danger">
-                            { state.error.message }
-                        </Alert>
-                    )
-                :   null
-                }
-                
-                <div className="form-group form-group-grow">
-                    <label className="control-label">Edit webtask code:</label>
-                </div>
-                
-                { state.showAdvanced
-                ?   (
-                        <AdvancedEditorOptions
-                            ref="advancedOptions"
-                            name={ props.name }
-                            mergeBody={ props.mergeBody }
-                            parseBody={ props.parseBody }
-                            secrets={ props.secrets }
-                            loading={ loading }
-                            onChange={ onChangeAdvancedOptions }
-                        />
-                    )
-                :   null
-                }
-                
-                { props.showScheduleInput
-                ?   (
-                        <ScheduleEditor
-                            ref="schedule"
-                            type="text"
-                            label="Schedule:"
-                            help={[
-                                'The schedule must be a valid ',
-                                <a key="schedule-help-link" href="http://crontab.guru/" target="_blank">cron expression</a>,
-                                '.',
-                            ]}
-                            value={ state.schedule }
-                            onChange={ onChangeSchedule }
-                        />
-                    )
-                :   null
-                }
-
-                { state.webtask
-                ?   (
-                        <div>
-                            { state.successMessage
-                            ?   (
-                                    <Alert
-                                        bsStyle="success"
-                                        onDismiss={ () => setState({ successMessage: '' }) }
-                                        dismissAfter={ 2000 }
-                                        >
-                                        { state.successMessage }
-                                    </Alert>
-                                )
-                            :   null
-                            }
-    
-                            { props.showWebtaskUrl
-                            ?   (
-                                    <Input
-                                        type="text"
-                                        disabled
-                                        label="Webtask url:"
-                                        buttonAfter={ copyButton }
-                                        value={ state.webtask.url }
-                                    />
-                                )
-                            :   null
-                            }
-    
-                        </div>
-                    )
-                :   null
-                }
-                
-                <div className="btn-list">
-                    <Button
-                        bsStyle="link"
-                        className="pull-left"
-                        type="button"
-                        disabled={ loading }
-                        onClick={ loading ? null : toggleSecrets }
-                    >
-                        { state.showAdvanced ? 'Hide advanced' : 'Show advanced' }
-                    </Button>
-
-                    <Button
-                        type="submit"
-                        disabled={ loading }
-                        onClick={ loading ? null : tryWebtask }
-                    >
-                        { state.creatingToken ? 'Sending...' : 'Try'}
-                    </Button>
-
-                    <Button
-                        bsStyle="primary"
-                        type="submit"
-                        disabled={ loading }
-                        onClick={ loading ? null : saveWebtask }
-                    >
-                        { state.savingWebtask ? 'Deploying...' : 'Deploy' }
-                    </Button>
                 </div>
             </div>
         );
@@ -302,6 +204,36 @@ export default class A0Editor extends React.Component {
         this.setState({ schedule: this.refs.schedule.getValue() });
     }
     
+    onClickRun() {
+        this.saveWebtask()
+            .then((webtask) => {
+                console.log('webtask', webtask);
+                return webtask.run({
+                    method: 'get',
+                    parse: !!this.state.parseBody,
+                    merge: !!this.state.mergeBody,
+                });
+            })
+            .tap((res) => {
+                const headers = res.header;
+                const auth0HeaderRx = /^x-auth0/;
+
+                for (let header in headers) {
+                    if (auth0HeaderRx.test(header)) {
+                        headers[header] = JSON.parse(headers[header]);
+                    }
+                }
+
+                this.refs.logs.push({
+                    data: {
+                        headers: headers,
+                        statusCode: res.status,
+                        body: res.body || res.text,
+                    },
+                });
+            });
+    }
+    
     saveWebtask ({hideSuccessMessage = false} = {}) {
         // Cancel any pending autoSaves
         this.autoSave.cancel();
@@ -314,7 +246,7 @@ export default class A0Editor extends React.Component {
         let promise = this.props.profile.create(this.state.code, {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
-            secret: this.state.secrets,
+            secrets: this.state.secrets,
             name: this.state.name,
         });
         
@@ -384,7 +316,7 @@ A0Editor.propTypes = {
 A0Editor.defaultProps = {
     mergeBody:              false,
     parseBody:              false,
-    name:                   '',
+    name:                   Genid(5),
     autoSaveInterval:       1000,
     autoSaveOnChange:       false,
     autoSaveOnLoad:         false,
