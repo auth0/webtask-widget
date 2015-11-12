@@ -95,7 +95,7 @@ export default class A0Logs extends React.Component {
                             { line.time.toLocaleTimeString() + ': ' }
                             { line.data
                             ?   <Inspector data={ line.data } name="result" />
-                            :   line.msg + '\n'
+                            :   line.msg
                             }
                         </span>
                     ))

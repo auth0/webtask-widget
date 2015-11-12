@@ -131,6 +131,7 @@ export default class A0Editor extends React.Component {
                                 className="a0-editor-ace"
                                 mode="javascript"
                                 theme="textmate"
+                                fontSize={ 14 }
                                 value={ state.code }
                                 maxLines={ 15 }
                                 minLines={ 5 }
@@ -205,6 +206,10 @@ export default class A0Editor extends React.Component {
     }
     
     onClickRun() {
+        this.setState({
+            pane: 'Logs',
+        });
+        
         this.saveWebtask()
             .then((webtask) => {
                 console.log('webtask', webtask);
