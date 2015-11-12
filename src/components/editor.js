@@ -95,6 +95,10 @@ export default class A0Editor extends React.Component {
         this.panes = [secretPane, schedulePane, settingsPane, logsPane];
     }
     
+    componentDidMount() {
+        if (this.props.autoSaveOnLoad) this.saveWebtask();
+    }
+    
     render() {
         const props = this.props;
         const state = this.state;
@@ -109,14 +113,17 @@ export default class A0Editor extends React.Component {
         const tryWebtask = this.tryWebtask.bind(this);
         const onChangeSchedule = this.onChangeSchedule.bind(this);
         const getSecrets = () => this.refs.secrets.getValue();
+        const webtaskUrl = props.profile.url + '/api/run/' + props.profile.container + '/' + state.name;
         
         const copyButton = this.state.webtask
             ?   (
-                    <ReactZeroClipboard text={ state.webtask.url }>
-                        <Button>Copy</Button>
+                    <ReactZeroClipboard text={ webtaskUrl }>
+                        <button className="a0-icon-button -copy"></button>
                     </ReactZeroClipboard>
                 )
-            :   null;
+            :   (
+                    <button disabled className="a0-icon-button -copy"></button>
+                );
 
         return (
             <div className="a0-editor">
@@ -180,7 +187,7 @@ export default class A0Editor extends React.Component {
                             value={ this.state.name }
                             onChange={ (e) => this.setState({ name: e.target.value }) }
                         />
-                        <button className="a0-icon-button -copy"></button>
+                        { copyButton }
                     </div>
                     <div className="a0-footer-actions">
                         <button className="a0-inline-button -primary">Save</button>
