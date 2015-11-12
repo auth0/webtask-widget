@@ -49,6 +49,7 @@
     
     & > .a0-editor-right {
         flex: 0 0 auto;
+        min-width: 40%;
     }
 }
 
@@ -99,14 +100,17 @@
 }
 
 .a0-editor-sidebar {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     
     background-color: @sidebar-bg-color;
     color: @sidebar-fg-color;
     
     & > .a0-sidebar-pane {
-        flex: 1 1;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
     }
 }
 
