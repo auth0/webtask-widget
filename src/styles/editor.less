@@ -18,6 +18,12 @@
 //            .a0-footer-actions
 //                TODO
 
+@widget-height: 500px;
+@toolbar-height: 42px;
+@footer-height: 47px;
+@editor-height: @widget-height - @toolbar-height - @footer-height;
+@editor-width: 60%;
+
 .a0-editor {
     .a0-widget();
     
@@ -125,6 +131,23 @@
     &.-active {
         display: flex;
         flex-direction: column;
+    }
+}
+
+.a0-sidebar-intro {
+    margin-bottom: 1em;
+    
+    & > .a0-title {
+        color: @inverted-fg-color;
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0 0 1em;
+    }
+    
+    & > .a0-explanation {
+        color: darken(@inverted-fg-color, 30%);
+        font-size: 13px;
+        
     }
 }
 

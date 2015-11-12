@@ -90,10 +90,15 @@
 @logs-fg-color: #CCC;
 @sidebar-bg-color: #081324;
 @sidebar-fg-color: #CCC;
+
 @input-bg-color: rgb(223, 230, 240);
 @input-fg-color: #fff;
+
 @input-dark-bg-color: rgb(58, 67, 81);
 @input-dark-fg-color: #fff;
+
+@input-darker-bg-color: rgb(24, 32, 44);
+@input-darker-fg-color: #fff;
 
 @primary-bg-color: rgb(79, 133, 216);
 @primary-fg-color: #fff;
@@ -103,12 +108,6 @@
 
 @danger-bg-color: #F00;
 @danger-fg-color: #FFF;
-
-@widget-height: 500px;
-@toolbar-height: 42px;
-@footer-height: 47px;
-@editor-height: @widget-height - @toolbar-height - @footer-height;
-@editor-width: 60%;
 
 .a0-widget {
     .btn-list {
@@ -153,10 +152,12 @@
         }
     }
     
-    &[disabled] {
-        &.-dark {
-            background-color: darken(@input-dark-bg-color, 50%);
-            color: darken(@input-dark-fg-color, 50%);
+    &.-darker {
+        background-color: @input-darker-bg-color;
+        color: @input-darker-fg-color;
+    
+        &::placeholder {
+            color: darken(@input-dark-fg-color, 40%);
         }
     }
     
@@ -167,6 +168,7 @@
 
 
 .a0-icon-button {
+    .a0-inline-text();
     .-icon();
     
     border: none;
@@ -187,7 +189,7 @@
     &.-arrow-below {
         position: relative;
         
-        @triangle-size: 6px;
+        @triangle-size: 8px;
         
         &:after {
             top: 100%;
@@ -287,11 +289,25 @@
     }
     
     &.-edit:before {
+        content: "";
+    }
+    
+    &.-confirm:before {
         content: "";
     }
 }
 
 .a0-inline-text {
+    color: @fg-color;
+    
+    &.-bright {
+        color: #fff;
+    }
+    
+    &.-strong {
+        font-weight: bold;
+    }
+    
     &.-muted {
         color: darken(@fg-color, 40%);
         
