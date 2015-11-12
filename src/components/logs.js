@@ -92,9 +92,10 @@ export default class A0Logs extends React.Component {
                 {
                     this.state.logs.map((line, i) => (
                         <span key={i} className={ 'a0-inline-text -inverted ' + line.className }>
+                            { line.time.toLocaleTimeString() + ': ' }
                             { line.data
                             ?   <Inspector data={ line.data } name="result" />
-                            :   line.time.toISOString() + ': ' + line.msg + '\n'
+                            :   line.msg + '\n'
                             }
                         </span>
                     ))
