@@ -10,10 +10,12 @@ import AceEditor from '../components/ace';
 import EditorOptions from '../components/editorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
+import DropDown from '../components/dropDown';
 import Input from '../components/input';
 import Logs from '../components/logs';
 import ScheduleEditor from '../components/scheduleEditor';
 import SecretsEditor from '../components/secretsEditor';
+import ToggleButton from '../components/toggleButton';
 import TryWebtask from '../components/tryWebtask';
 
 import ComponentStack from '../lib/componentStack';
@@ -60,9 +62,8 @@ export default class A0Editor extends React.Component {
             name: 'Schedule',
             iconClass: '-clock',
             vdom: (
-                <ScheduleEditor
+                <A0SchedulePane
                     ref="schedule"
-                    secrets={ this.state.secrets }
                     onChange={ (schedule) => this.setState({ schedule }) }
                 />
             ),
@@ -222,6 +223,9 @@ export default class A0Editor extends React.Component {
                 console.log('webtask', webtask);
                 return webtask.run({
                     method: 'get',
+                    query: {
+                        webtask_no_cache: 1,
+                    },
                     parse: !!this.state.parseBody,
                     merge: !!this.state.mergeBody,
                 });
@@ -354,4 +358,74 @@ A0Editor.defaultProps = {
                                     hint: 'Only sent for PUT, POST and PATCH requests',
                                 },
                             },
+};
+
+
+class A0SchedulePane extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            advanced: false,
+            schedule: props.schedule,
+            frequencyValue: 10,
+            frequencyMetric: 'minutes',
+            state: 'inactive',
+        };
+    }
+    
+    render() {
+        const props = this.props;
+        const state = this.state;
+        
+        const nextRunDay = 'today';
+        const nextRunTime = '2:00pm';
+        
+        return (
+            <div className="a0-schedule-pane">
+                <div className="a0-schedule-display">
+                    <div className="a0-next-run">
+                        <span className="a0-inline-text -inverted -bright">Next run will be&nbsp;</span>
+                        <span className="a0-inline-text -inverted -primary">{ nextRunDay }</span>
+                        <span className="a0-inline-text -inverted -bright">&nbsp;at&nbsp;</span>
+                        <span className="a0-inline-text -inverted -primary">{ nextRunTime }</span>
+                    </div>
+                    <ToggleButton
+                        ref="state"
+                        disabled={ state.state !== 'active' && state.state !== 'inactive' }
+                        checked={ state.state === 'active' }
+                        onChange={ e => this.setState({ state: e.target.checked ? 'active' : 'inactive' }) }
+                    />
+                </div>
+                <div className="a0-schedule-editor">
+                    <span className="a0-inline-text -inverted -bright">Run this every</span>
+                    <input className="a0-frequency -inverted -primary" type="text"
+                        onChange={ e => this.onChangeFrequencyValue(e.target.value) }
+                    />
+                    <DropDown
+                    />
+                </div>
+                <ScheduleEditor
+                    ref="schedule"
+                    schedule={ state.schedule }
+                    onChange={ (schedule) => this.setState({ schedule }) }
+                />
+            </div>
+        );
+    }
+    
+    getValue() {
+        return 'TODO';
+    }
+    
+    onChangeFrequencyValue(frequencyValue) {
+        this.setState({ frequencyValue }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
+    }
+}
+
+A0SchedulePane.propTypes = {
+    // schedule: React.PropTypes.string.isRequired,
+    onChange: React.PropTypes.func.isRequired,
 };

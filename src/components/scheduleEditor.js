@@ -24,6 +24,8 @@ export default class A0ScheduleEditor extends React.Component {
         const invalid = false;
         
         const onChangeSchedule = this.onChangeSchedule.bind(this);
+        
+        return <div></div>;
 
         return (
             <div className="a0-scheduleeditor">

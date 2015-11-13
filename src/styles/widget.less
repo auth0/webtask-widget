@@ -83,12 +83,13 @@
 
 
 @fg-color: #666;
-@inverted-fg-color: #FFF;
+@inverted-fg-color: #F5F5F5;
 @tb-bg-color: #F4F7FC;
-@body-bg-color: #F8F9FC;
+@lines-bg-color: #F8F9FC;
+@editor-bg-color: #FFF;
 @logs-bg-color: #000;
 @logs-fg-color: #CCC;
-@sidebar-bg-color: #081324;
+@sidebar-bg-color: rgb(33, 43, 58);
 @sidebar-fg-color: #CCC;
 
 @input-bg-color: rgb(223, 230, 240);
@@ -135,6 +136,12 @@
     border-radius: 4px;
     padding: 0 0.5em;
     
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
+    
     &::placeholder {
         color: darken(@input-fg-color, 40%);
     }
@@ -177,6 +184,12 @@
     line-height: 28px;
     margin: 0;
     padding: 0 0.5em;
+    
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
     
     &:focus {
         outline: none;
@@ -224,6 +237,12 @@
     text-transform: uppercase;
     text-align: center;
     font-size: 95%;
+    
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
     
     &:focus {
         outline: none;
@@ -295,10 +314,17 @@
     &.-confirm:before {
         content: "";
     }
+    &.-trash:before {
+        content: "";
+    }
 }
 
 .a0-inline-text {
     color: @fg-color;
+    
+    &.-inverted {
+        color: @inverted-fg-color;
+    }
     
     &.-bright {
         color: #fff;
@@ -316,11 +342,15 @@
         }
     }
     
+    &.-primary {
+        color: desaturate(@primary-bg-color, 20%);
+    }
+    
     &.-success {
-        color: @success-bg-color;
+        color: desaturate(@success-bg-color, 20%);
     }
     
     &.-danger {
-        color: @danger-bg-color;
+        color: desaturate(@danger-bg-color, 20%);
     }
 }

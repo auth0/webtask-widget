@@ -39,6 +39,8 @@ export default class A0Logs extends React.Component {
             if (event.name === 'sandbox-logs') {
                 if (event.msg.match(/^webtask container (assigned|recycled)$/)) {
                     event.className = '-muted';
+                } else {
+                    event.className = '';
                 }
                 
                 event.time = new Date(event.time);
@@ -66,32 +68,14 @@ export default class A0Logs extends React.Component {
     }
 
     render() {
-        const theme = {
-            scheme: 'monokai',
-            author: 'wimer hazenberg (http://www.monokai.nl)',
-            base00: '#272822',
-            base01: '#383830',
-            base02: '#49483e',
-            base03: '#75715e',
-            base04: '#a59f85',
-            base05: '#f8f8f2',
-            base06: '#f5f4f1',
-            base07: '#f9f8f5',
-            base08: '#f92672',
-            base09: '#fd971f',
-            base0A: '#f4bf75',
-            base0B: '#a6e22e',
-            base0C: '#a1efe4',
-            base0D: '#66d9ef',
-            base0E: '#ae81ff',
-            base0F: '#cc6633'
-        };
-        
         return (
-            <div className="a0-logs">
+            <div className="a0-logs-viewer">
+                <button className="a0-clear -inverted -trash"
+                    onClick={ e => this.clear() }
+                ></button>
                 {
                     this.state.logs.map((line, i) => (
-                        <span key={i} className={ 'a0-inline-text -inverted ' + line.className }>
+                        <span key={i} className={ 'a0-inline-text -inverted' + (line.className || '') }>
                             { line.time.toLocaleTimeString() + ': ' }
                             { line.data
                             ?   <Inspector data={ line.data } name="result" />

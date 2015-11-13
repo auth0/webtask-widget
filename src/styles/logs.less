@@ -1,12 +1,28 @@
 @import (reference) "~styles/widget.less";
-.a0-logs {
+
+
+.a0-logs-viewer {
     background-color: @logs-bg-color;
     color: @logs-fg-color;
     font-family: "Roboto Mono", ;
     font-size: 13px;
     padding: 1em;
-    overflow-x: hidden;
-    overflow-y: auto;
+    white-space: pre;
+    overflow: auto;
+    position: relative;
+    
+    & > .a0-clear {
+        .a0-icon-button();
+        
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        opacity: 0.5;
+    }
+    
+    &:hover > .a0-clear {
+        opacity: 1;
+    }
     
     & > .a0-inline-text {
         display: block;

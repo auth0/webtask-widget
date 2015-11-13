@@ -9,7 +9,7 @@
 //            .a0-editor-right
 //                .a0-editor-toolbar
 //                .a0-editor-sidebar
-//                    .a0-logs
+//                    .a0-logs-viewer
 //        .a0-editor-footer
 //            .a0-webtask-url
 //                .a0-container-url
@@ -98,10 +98,11 @@
 
 .a0-editor-ace {
     &.ace_editor {
-        background-color: @body-bg-color;
+        background-color: @editor-bg-color;
         
         .ace_gutter {
-            background-color: @body-bg-color;
+            background-color: @lines-bg-color;
+            color: @fg-color;
         }
     }
 }
@@ -149,16 +150,6 @@
         font-size: 13px;
         
     }
-}
-
-.a0-logs {
-    background-color: @logs-bg-color;
-    color: @logs-fg-color;
-    font-family: "Roboto Mono", ;
-    font-size: 13px;
-    padding: 1em;
-    white-space: pre;
-    overflow: auto;
 }
 
 .a0-editor-footer {
@@ -229,5 +220,57 @@
     & > .a0-inline-button {
         flex: 0 0 auto;
         margin-right: 1em;
+    }
+}
+
+
+
+
+.a0-schedule-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .a0-schedule-display {
+        margin: 4em auto;
+    }
+    
+    .a0-schedule-editor {
+        font-size: 120%;
+        margin: 1em auto;
+    }
+}
+
+.a0-schedule-display {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    .a0-next-run, .a0-toggle-button {
+        flex: 0 0 auto;
+    }
+    
+    .a0-toggle-button {
+        margin-left: 1em;
+    }
+}
+
+.a0-schedule-editor {
+    & > .a0-frequency {
+        .a0-inline-text();
+        
+        width: 2em;
+        margin: 0 0.5em;
+        padding: 0.2em 0;
+        
+        background: transparent;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid @fg-color;
+        text-align: center;
+        
+        &:focus {
+            outline: none;
+        }
     }
 }

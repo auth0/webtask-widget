@@ -119,15 +119,19 @@ class A0SecretCreator extends React.Component {
         super(props);
         
         this.state = {
-            key: props.secret ? props.secret.key : '',
-            value: props.secret ? props.secret.value : '',
+            key: '',
+            value: '',
         };
+        
+        this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
     
     render() {
         const self = this;
         const props = this.props;
         const state = this.state;
+        
+        const isInvalid = !this.isValid();
         
         return (
             <div className="a0-secret-editor">
@@ -142,24 +146,21 @@ class A0SecretCreator extends React.Component {
                     />
                 </div>
                 <div className="a0-actions">
-                    <button className="a0-icon-button -add -success"
+                    <button className={ 'a0-icon-button -inverted -add ' + (isInvalid ? '-muted' : '-success') }
+                        disabled={ isInvalid }
                         onClick={ (e) => this.onClickAccept() }
                     ></button>
                 </div>
             </div>
         );
     }
-        
-    captureEdit(field, value) {
-        const editing = this.state.editing;
-        
-        editing[field] = value;
-        
-        this.setState({ editing });
+    
+    isValid() {
+        return this.validKeyRx.test(this.state.key);
     }
     
     onClickAccept() {
-        if (this.props.onAccept) this.props.onAccept(this.getValue());
+        if (this.isValid() && this.props.onAccept) this.props.onAccept(this.getValue());
     }
     
     clear() {
@@ -186,12 +187,16 @@ class A0SecretEditor extends React.Component {
             key: props.secret ? props.secret.key : '',
             value: props.secret ? props.secret.value : '',
         };
+        
+        this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
     
     render() {
         const self = this;
         const props = this.props;
         const state = this.state;
+        
+        const isInvalid = !this.isValid();
         
         return (
             <div className="a0-secret-editor">
@@ -206,24 +211,21 @@ class A0SecretEditor extends React.Component {
                     />
                 </div>
                 <div className="a0-actions">
-                    <button className="a0-icon-button -confirm -bright"
+                    <button className={ 'a0-icon-button -inverted -confirm ' + (isInvalid ? '-muted' : '-bright') }
+                        disabled={ isInvalid }
                         onClick={ (e) => this.onClickAccept() }
                     ></button>
                 </div>
             </div>
         );
     }
-        
-    captureEdit(field, value) {
-        const editing = this.state.editing;
-        
-        editing[field] = value;
-        
-        this.setState({ editing });
+    
+    isValid() {
+        return this.validKeyRx.test(this.state.key);
     }
     
     onClickAccept() {
-        if (this.props.onAccept) this.props.onAccept(this.getValue());
+        if (this.isValid() && this.props.onAccept) this.props.onAccept(this.getValue());
     }
 
     getValue() {
