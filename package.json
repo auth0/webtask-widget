@@ -8,6 +8,7 @@
     "bluebird": "^2.9.33",
     "bootstrap": "^3.3.5",
     "brace": "^0.5.1",
+    "cron-parser": "^1.0.1",
     "eventemitter3": "^1.1.1",
     "genid": "^0.1.0",
     "human-to-cron": "^0.1.7",

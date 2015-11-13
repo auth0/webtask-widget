@@ -1,19 +1,19 @@
+import Cron from 'cron-parser';
 import Debounce from 'lodash.debounce';
 import Genid from 'genid';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
-import {Modal} from 'react-bootstrap';
+import {DropdownButton, MenuItem} from 'react-bootstrap';
 import ReactZeroClipboard from 'react-zeroclipboard';
 
 import AceEditor from '../components/ace';
-import EditorOptions from '../components/editorOptions';
 import Alert from '../components/alert';
 import Button from '../components/button';
-import DropDown from '../components/dropDown';
+import CronEditor from '../components/cronEditor';
+import EditorOptions from '../components/editorOptions';
 import Input from '../components/input';
 import Logs from '../components/logs';
-import ScheduleEditor from '../components/scheduleEditor';
 import SecretsEditor from '../components/secretsEditor';
 import ToggleButton from '../components/toggleButton';
 import TryWebtask from '../components/tryWebtask';
@@ -365,31 +365,91 @@ class A0SchedulePane extends React.Component {
     constructor(props) {
         super(props);
         
+        const now = new Date();
+        
         this.state = {
-            advanced: false,
+            advanced: !!props.schedule,
             schedule: props.schedule,
             frequencyValue: 10,
-            frequencyMetric: 'minutes',
+            frequencyMetric: 'mins',
             state: 'inactive',
+            now: now,
+            currentDate: now,
         };
+    }
+    
+    componentDidMount() {
+        this.nowInterval = setInterval(() => this.setState({ now: new Date() }), 1000 * 60);
+    }
+    
+    componentWillUnmount() {
+        clearInterval(this.nowInterval);
     }
     
     render() {
         const props = this.props;
         const state = this.state;
         
-        const nextRunDay = 'today';
-        const nextRunTime = '2:00pm';
+        const schedule = this.getValue();
+        let nextRun;
+        
+        try {
+            const cron = Cron.parseExpression(schedule, {
+                currentDate: this.state.now,
+            });
+            const next = cron.next();
+            const startOfToday = new Date(state.currentDate.valueOf());
+            const days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
+            
+            startOfToday.setHours(0);
+            startOfToday.setMinutes(0);
+            startOfToday.setSeconds(0);
+            startOfToday.setMilliseconds(0);
+            
+            const deltaMinutes = (next.valueOf() - startOfToday.valueOf()) / (1000 * 60);
+            let day;
+            
+            if (deltaMinutes < 60 * 24) {
+                day = 'today';
+            } else if (deltaMinutes < 60 * 24 * 2) {
+                day = 'tomorrow';
+            } else if (deltaMinutes < 60 * 24 * 7) {
+                day = 'this ' + days[next.getDay()];
+            } else if (deltaMinutes < 60 * 24 * 7 * 2) {
+                day = 'next ' + days[next.getDay()];
+            } else {
+                day = 'in ' + Math.floor(deltaMinutes / (60 * 24)) + ' days';
+            }
+            
+            nextRun = {
+                day: day,
+                time: next.toLocaleTimeString().replace(':00 ', ' '), // Strip seconds
+            };
+            
+        } catch (e) { }
+        
+        const metrics = Object.keys(A0SchedulePane.frequencyMetrics);
+        const allowed = A0SchedulePane.frequencyMetrics[state.frequencyMetric].allowed;
+        const frequencyValueLabel = allowed[state.frequencyValue];
         
         return (
             <div className="a0-schedule-pane">
                 <div className="a0-schedule-display">
-                    <div className="a0-next-run">
-                        <span className="a0-inline-text -inverted -bright">Next run will be&nbsp;</span>
-                        <span className="a0-inline-text -inverted -primary">{ nextRunDay }</span>
-                        <span className="a0-inline-text -inverted -bright">&nbsp;at&nbsp;</span>
-                        <span className="a0-inline-text -inverted -primary">{ nextRunTime }</span>
-                    </div>
+                    { nextRun
+                    ?   (
+                            <div className="a0-next-run">
+                                <span className="a0-inline-text -inverted -bright">Next run will be&nbsp;</span>
+                                <span className="a0-inline-text -inverted -primary">{ nextRun.day }</span>
+                                <span className="a0-inline-text -inverted -bright">&nbsp;at&nbsp;</span>
+                                <span className="a0-inline-text -inverted -primary">{ nextRun.time }</span>
+                            </div>
+                        )
+                    :   (
+                            <div className="a0-next-run">
+                                <span className="a0-inline-text -inverted -bright">This job will not run in the future</span>
+                            </div>
+                        )
+                    }
                     <ToggleButton
                         ref="state"
                         disabled={ state.state !== 'active' && state.state !== 'inactive' }
@@ -397,35 +457,188 @@ class A0SchedulePane extends React.Component {
                         onChange={ e => this.setState({ state: e.target.checked ? 'active' : 'inactive' }) }
                     />
                 </div>
-                <div className="a0-schedule-editor">
+                <div className="a0-schedule-editor" disabled={ state.advanced }>
                     <span className="a0-inline-text -inverted -bright">Run this every</span>
-                    <input className="a0-frequency -inverted -primary" type="text"
-                        onChange={ e => this.onChangeFrequencyValue(e.target.value) }
-                    />
-                    <DropDown
-                    />
+                    { Object.keys(allowed).length > 1
+                    ?   (
+                            <DropdownButton
+                                className="a0-value"
+                                bsStyle="link"
+                                disabled={ state.advanced }
+                                noCaret={ false }
+                                title={ frequencyValueLabel }
+                                onSelect={ (e, frequencyValue) => this.onChangeFrequencyValue(frequencyValue) }
+                                id="frequencyValue"
+                            >
+                                {
+                                    Object.keys(allowed).map(i => (
+                                        <MenuItem
+                                            eventKey={ i }
+                                            key={ i }
+                                            active={ state.frequencyValue === i }
+                                        >{ allowed[i] }</MenuItem>
+                                    ))
+                                }
+                            </DropdownButton>
+                        )
+                    :   null
+                    }
+                    <DropdownButton
+                        className="a0-metric"
+                        bsStyle="link"
+                        disabled={ state.advanced }
+                        noCaret={ false }
+                        title={ state.frequencyMetric }
+                        onSelect={ (e, frequencyMetric) => this.onChangeFrequencyMetric(frequencyMetric) }
+                        id="frequencyMetric"
+                    >
+                        {
+                            metrics.map(value => (
+                                <MenuItem
+                                    eventKey={ value }
+                                    key={ value }
+                                    active={ state.frequencyMetric === value }
+                                >{ value }</MenuItem>
+                            ))
+                        }
+                    </DropdownButton>
                 </div>
-                <ScheduleEditor
+                <div className="a0-advanced-cron">
+                    <label>
+                        <input className="a0-toggle" type="checkbox"
+                            checked={ state.advanced }
+                            onChange={ e => this.setState({ advanced: e.target.checked }) }
+                        />
+                        <span className="a0-label -inverted -bright">Write an advanced schedule</span>
+                    </label>
+                </div>
+                <CronEditor
                     ref="schedule"
-                    schedule={ state.schedule }
-                    onChange={ (schedule) => this.setState({ schedule }) }
+                    value={ schedule }
+                    disabled={ !state.advanced }
+                    onChange={ (schedule) => this.onChangeSchedule(schedule) }
                 />
             </div>
         );
     }
     
+    createIntervalSchedule() {
+        // How does this work, you may ask
+        //
+        // First, we build a cron string array that corresponds to right now.
+        // Next, the complex ternary works as follows:
+        // 1.  If the current position in the cron string array is higher than the current
+        //     metric's offset, this means that no schedule should be enforced at this
+        //     position, so we return a '*'
+        // 2.  If the current position in the cron string array is lower than the current
+        //     metric's offset, we leave that part of the cron string as is because it
+        //     represents 'right now'
+        // 3.  Otherwise, we want to build a list of hour/minute offsets that correspond to 
+        //     intervals of `frequencyValue` units of `frequencyMetric` from the current time.
+        const d = this.state.currentDate;
+        const nowSchedule = [d.getMinutes(), d.getHours(), d.getDate(), d.getMonth() + 1, d.getDay()];
+        const frequencyMetric = this.state.frequencyMetric;
+        const frequencyValue = this.state.frequencyValue;
+        const metric = A0SchedulePane.frequencyMetrics[frequencyMetric];
+        
+        const schedule = metric
+            ?   nowSchedule.map((curr, pos) =>
+                    pos > metric.offset
+                        ?   '*'
+                        :   pos < metric.offset
+                            ?   curr
+                            :   metric.encode(curr, frequencyValue, metric)
+                )
+            :   nowSchedule;
+        
+        return schedule.join(' ');
+    }
+    
     getValue() {
-        return 'TODO';
+        return this.state.advanced
+            ?   this.state.schedule
+            :   this.createIntervalSchedule()
+    }
+    
+    onChangeFrequencyMetric(frequencyMetric) {
+        const metric = A0SchedulePane.frequencyMetrics[frequencyMetric];
+        const currentDate = new Date();
+        
+        if (!metric) return;
+        
+        let frequencyValue = this.state.frequencyValue;
+        
+        if (!metric.allowed[frequencyValue]) {
+            frequencyValue = Object.keys(metric.allowed)[0];
+        }
+        
+        this.setState({ frequencyMetric, frequencyValue, currentDate }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
     }
     
     onChangeFrequencyValue(frequencyValue) {
-        this.setState({ frequencyValue }, () => {
+        const currentDate = new Date();
+        
+        this.setState({ frequencyValue, currentDate }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
+    }
+    
+    onChangeSchedule(schedule) {
+        const currentDate = new Date();
+        
+        this.setState({ schedule, currentDate }, () => {
             if (this.props.onChange) this.props.onChange(this.getValue());
         });
     }
 }
 
+A0SchedulePane.frequencyMetrics = {
+    'mins': {
+        max: 60,
+        allowed: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 10: 10, 15: 15, 20: 20, 30: 30 },
+        offset: 0,
+        encode: (curr, frequencyValue, metric) => {
+            const mod = curr % frequencyValue;
+            
+            return mod > 0
+                ?   `${curr % frequencyValue}-${metric.max - 1}/${frequencyValue}`
+                :   `*/${frequencyValue}`;
+        },
+    },
+    'hours': {
+        max: 24,
+        allowed: { 1: 1, 2: 2, 3: 3, 4: 4, 6: 6, 8: 8, 12: 12 },
+        offset: 1,
+        encode: (curr, frequencyValue, metric) => {
+            const mod = curr % frequencyValue;
+            
+            return mod > 0
+                ?   `${curr % frequencyValue}-${metric.max - 1}/${frequencyValue}`
+                :   `*/${frequencyValue}`;
+        },
+    },
+    'day': {
+        max: 7,
+        allowed: { 1: 'once' },
+        offset: 2,
+        encode: (curr, frequencyValue, metric) => '*',
+    },
+    'weekly': {
+        max: 7,
+        allowed: { 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat', 7: 'Sun' },
+        offset: 4,
+        encode: (curr, frequencyValue, metric) => frequencyValue,
+    },
+};
+
 A0SchedulePane.propTypes = {
     // schedule: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
+    schedule: React.PropTypes.string,
+};
+
+A0SchedulePane.defaultProps = {
+    schedule: '',
 };

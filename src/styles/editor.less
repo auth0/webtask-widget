@@ -239,6 +239,14 @@
         font-size: 120%;
         margin: 1em auto;
     }
+    
+    .a0-advanced-cron {
+        margin: 1em auto 1.5em;
+    }
+    
+    .a0-cron-editor {
+        margin-top: 2em;
+    }
 }
 
 .a0-schedule-display {
@@ -256,21 +264,37 @@
 }
 
 .a0-schedule-editor {
-    & > .a0-frequency {
+    &[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+    }
+    
+    & > .a0-metric, & > .a0-value {
         .a0-inline-text();
         
-        width: 2em;
         margin: 0 0.5em;
-        padding: 0.2em 0;
         
-        background: transparent;
-        border: none;
-        outline: none;
-        border-bottom: 1px solid @fg-color;
-        text-align: center;
+        & > .btn {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            border-bottom: 1px solid @fg-color;
+            
+            &:hover, &:hover span, span:hover {
+                text-decoration: none;
+            }
+        }
         
         &:focus {
             outline: none;
         }
+    }
+}
+
+.a0-advanced-cron {
+    .a0-label {
+        padding-left: 0.5em;
     }
 }

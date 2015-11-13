@@ -69,6 +69,9 @@ var baseConfig = {
         root: __dirname,
         alias: {},
     },
+    node: {
+        fs: 'empty',
+    }
 };
 
 module.exports = [
