@@ -25,6 +25,15 @@ export default class A0CronEditor extends React.Component {
         };
     }
     
+    componentWillReceiveProps(props) {
+        const atoms = props.value.split(/\s+/);
+        
+        // Discard non-standard seconds specifier
+        if (atoms.length > 5) atoms.splice(0, 1);
+        
+        this.setState({ atoms })
+    }
+    
     render() {
         const props = this.props;
         const state = this.state;
