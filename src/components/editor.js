@@ -366,12 +366,14 @@ class A0SchedulePane extends React.Component {
         super(props);
         
         const now = new Date();
+        const frequencyMetric = 'mins';
+        const frequencyValue = 10;
         
         this.state = {
             advanced: !!props.schedule,
-            schedule: props.schedule,
-            frequencyValue: 10,
-            frequencyMetric: 'mins',
+            schedule: props.schedule || this.createIntervalSchedule(now, frequencyMetric, frequencyValue),
+            frequencyValue,
+            frequencyMetric,
             state: 'inactive',
             now: now,
             currentDate: now,
@@ -395,10 +397,10 @@ class A0SchedulePane extends React.Component {
         
         try {
             const cron = Cron.parseExpression(schedule, {
-                currentDate: this.state.now,
+                currentDate: this.state.currentDate,
             });
             const next = cron.next();
-            const startOfToday = new Date(state.currentDate.valueOf());
+            const startOfToday = new Date(state.now.valueOf());
             const days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
             
             startOfToday.setHours(0);
@@ -454,7 +456,7 @@ class A0SchedulePane extends React.Component {
                         ref="state"
                         disabled={ state.state !== 'active' && state.state !== 'inactive' }
                         checked={ state.state === 'active' }
-                        onChange={ e => this.setState({ state: e.target.checked ? 'active' : 'inactive' }) }
+                        onChange={ checked => this.setState({ state: checked ? 'active' : 'inactive' }) }
                     />
                 </div>
                 <div className="a0-schedule-editor" disabled={ state.advanced }>
@@ -522,7 +524,7 @@ class A0SchedulePane extends React.Component {
         );
     }
     
-    createIntervalSchedule() {
+    createIntervalSchedule(d, frequencyMetric, frequencyValue) {
         // How does this work, you may ask
         //
         // First, we build a cron string array that corresponds to right now.
@@ -535,19 +537,19 @@ class A0SchedulePane extends React.Component {
         //     represents 'right now'
         // 3.  Otherwise, we want to build a list of hour/minute offsets that correspond to 
         //     intervals of `frequencyValue` units of `frequencyMetric` from the current time.
-        const d = this.state.currentDate;
         const nowSchedule = [d.getMinutes(), d.getHours(), d.getDate(), d.getMonth() + 1, d.getDay()];
-        const frequencyMetric = this.state.frequencyMetric;
-        const frequencyValue = this.state.frequencyValue;
         const metric = A0SchedulePane.frequencyMetrics[frequencyMetric];
+        const freeze = typeof metric.freeze === 'undefined'
+            ?   metric.offset
+            :   metric.freeze;
         
         const schedule = metric
             ?   nowSchedule.map((curr, pos) =>
-                    pos > metric.offset
-                        ?   '*'
-                        :   pos < metric.offset
-                            ?   curr
-                            :   metric.encode(curr, frequencyValue, metric)
+                    pos === metric.offset
+                        ?   metric.encode(curr, frequencyValue, metric)
+                        :   pos > freeze
+                            ?   '*'
+                            :   curr
                 )
             :   nowSchedule;
         
@@ -555,9 +557,7 @@ class A0SchedulePane extends React.Component {
     }
     
     getValue() {
-        return this.state.advanced
-            ?   this.state.schedule
-            :   this.createIntervalSchedule()
+        return this.state.schedule;
     }
     
     onChangeFrequencyMetric(frequencyMetric) {
@@ -572,15 +572,18 @@ class A0SchedulePane extends React.Component {
             frequencyValue = Object.keys(metric.allowed)[0];
         }
         
-        this.setState({ frequencyMetric, frequencyValue, currentDate }, () => {
+        const schedule = this.createIntervalSchedule(currentDate, frequencyMetric, frequencyValue);
+        
+        this.setState({ frequencyMetric, frequencyValue, currentDate, schedule }, () => {
             if (this.props.onChange) this.props.onChange(this.getValue());
         });
     }
     
     onChangeFrequencyValue(frequencyValue) {
         const currentDate = new Date();
+        const schedule = this.createIntervalSchedule(currentDate, this.state.frequencyMetric, frequencyValue);
         
-        this.setState({ frequencyValue, currentDate }, () => {
+        this.setState({ frequencyValue, currentDate, schedule }, () => {
             if (this.props.onChange) this.props.onChange(this.getValue());
         });
     }
@@ -629,6 +632,7 @@ A0SchedulePane.frequencyMetrics = {
         max: 7,
         allowed: { 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat', 7: 'Sun' },
         offset: 4,
+        freeze: 1,
         encode: (curr, frequencyValue, metric) => frequencyValue,
     },
 };

@@ -44,7 +44,10 @@ export default class A0CronEditor extends React.Component {
             <div className="a0-cron-editor" disabled={ props.disabled }>
                 {
                     titles.map((title, i) => (
-                        <div className={ 'a0-cron-segment' + (state.invalid[i] ? ' -invalid': '' ) }>
+                        <div
+                            className={ 'a0-cron-segment' + (state.invalid[i] ? ' -invalid': '' ) }
+                            key={ i }
+                        >
                             <input className="a0-value"
                                 value={ state.atoms[i] }
                                 disabled={ props.disabled }
