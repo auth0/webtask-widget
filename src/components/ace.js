@@ -1,5 +1,6 @@
 import Ace from 'brace';
 import React from 'react';
+import Resize from 'element-resize-detector';
 
 import 'brace/mode/javascript';
 import 'brace/mode/json';
@@ -10,6 +11,7 @@ const EditSession = Ace.acequire('./edit_session').EditSession;
 const VirtualRenderer = Ace.acequire('./virtual_renderer').VirtualRenderer;
 const UndoManager = Ace.acequire('./undomanager').UndoManager;
 
+const resize = Resize();
 
 export default class AceEditorComponent extends React.Component {
     constructor(props) {
@@ -23,9 +25,7 @@ export default class AceEditorComponent extends React.Component {
     }
     
     componentDidMount() {
-        const node = this.refs[this.props.name];
-        
-        this.renderer = new VirtualRenderer(node, `ace/theme/${this.props.theme}`);
+        this.renderer = new VirtualRenderer(this.node, `ace/theme/${this.props.theme}`);
         this.undoManager = new UndoManager();
         this.editSession = new EditSession(this.props.value, `ace/mode/${this.props.mode}`);
         this.editSession.setUndoManager(this.undoManager);
@@ -53,6 +53,10 @@ export default class AceEditorComponent extends React.Component {
         this.editor.removeListener('change', this.onChange);
         
         this.editor = null;
+        
+        if (this.node) {
+            resize.uninstall(this.node);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -68,7 +72,7 @@ export default class AceEditorComponent extends React.Component {
         this.editSession.setMode(`ace/mode/${nextProps.mode}`);
         
         this.editor.setFontSize(nextProps.fontSize);
-        this.editor.setOption('maxLines', nextProps.maxLines);
+        // this.editor.setOption('maxLines', nextProps.maxLines);
         this.editor.setOption('minLines', nextProps.minLines);
         this.editor.setOption('readOnly', nextProps.readOnly);
         this.editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
@@ -90,7 +94,7 @@ export default class AceEditorComponent extends React.Component {
         };
         const className = this.props.className;
         return (
-            <div ref={this.props.name}
+            <div ref={ node => this.onUpdateRef(node) }
                 className={className}
                 style={divStyle}>
             </div>
@@ -125,6 +129,20 @@ export default class AceEditorComponent extends React.Component {
     onPaste(text) {
         if (this.props.onPaste) {
             this.props.onPaste(text);
+        }
+    }
+    
+    onUpdateRef(node) {
+        console.log('New ACE node', node);
+        
+        if (this.node) {
+            resize.uninstall(this.node);
+        }
+        
+        this.node = node;
+        
+        if (this.node) {
+            resize.listenTo(this.node, e => this.editor.resize());
         }
     }
 }
