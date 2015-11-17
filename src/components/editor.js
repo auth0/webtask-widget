@@ -218,7 +218,9 @@ export default class A0Editor extends React.Component {
             pane: 'Logs',
         });
         
-        this.saveWebtask()
+        this.saveWebtask({
+            name: `${this.state.name}-run`,
+        })
             .then((webtask) => {
                 console.log('webtask', webtask);
                 return webtask.run({
@@ -250,7 +252,7 @@ export default class A0Editor extends React.Component {
             });
     }
     
-    saveWebtask ({hideSuccessMessage = false} = {}) {
+    saveWebtask ({name = this.state.name, hideSuccessMessage = false} = {}) {
         // Cancel any pending autoSaves
         this.autoSave.cancel();
 
@@ -263,7 +265,7 @@ export default class A0Editor extends React.Component {
             merge: this.state.mergeBody,
             parse: this.state.parseBody,
             secrets: this.state.secrets,
-            name: this.state.name,
+            name,
         });
         
         if (this.props.onSave) {
