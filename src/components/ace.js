@@ -46,39 +46,42 @@ export default class AceEditorComponent extends React.Component {
     }
 
     componentWillUnmount() {
-        this.editor.removeListener('focus', this.onFocus);
-        this.editor.removeListener('blur', this.onBlur);
-        this.editor.removeListener('copy', this.onCopy);
-        this.editor.removeListener('paste', this.onPaste);
-        this.editor.removeListener('change', this.onChange);
-        
-        this.editor = null;
-        
-        if (this.node) {
-            resize.uninstall(this.node);
+        if (this.editor) {
+            this.editor.removeListener('focus', this.onFocus);
+            this.editor.removeListener('blur', this.onBlur);
+            this.editor.removeListener('copy', this.onCopy);
+            this.editor.removeListener('paste', this.onPaste);
+            this.editor.removeListener('change', this.onChange);
         }
+        
+        this.renderer = null;
+        this.undoManager = null;
+        this.editSession = null;
+        this.editor = null;
     }
 
     componentWillReceiveProps(nextProps) {
-        this.renderer.setTheme(`ace/theme/${nextProps.theme}`);
-        this.renderer.setShowGutter(nextProps.showGutter);
-        
-        if (this.editSession.getValue() !== nextProps.value) {
-            this.silent = true;
-            this.editSession.setValue(nextProps.value);
-            this.silent = false;
+        if (this.editor) {
+            this.renderer.setTheme(`ace/theme/${nextProps.theme}`);
+            this.renderer.setShowGutter(nextProps.showGutter);
+            
+            if (this.editSession.getValue() !== nextProps.value) {
+                this.silent = true;
+                this.editSession.setValue(nextProps.value);
+                this.silent = false;
+            }
+            
+            this.editSession.setMode(`ace/mode/${nextProps.mode}`);
+            
+            this.editor.setFontSize(nextProps.fontSize);
+            // this.editor.setOption('maxLines', nextProps.maxLines);
+            this.editor.setOption('minLines', nextProps.minLines);
+            this.editor.setOption('readOnly', nextProps.readOnly);
+            this.editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
+            this.editor.setOption('highlightGutterLine', nextProps.highlightActiveLine);
+            this.editor.setOption('tabSize', nextProps.tabSize);
+            this.editor.setShowPrintMargin(nextProps.setShowPrintMargin);
         }
-        
-        this.editSession.setMode(`ace/mode/${nextProps.mode}`);
-        
-        this.editor.setFontSize(nextProps.fontSize);
-        // this.editor.setOption('maxLines', nextProps.maxLines);
-        this.editor.setOption('minLines', nextProps.minLines);
-        this.editor.setOption('readOnly', nextProps.readOnly);
-        this.editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
-        this.editor.setOption('highlightGutterLine', nextProps.highlightActiveLine);
-        this.editor.setOption('tabSize', nextProps.tabSize);
-        this.editor.setShowPrintMargin(nextProps.setShowPrintMargin);
     }
     
     shouldComponentUpdate(nextProps, nextStyle) {
@@ -133,8 +136,6 @@ export default class AceEditorComponent extends React.Component {
     }
     
     onUpdateRef(node) {
-        console.log('New ACE node', node);
-        
         if (this.node) {
             resize.uninstall(this.node);
         }

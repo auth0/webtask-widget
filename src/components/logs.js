@@ -70,9 +70,6 @@ export default class A0Logs extends React.Component {
     render() {
         return (
             <div className="a0-logs-viewer">
-                <button className="a0-clear -inverted -trash"
-                    onClick={ e => this.clear() }
-                ></button>
                 {
                     this.state.logs.map((line, i) => (
                         <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>

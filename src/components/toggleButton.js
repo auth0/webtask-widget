@@ -25,7 +25,10 @@ export default class A0ToggleButton extends React.Component {
                     checked={ state.checked }
                     onChange={ e => this.onToggle(e.target.checked) }
                 />
-                <label className="a0-toggle" htmlFor={ state.id } />
+                <label className="a0-toggle"
+                    htmlFor={ state.id }
+                    onClick={ e => e.stopPropagation() }
+                />
             </div>
         );
     }

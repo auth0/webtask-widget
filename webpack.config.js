@@ -22,7 +22,7 @@ var baseConfig = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                exclude: /node_modules/,
+                exclude: /node_modules|sandboxjs/,
                 loaders: ['babel-loader'],
             }, {
                 test: /\.css$/,
@@ -43,7 +43,7 @@ var baseConfig = {
                 test: /\.html$/,
                 loader: 'raw-loader'
             }, {
-                test: /\.txt/,
+                test: /\.txt$/,
                 loader: 'raw-loader'
             }, {
                 test: /\.json$/,

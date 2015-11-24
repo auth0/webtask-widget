@@ -76,13 +76,25 @@
 .a0-editor-toolbar {
     display: flex;
     flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
     
     background-color: @tb-bg-color;
     
-    & > .a0-icon-button {
-        flex: 1 1 auto;
+    .a0-editor-left > & {
+        align-items: stretch;
+        justify-content: flex-start;
+        
+        & > .a0-icon-button {
+            flex: 0 0 auto;
+        }
+    }
+    
+    .a0-editor-right > & {
+        align-items: stretch;
+        justify-content: center;
+    
+        & > .a0-icon-button {
+            flex: 1 1 auto;
+        }
     }
 }
 
@@ -132,6 +144,33 @@
     &.-active {
         display: flex;
         flex-direction: column;
+    }
+}
+
+.a0-sidebar-logs {
+    position: relative;
+    
+    & > .a0-clear {
+        .a0-icon-button();
+        
+        position: absolute;
+        right: 20px;
+        top: 8px;
+        opacity: 0.5;
+        z-index: 1;
+    }
+    
+    &:hover > .a0-clear {
+        opacity: 1;
+    }
+    
+    & > .a0-logs-viewer {
+        
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
     }
 }
 

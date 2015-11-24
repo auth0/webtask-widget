@@ -12,6 +12,10 @@ export class A0EditorWidget extends Widget {
         });
     }
     
+    run(fn) {
+        return this._enqueue('runTestWebtask', [], fn);
+    }
+    
     save(fn) {
         return this._enqueue('saveWebtask', [], fn);
     }

@@ -48,7 +48,7 @@ export default class ComponentStack {
     
     push(Component, props) {
         const dfd = new Bluebird.defer();
-        const wrapperEl = document.createElement('div');
+        let wrapperEl = document.createElement('div');
         const childProps = Object.assign({}, props, {
             resolve: dfd.resolve.bind(dfd),
             reject: dfd.reject.bind(dfd),
@@ -58,11 +58,19 @@ export default class ComponentStack {
         
         const wrapper = ReactDOM.render(this.wrapComponent(Component, childProps), wrapperEl);
         const unmount = () => {
-            if (!dfd.promise.isFulfilled()) dfd.reject(new Error('Widget was unmounted'));
-            
             console.log('unmounting');
-            ReactDOM.unmountComponentAtNode(wrapperEl);
-            setTimeout(() => wrapperEl.remove());
+            
+            if (wrapperEl) {
+                if (ReactDOM.unmountComponentAtNode(wrapperEl)) {
+                
+                // setTimeout(() => {
+                    wrapperEl.remove();
+                
+                    wrapperEl = null;
+                    if (!dfd.promise.isFulfilled()) dfd.reject(new Error('Widget was unmounted'));
+                // });
+                }
+            }
         };
         
         dfd.promise

@@ -82,7 +82,7 @@
 }
 
 
-@fg-color: #666;
+@fg-color: #2F383D;
 @inverted-fg-color: #F5F5F5;
 @tb-bg-color: #F4F7FC;
 @lines-bg-color: #F8F9FC;
@@ -91,6 +91,14 @@
 @logs-fg-color: #CCC;
 @sidebar-bg-color: rgb(33, 43, 58);
 @sidebar-fg-color: #CCC;
+
+@thead-bg-color: #202A39;
+@thead-fg-color: #fff;
+
+@tbody-bg-color: transparent;
+@tbody-fg-color: @fg-color;
+
+@tbody-stripe-bg-color: #F4F7FC;
 
 @input-bg-color: rgb(223, 230, 240);
 @input-fg-color: #fff;
@@ -317,6 +325,9 @@
     &.-trash:before {
         content: "";
     }
+    &.-back:before {
+        content: "";
+    }
 }
 
 .a0-inline-text {
@@ -352,5 +363,13 @@
     
     &.-danger {
         color: desaturate(@danger-bg-color, 20%);
+    }
+    
+    &.-sentence {
+        display: inline-block;
+        
+        &:first-letter {
+            text-transform: capitalize;
+        }
     }
 }

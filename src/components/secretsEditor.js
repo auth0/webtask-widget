@@ -68,9 +68,10 @@ export default class A0SecretsEditor extends React.Component {
         
         secrets[i].editing = true;
         
-        this.setState({ secrets });
+        this.setState({ secrets }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
 
-        if (this.props.onChange) this.props.onChange(this.getValue());
     }
 
     addSecret(secret) {
@@ -79,9 +80,9 @@ export default class A0SecretsEditor extends React.Component {
         secrets.push(secret);
         
         this.refs.creator.clear();
-        this.setState({ secrets });
-
-        if (this.props.onChange) this.props.onChange(this.getValue());
+        this.setState({ secrets }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
     }
 
     removeSecret(i) {
@@ -89,9 +90,9 @@ export default class A0SecretsEditor extends React.Component {
 
         secrets.splice(i, 1);
 
-        this.setState({ secrets });
-
-        if (this.props.onChange) this.props.onChange(this.getValue());
+        this.setState({ secrets }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
     }
 
     updateSecret(i, accepted) {
@@ -103,9 +104,9 @@ export default class A0SecretsEditor extends React.Component {
             editing: false,
         };
 
-        this.setState({ secrets });
-        
-        if (this.props.onChange) this.props.onChange(this.getValue());
+        this.setState({ secrets }, () => {
+            if (this.props.onChange) this.props.onChange(this.getValue());
+        });
     }
 }
 

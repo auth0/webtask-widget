@@ -8,11 +8,8 @@ import {DropdownButton, MenuItem} from 'react-bootstrap';
 import ReactZeroClipboard from 'react-zeroclipboard';
 
 import AceEditor from '../components/ace';
-import Alert from '../components/alert';
-import Button from '../components/button';
 import CronEditor from '../components/cronEditor';
 import EditorOptions from '../components/editorOptions';
-import Input from '../components/input';
 import Logs from '../components/logs';
 import SecretsEditor from '../components/secretsEditor';
 import ToggleButton from '../components/toggleButton';
@@ -33,17 +30,17 @@ export default class A0Editor extends React.Component {
             code: props.code,
             secrets: props.secrets,
             creatingToken: false,
-            showAdvanced: false,
             savingWebtask: false,
             mergeBody: props.mergeBody,
             parseBody: props.parseBody,
             name: props.name,
-            successMessage: '',
-            pane: 'Logs',
+            pane: props.pane,
         };
 
         const debounceInterval = Math.max(1000, Number(props.autoSaveInterval));
 
+        this.lastSavedAt = 0;
+        this.lastChangedAt = Date.now();
         this.autoSave = Debounce(() => this.saveWebtask(), debounceInterval);
         
         const secretPane = {
@@ -64,6 +61,8 @@ export default class A0Editor extends React.Component {
             vdom: (
                 <A0SchedulePane
                     ref="schedule"
+                    schedule={ this.state.schedule }
+                    cronJob={ this.props.cronJob }
                     onChange={ (schedule) => this.setState({ schedule }) }
                 />
             ),
@@ -86,14 +85,24 @@ export default class A0Editor extends React.Component {
             name: 'Logs',
             iconClass: '-split',
             vdom: (
-                <Logs
-                    ref="logs"
-                    profile={ this.props.profile }
-                />
+                <div className="a0-sidebar-logs">
+                    <button className="a0-clear -inverted -trash"
+                        onClick={ e => this.refs.logs.clear() }
+                    ></button>
+                    <Logs
+                        ref="logs"
+                        profile={ this.props.profile }
+                    />
+                </div>
             ),
         };
         
-        this.panes = [secretPane, schedulePane, settingsPane, logsPane];
+        this.panes = [];
+        
+        this.panes.push(secretPane);
+        if (this.props.createCronJob) this.panes.push(schedulePane);
+        this.panes.push(settingsPane);
+        this.panes.push(logsPane);
     }
     
     componentDidMount() {
@@ -106,19 +115,11 @@ export default class A0Editor extends React.Component {
         
         const loading = state.creatingToken
             || state.savingWebtask;
-        const onChangeCode = this.onChangeCode.bind(this);
-        const onChangeAdvancedOptions = this.onChangeAdvancedOptions.bind(this);
-        const saveWebtask = this.saveWebtask.bind(this);
-        const setState = this.setState.bind(this);
-        const toggleSecrets = this.toggleSecrets.bind(this);
-        const tryWebtask = this.tryWebtask.bind(this);
-        const onChangeSchedule = this.onChangeSchedule.bind(this);
-        const getSecrets = () => this.refs.secrets.getValue();
-        const webtaskUrl = props.profile.url + '/api/run/' + props.profile.container + '/' + state.name;
+        // const webtaskUrl = props.profile.url + '/api/run/' + props.profile.container + '/' + state.name;
         
-        const copyButton = this.state.webtask
+        const copyButton = this.webtask
             ?   (
-                    <ReactZeroClipboard text={ webtaskUrl }>
+                    <ReactZeroClipboard text={ this.webtask.url }>
                         <button className="a0-icon-button -copy"></button>
                     </ReactZeroClipboard>
                 )
@@ -131,6 +132,15 @@ export default class A0Editor extends React.Component {
                 <div className="a0-editor-split">
                     <div className="a0-editor-left">
                         <div className="a0-editor-toolbar">
+                            { props.onClickCancel
+                            ?   (
+                                    <button className="a0-icon-button -back"
+                                        disabled={ loading }
+                                        onClick={ e => this.onClickCancel() }
+                                    >Back</button>
+                                )
+                            :   null
+                            }
                         </div>
                         <div className="a0-editor-body">
                             <AceEditor
@@ -145,7 +155,7 @@ export default class A0Editor extends React.Component {
                                 minLines={ 5 }
                                 height=""
                                 width=""
-                                onChange={ onChangeCode }
+                                onChange={ code => this.onChangeCode(code) }
                                 highlightActiveLine={ false }
                                 editorProps={ { $blockScrolling: true } }
                             />
@@ -162,7 +172,7 @@ export default class A0Editor extends React.Component {
                                     return <button
                                         className={ classNames.join(' ') }
                                         key={ pane.name }
-                                        onClick={ () => setState({ pane: pane.name }) }
+                                        onClick={ () => this.setState({ pane: pane.name }) }
                                     >{ pane.name }</button>;
                                 })
                             }
@@ -191,8 +201,12 @@ export default class A0Editor extends React.Component {
                         { copyButton }
                     </div>
                     <div className="a0-footer-actions">
-                        <button className="a0-inline-button -primary">Save</button>
+                        <button className="a0-inline-button -primary"
+                            disabled={ loading }
+                            onClick={ e => this.onClickSave() }
+                        >Save</button>
                         <button className="a0-inline-button -success"
+                            disabled={ loading }
                             onClick={ e => this.onClickRun() }
                         >Run</button>
                     </div>
@@ -213,25 +227,52 @@ export default class A0Editor extends React.Component {
         this.setState({ schedule: this.refs.schedule.getValue() });
     }
     
+    onClickCancel() {
+        this.props.onClickCancel
+            ?   this.props.onClickCancel(this)
+            :   null;
+    }
+    
     onClickRun() {
+        this.props.onClickRun
+            ?   this.props.onClickRun(this)
+            :   this.runTestWebtask();
+    }
+    
+    onClickSave() {
+        this.props.onClickSave
+            ?   this.props.onClickSave(this)
+            :   this.saveWebtask();
+    }
+    
+    getWebtaskDetails() {
+        return Object.assign({}, this.state, { profile: this.props.protile });
+    }
+    
+    runTestWebtask() {
         this.setState({
             pane: 'Logs',
+            creatingToken: true,
         });
         
-        this.saveWebtask({
-            name: `${this.state.name}-run`,
-        })
-            .then((webtask) => {
-                console.log('webtask', webtask);
-                return webtask.run({
-                    method: 'get',
-                    query: {
-                        webtask_no_cache: 1,
-                    },
-                    parse: !!this.state.parseBody,
-                    merge: !!this.state.mergeBody,
-                });
-            })
+        const webtaskOptions = {
+            name: this.state.name + '-run',
+            mergeBody: this.state.mergeBody,
+            parseBody: this.state.parseBody,
+            secrets: this.state.secrets,
+        };
+        
+        console.log('webtaskOptions', webtaskOptions);
+        
+        this.props.profile.create(this.state.code, webtaskOptions)
+            .then(webtask => webtask.run({
+                method: 'get',
+                query: {
+                    webtask_no_cache: 1,
+                },
+                parse: !!this.state.parseBody,
+                merge: !!this.state.mergeBody,
+            }))
             .tap((res) => {
                 const headers = res.header;
                 const auth0HeaderRx = /^x-auth0/;
@@ -241,7 +282,7 @@ export default class A0Editor extends React.Component {
                         headers[header] = JSON.parse(headers[header]);
                     }
                 }
-
+                
                 this.refs.logs.push({
                     data: {
                         headers: headers,
@@ -249,48 +290,30 @@ export default class A0Editor extends React.Component {
                         body: res.body || res.text,
                     },
                 });
-            });
+            })
+            .catch(e => this.setState({ error: e }))
+            .finally(() => this.setState({ creatingToken: false }));
     }
     
-    saveWebtask ({name = this.state.name, hideSuccessMessage = false} = {}) {
+    saveWebtask(options = {}) {
         // Cancel any pending autoSaves
         this.autoSave.cancel();
 
         this.setState({
             savingWebtask: true,
-            successMessage: '',
         });
         
-        let promise = this.props.profile.create(this.state.code, {
-            merge: this.state.mergeBody,
-            parse: this.state.parseBody,
-            secrets: this.state.secrets,
-            name,
-        });
+        const details = this.getWebtaskDetails(options);
         
-        if (this.props.onSave) {
-            promise = promise
-                .tap(this.props.onSave);
-        }
-        
+        let promise = this.props.profile.create(details.code, details);
+
         promise = promise
-            .tap(() => !hideSuccessMessage && this.setState({
-                successMessage: 'Webtask successfully created',
-            }))
             .tap((webtask) => this.setState({
                 webtask,
             }))
-            .finally(() => this.setState({ savingWebtask: false }));
+            .finally(() => console.log('finally') + this.setState({ savingWebtask: false }));
         
         return promise;
-    }
-    
-    toggleSecrets(e) {
-        e.preventDefault();
-        
-        this.setState({
-            showAdvanced: !this.state.showAdvanced
-        });
     }
     
     tryWebtask(e) {
@@ -326,9 +349,12 @@ A0Editor.propTypes = {
     showScheduleInput:      React.PropTypes.bool,
     schedule:               React.PropTypes.string,
     secrets:                React.PropTypes.object,
+    pane:                   React.PropTypes.string,
     code:                   React.PropTypes.string,
     tryParams:              React.PropTypes.object,
     onSave:                 React.PropTypes.func,
+    cronJob:                React.PropTypes.instanceOf(Sandbox.CronJob),
+    createCronJob:          React.PropTypes.bool,
 };
 
 A0Editor.defaultProps = {
@@ -341,25 +367,15 @@ A0Editor.defaultProps = {
     showWebtaskUrl:         true,
     showTryWebtaskUrl:      true,
     showScheduleInput:      false,
-    schedule:               '* * * * *',
+    schedule:               null,
+    createCronJob:          false,
     secrets:                {},
+    pane:                   'Logs',
     code:                   dedent`
                                 module.exports = function (ctx, cb) {
-                                    cb(null, 'Hello ' + ctx.query.hello);
+                                    cb(null, 'Hello world');
                                 };
                             `.trim(),
-    tryParams:              {
-                                path: '',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                query: {
-                                    hello: 'world',
-                                },
-                                body: {
-                                    hint: 'Only sent for PUT, POST and PATCH requests',
-                                },
-                            },
 };
 
 
@@ -376,7 +392,7 @@ class A0SchedulePane extends React.Component {
             schedule: props.schedule || this.createIntervalSchedule(now, frequencyMetric, frequencyValue),
             frequencyValue,
             frequencyMetric,
-            state: 'inactive',
+            cronJob: props.cronJob,
             now: now,
             currentDate: now,
         };
@@ -384,6 +400,9 @@ class A0SchedulePane extends React.Component {
     
     componentDidMount() {
         this.nowInterval = setInterval(() => this.setState({ now: new Date() }), 1000 * 60);
+        
+        // Report any default schedule settings to parent
+        this.onChangeSchedule(this.state.schedule);
     }
     
     componentWillUnmount() {
@@ -435,6 +454,9 @@ class A0SchedulePane extends React.Component {
         const metrics = Object.keys(A0SchedulePane.frequencyMetrics);
         const allowed = A0SchedulePane.frequencyMetrics[state.frequencyMetric].allowed;
         const frequencyValueLabel = allowed[state.frequencyValue];
+        const jobState = props.cronJob
+            ?   props.cronJob.state
+            :   'disabled';
         
         return (
             <div className="a0-schedule-pane">
@@ -442,7 +464,7 @@ class A0SchedulePane extends React.Component {
                     { nextRun
                     ?   (
                             <div className="a0-next-run">
-                                <span className="a0-inline-text -inverted -bright">Next run will be&nbsp;</span>
+                                <span className="a0-inline-text -inverted -bright">Next run { state.cronJob && state.cronJob.state === 'active' ? 'will' : 'would' } be&nbsp;</span>
                                 <span className="a0-inline-text -inverted -primary">{ nextRun.day }</span>
                                 <span className="a0-inline-text -inverted -bright">&nbsp;at&nbsp;</span>
                                 <span className="a0-inline-text -inverted -primary">{ nextRun.time }</span>
@@ -456,8 +478,8 @@ class A0SchedulePane extends React.Component {
                     }
                     <ToggleButton
                         ref="state"
-                        disabled={ state.state !== 'active' && state.state !== 'inactive' }
-                        checked={ state.state === 'active' }
+                        disabled={ jobState !== 'active' && jobState !== 'inactive' }
+                        checked={ jobState === 'active' }
                         onChange={ checked => this.setState({ state: checked ? 'active' : 'inactive' }) }
                     />
                 </div>
@@ -643,8 +665,10 @@ A0SchedulePane.propTypes = {
     // schedule: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
     schedule: React.PropTypes.string,
+    state: React.PropTypes.oneOf(['active', 'inactive', 'invalid', 'expired']),
 };
 
 A0SchedulePane.defaultProps = {
     schedule: '',
+    state: 'inactive',
 };
