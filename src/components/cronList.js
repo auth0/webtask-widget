@@ -63,7 +63,6 @@ export default class A0CronJobList extends React.Component {
                             <th>State</th>
                             <th>Next Run</th>
                             <th>Last result</th>
-                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     { loading
@@ -297,7 +296,7 @@ class A0CronJobRow extends React.Component {
                         date={ job.created_at }
                     />
                 </td>
-                <td>
+                <td className="_fit-content">
                     <ToggleButton
                         ref="state"
                         disabled={ job.state === 'expired' || job.state === 'invalid' }
@@ -317,7 +316,7 @@ class A0CronJobRow extends React.Component {
                         :   '-'
                     }
                 </td>
-                <td>
+                <td className="_fit-content">
                     { lastResult
                     ?   (
                             <div>
@@ -326,8 +325,6 @@ class A0CronJobRow extends React.Component {
                         )
                     : "&emdash;"
                     }
-                </td>
-                <td>
                     <button
                         className="a0-row-delete"
                         type="button"

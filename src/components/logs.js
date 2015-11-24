@@ -54,22 +54,29 @@ export default class A0Logs extends React.Component {
         });
     }
 
-    componentDidUpdate() {
-        // if(this.refs['log-view']) {
-        //     let logs = this.refs['log-view'];
+    componentWillUpdate() {
+        var element = this.refs.lines;
 
-        //     logs.scrollTop = logs.scrollHeight;
-        // }
+        // Set scroll flag if we are within 20px of scroll bottom
+        this.shouldScroll = Math.abs(element.scrollHeight - element.scrollTop - element.offsetHeight) < 20;
     }
     
     componentWillUnmount() {
         this.logStream.destroy();
         this.logStream = null;
     }
+    
+    componentDidUpdate() {
+        var element = this.refs.lines;
+        
+        if (this.shouldScroll) {
+            element.scrollTop = element.scrollHeight;
+        }
+    }
 
     render() {
         return (
-            <div className="a0-logs-viewer">
+            <div className="a0-logs-viewer" ref="lines">
                 {
                     this.state.logs.map((line, i) => (
                         <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>

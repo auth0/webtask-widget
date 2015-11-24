@@ -42,13 +42,14 @@
             line-height: 24px;
             font-size: 13px;
             font-weight: normal;
+            padding-right: 2em;
             
             &:first-child {
                 padding-left: 2em;
             }
             
             &:last-child {
-                padding-right: 2em;
+                padding-right: 6em;
                 position: relative;
                 
                 & > .a0-row-delete {
@@ -58,6 +59,11 @@
                     top: 0;
                     bottom: 0;
                 }
+            }
+            
+            &._fit-content {
+                width: 1%;
+                white-space: nowrap;
             }
         }
         
