@@ -28,7 +28,7 @@
     "react-object-inspector": "^0.1.6",
     "react-timeago": "^2.2.1",
     "react-zeroclipboard": "^3.0.0",
-    "sandboxjs": "^1.2.2",
+    "sandboxjs": "v2.0.0-pre.03",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },
