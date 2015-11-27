@@ -26,15 +26,17 @@ export default class A0Editor extends React.Component {
         super(props);
         
         this.state = {
-            schedule: props.schedule,
             code: props.code,
-            secrets: props.secrets,
             creatingToken: false,
-            savingWebtask: false,
+            error: null,
             mergeBody: props.mergeBody,
-            parseBody: props.parseBody,
             name: props.name,
             pane: props.pane,
+            parseBody: props.parseBody,
+            savingWebtask: false,
+            schedule: props.schedule,
+            secrets: props.secrets,
+            subject: props.edit,
         };
 
         const debounceInterval = Math.max(1000, Number(props.autoSaveInterval));

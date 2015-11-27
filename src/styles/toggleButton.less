@@ -43,12 +43,12 @@
     			content: "";
     			width: 50%;
     			height: 100%;
+    			transition: all .2s ease;
     		}
     		&:after {
     			left: 0;
     			border-radius: 50%;
     			background: #fff;
-    			transition: all .2s ease;
     		}
     		&:before {
     			display: none;
@@ -66,4 +66,45 @@
     	    
     	}
     }
+    
+    &.-loading {
+        .a0-toggle:before {
+            display: block;
+            position: absolute;
+            font-family: "budicon-font" !important;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 2em;
+            height: 2em;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 2em;
+            font-size: 1em;
+            font-style: normal !important;
+            font-weight: normal !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            transform-origin: 49% 48%;
+            z-index: 1;
+            left: 0;
+            top: 1px;
+            .-loader();
+        }
+        
+        & > .a0-checkbox:checked + .a0-toggle:before {
+            left: 50%;
+        }
+    }
+}
+
+.-loader {
+    content: "";
+    animation: spinner 1.3s infinite linear;
+    transform: translateZ(0);
+}
+
+@keyframes spinner {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

@@ -92,20 +92,43 @@
         align-items: stretch;
         justify-content: center;
     
-        & > .a0-icon-button {
+        & > .a0-pane-selector {
             flex: 1 1 auto;
         }
     }
 }
 
+.a0-pane-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+
+    & > .a0-icon-button {
+        flex: 1 1 auto;
+    }
+}
+
+
 .a0-editor-body {
     display: flex;
     flex-direction: column;
+    
+    & > .a0-error-message {
+        flex: 0 0 auto;
+        min-height: 25px;
+    }
     
     & > .a0-editor-ace {
         flex: 1 1;
         font-family: "Roboto Mono";
     }
+}
+
+.a0-error-message {
+    background-color: @danger-bg-color;
+    color: @danger-fg-color;
+    padding: 0.5em 3em;
 }
 
 .a0-editor-ace {
@@ -154,8 +177,15 @@
         .a0-icon-button();
         
         position: absolute;
-        right: 20px;
-        top: 8px;
+        background-color: @danger-bg-color;
+        color: @danger-fg-color;
+        height: 2.5em;
+        width: 2.5em;
+        border-radius: 1.25em;
+        text-align: center;
+        vertical-align: middle;
+        right: 1em;
+        bottom: 1em;
         opacity: 0.5;
         z-index: 1;
     }

@@ -1,16 +1,9 @@
 import isEqual from 'lodash.isequal';
 import React from 'react';
-import {OverlayTrigger} from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 
-import Alert from '../components/alert';
-import Button from '../components/button';
-import Input from '../components/input';
-import SecretsEditor from '../components/secretsEditor';
-import Tooltip from '../components/tooltip';
-
-
-import '../styles/editorOptions.less';
+import 'styles/editorOptions.less';
 
 
 export default class A0AdvancedEditorOptions extends React.Component {

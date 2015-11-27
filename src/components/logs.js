@@ -17,11 +17,11 @@ export default class A0Logs extends React.Component {
     }
 
     componentDidMount() {
-        this.logStream = this.props.profile.createLogStream();
+        this.logStream = this.props.sandbox.createLogStream();
         
         this.logStream.on('open', (e) => {
             this.push({
-                msg: 'Connected to ' + this.props.profile.container,
+                msg: 'Connected to ' + this.props.sandbox.container,
                 className: '-success',
             });
         });
@@ -112,7 +112,7 @@ export default class A0Logs extends React.Component {
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
-    profile: React.PropTypes.instanceOf(Sandbox).isRequired,
+    sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
     onMessage: React.PropTypes.func,
     onEvent: React.PropTypes.func,
     onError: React.PropTypes.func,

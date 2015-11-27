@@ -115,7 +115,7 @@
 @success-bg-color: rgb(40, 170, 65);
 @success-fg-color: #fff;
 
-@danger-bg-color: desaturate(#F00, 30%);
+@danger-bg-color: #F93A38;
 @danger-fg-color: #FFF;
 
 .a0-widget {
@@ -371,5 +371,15 @@
         &:first-letter {
             text-transform: capitalize;
         }
+    }
+}
+
+.a0-button-list {
+    display: flex;
+    flex-direction: row;
+    padding: 2em;
+    
+    &.-right {
+        justify-content: flex-end;
     }
 }

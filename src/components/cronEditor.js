@@ -1,15 +1,11 @@
 import CronExpression from 'cron-parser/lib/expression';
 import React from 'react';
 
-import AceEditor from '../components/ace';
-import Alert from '../components/alert';
-import Button from '../components/button';
-import Input from '../components/input';
+
+import 'styles/cronEditor.less';
 
 
-import '../styles/cronEditor.less';
-
-export default class A0CronEditor extends React.Component {
+export default class CronEditor extends React.Component {
     constructor(props) {
         super(props);
         
@@ -93,9 +89,7 @@ export default class A0CronEditor extends React.Component {
     }
 }
 
-A0CronEditor.title = 'Create a schedule';
-
-A0CronEditor.propTypes = {
+CronEditor.propTypes = {
     help:                   React.PropTypes.oneOfType([
                                 React.PropTypes.string,
                                 React.PropTypes.array,
@@ -109,7 +103,7 @@ A0CronEditor.propTypes = {
     showLabel:              React.PropTypes.bool,
 };
 
-A0CronEditor.defaultProps = {
+CronEditor.defaultProps = {
     value:                  '* * * * *',
     help:                   null,
     label:                  null,

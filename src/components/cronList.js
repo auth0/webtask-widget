@@ -35,7 +35,7 @@ export default class A0CronJobList extends React.Component {
         const props = this.props;
         const state = this.state;
         
-        const loading = state.loadingJobs || state.inspectingJob;
+        const loading = state.jobs.length === 0 && state.loadingJobs || state.inspectingJob;
         
         const loadingBody = (
             <tbody className="a0-conlist-loading">
@@ -75,10 +75,11 @@ export default class A0CronJobList extends React.Component {
                                             key={ job.name } 
                                             job={ job }
                                             disabled={ loading }
+                                            loading={ job.loading }
                                             onClick={ job => this.editJob(job) }
                                             onClickDestroy={ job => this.onDeleteJob(job) }
                                             onChangeState={ (job, state) => this.onChangeJobState(job, state) }
-                                            removeCronJob={ props.profile.removeCronJob.bind(props.profile) }
+                                            removeCronJob={ props.sandbox.removeCronJob.bind(props.sandbox) }
                                         />
                                     )
                                 :   (
@@ -99,7 +100,7 @@ export default class A0CronJobList extends React.Component {
                         )
                     }
                 </table>
-                <div className="btn-list">
+                <div className="a0-button-list -right">
                     <button
                         className="a0-inline-button"
                         disabled={ loading }
@@ -114,7 +115,7 @@ export default class A0CronJobList extends React.Component {
                     { props.showCreateButton
                     ?   (
                             <button
-                                className="a0-inline-button -primary"
+                                className="a0-inline-button -success"
                                 onClick={ e => this.createJob() }
                             >
                                 Create
@@ -151,7 +152,7 @@ export default class A0CronJobList extends React.Component {
     refreshJobs() {
         this.setState({ loadingJobs: true, error: null });
         
-        return this.props.profile.listCronJobs()
+        return this.props.sandbox.listCronJobs()
             .tap((jobs) => this.setState({ jobs }))
             .catch((error) => this.setState({ error }))
             .finally(() => this.setState({ loadingJobs: false }));
@@ -167,30 +168,24 @@ export default class A0CronJobList extends React.Component {
             decrypt: true,
         })
             .then(tokenData => {
-                var editor = new A0EditorWidget(Object.assign({}, this.props, {
+                const backButton = (
+                    <button className="a0-icon-button -back"
+                        onClick={ e => editor.destroy() }
+                    >Back</button>
+                );
+        
+                const editor = new A0EditorWidget(Object.assign({}, this.props, {
+                    backButton,
                     createCronJob: true,
                     schedule: job.schedule,
+                    cron: true,
+                    edit: job,
                     code: tokenData.code,
                     secrets: tokenData.ectx,
                     mergeBody: !!tokenData.mb,
                     parseBody: !!tokenData.pb,
                     name: job.name || tokenData.jtn,
-                    pane: 'Schedule',
-                    onClickCancel: () => editor.destroy(),
-                    onClickSave: updateCronJob.bind(this),
                 }));
-                
-                function updateCronJob(inst) {
-                    return editor.save()
-                        .then(webtask => webtask.createCronJob({
-                            schedule: inst.state.schedule,
-                        }))
-                        .catch(e => this.setState({ error: e }))
-                        .finally(() => {
-                            editor.destroy();
-                            this.refreshJobs();
-                        });
-                }
             })
             .catch(error => this.setState({ error }))
             .finally(() => this.refreshJobs(), this.setState({ inspectingJob: false }));
@@ -219,18 +214,12 @@ export default class A0CronJobList extends React.Component {
     }
     
     onChangeJobState(job, state) {
-        job.setJobState({ state })
-            .tap(() => {
-                const jobs = this.state.jobs.slice();
-                
-                this.setState({ jobs });
-            });
     }
 }
 
 A0CronJobList.propTypes = {
     componentStack:         React.PropTypes.instanceOf(ComponentStack).isRequired,
-    profile:                React.PropTypes.instanceOf(Sandbox).isRequired,
+    sandbox:                React.PropTypes.instanceOf(Sandbox).isRequired,
     showCreateButton:       React.PropTypes.bool,
 };
 
@@ -257,6 +246,7 @@ class A0CronJobRow extends React.Component {
 
     render() {
         const props = this.props;
+        const state = this.state;
         
         const job = props.job;
         const resultClasses = {
@@ -276,7 +266,7 @@ class A0CronJobRow extends React.Component {
             // Stop inline buttons from triggering row click
             e.stopPropagation();
 
-            if(e.target.tagName !== 'BUTTON')
+            if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT')
                 return props.onClick(this.props.job);
         };
 
@@ -301,6 +291,8 @@ class A0CronJobRow extends React.Component {
                         ref="state"
                         disabled={ job.state === 'expired' || job.state === 'invalid' }
                         checked={ job.state === 'active' }
+                        loading={ state.changingState }
+                        async
                         onChange={ checked => this.onChangeState(checked) }
                     />
                 </td>
@@ -338,8 +330,16 @@ class A0CronJobRow extends React.Component {
     }
     
     onChangeState(state) {
+        const job = this.props.job;
         const newState = state ? 'active' : 'inactive';
         
-        if (this.props.onChangeState) this.props.onChangeState(this.props.job, newState);
+        this.setState({ changingState: true });
+        
+        job.setJobState({ state: newState })
+            .finally(() => {
+                this.setState({ changingState: false });
+                // I feel dirty.
+                // this.refs.state.forceUpdate();
+            });
     }
 }

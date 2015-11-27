@@ -13,7 +13,7 @@ const UndoManager = Ace.acequire('./undomanager').UndoManager;
 
 const resize = Resize();
 
-export default class AceEditorComponent extends React.Component {
+export default class AceEditor extends React.Component {
     constructor(props) {
         super(props);
         
@@ -148,7 +148,7 @@ export default class AceEditorComponent extends React.Component {
     }
 }
 
-AceEditorComponent.propTypes = {
+AceEditor.propTypes = {
     mode: React.PropTypes.string,
     theme: React.PropTypes.string,
     name: React.PropTypes.string,
@@ -175,7 +175,7 @@ AceEditorComponent.propTypes = {
     editorProps: React.PropTypes.object
 };
 
-AceEditorComponent.defaultProps = {
+AceEditor.defaultProps = {
     name: 'brace-editor',
     mode: 'text',
     theme: 'textmate',

@@ -17,12 +17,12 @@ export default class A0ToggleButton extends React.Component {
         const state = this.state;
         
         return (
-            <div className="a0-toggle-button">
+            <div className={ 'a0-toggle-button' + (props.loading ? ' -loading': '') }>
                 <input className="a0-checkbox" type="checkbox"
                     ref="checkbox"
                     id={ state.id }
                     disabled={ props.disabled }
-                    checked={ state.checked }
+                    checked={ props.checked }
                     onChange={ e => this.onToggle(e.target.checked) }
                 />
                 <label className="a0-toggle"
@@ -34,9 +34,13 @@ export default class A0ToggleButton extends React.Component {
     }
     
     onToggle(checked) {
-        this.setState({ checked }, () => {
+        if (this.props.async) {
             if (this.props.onChange) this.props.onChange(this.getValue());
-        });
+        } else {
+            this.setState({ checked }, () => {
+                if (this.props.onChange) this.props.onChange(this.getValue());
+            });
+        }
     }
     
     getValue() {
@@ -48,4 +52,12 @@ A0ToggleButton.seq = 0;
 
 A0ToggleButton.propTypes = {
     checked: React.PropTypes.bool.isRequired,
+    onChange: React.PropTypes.func,
+    async: React.PropTypes.bool,
+    loading: React.PropTypes.bool,
+};
+
+A0ToggleButton.defaultProps = {
+    async: false,
+    loading: false,
 };

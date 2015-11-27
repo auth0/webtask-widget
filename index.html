@@ -50,8 +50,14 @@
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
+            var cronJobs = window.webtaskWidget.createCronListing({
+                mount: document.getElementById('cron-jobs'),
+                storeProfile: true,
+            });
+        
             var editor = window.webtaskWidget.createEditor({
                 mount: document.getElementById('editor'),
+                cron: true,
                 storeProfile: true,
                 showScheduleInput: true,
                 name: 'webtask',
@@ -59,18 +65,10 @@
                 autoSaveOnChange: true,
             });
             
-            var logger = window.webtaskWidget.createLogger({
-                mount: document.getElementById('logs'),
-                storeProfile: true,
-            });
-        
-            var cronJobs = window.webtaskWidget.createCronListing({
-                url: 'https://wt-geoff-1.it.auth0.com:8721',
-                token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IjIifQ.eyJqdGkiOiI1OTZlNzAyZTJlNGM0MzMyYjVkYTVhMGU3YTM5ZTA2ZiIsImlhdCI6MTQyODk3ODI0MiwiY2EiOltdLCJkZCI6MSwidGVuIjoiL153dC1nZ29vZG1hbi1nbWFpbF9jb20tWzAtMV0kLyJ9.0Kld7MdPHC0bAtVfGRrb6K0b6bx2BDAE4Q0sh5EYeKs',
-                container: 'wt-ggoodman-gmail_com-0',
-                mount: document.getElementById('cron-jobs'),
-                storeProfile: true,
-            });
+            // var logger = window.webtaskWidget.createLogger({
+            //     mount: document.getElementById('logs'),
+            //     storeProfile: true,
+            // });
         </script>
     </body>
 

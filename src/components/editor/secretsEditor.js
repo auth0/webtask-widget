@@ -1,10 +1,7 @@
 import React from 'react';
 
-import Button from '../components/button';
-import Input from '../components/input';
 
-
-import '../styles/secretsEditor.less';
+import 'styles/secretsEditor.less';
 
 
 export default class A0SecretsEditor extends React.Component {
