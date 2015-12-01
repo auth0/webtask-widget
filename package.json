@@ -25,7 +25,7 @@
     "react-dom": "^0.14.3",
     "react-json-inspector": "^6.0.0",
     "react-mixin": "^3.0.1",
-    "react-object-inspector": "^0.1.6",
+    "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
     "react-zeroclipboard": "^3.0.0",
     "sandboxjs": "v2.0.0-pre.03",

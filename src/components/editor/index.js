@@ -37,6 +37,7 @@ export default class WebtaskEditor extends React.Component {
             saveInProgress: false,
             schedule: props.schedule,
             secrets: props.secrets,
+            subject: props.edit,
         };
         
     }
@@ -209,8 +210,20 @@ export default class WebtaskEditor extends React.Component {
             .finally(() => this.setState({ saveInProgress: false }));
     }
     
+    onSelectHistoryItem(item) {
+        this.setState({ selectedHistoryItem: item });
+    }
+    
     setStrategy(strategy) {
+        if (this.strategy.onDeactivate) {
+            this.strategy.onDeactivate();
+        }
+        
         this.strategy = strategy;
+        
+        if (this.strategy.onActivate) {
+            this.strategy.onActivate();
+        }
         
         this.forceUpdate();
     }

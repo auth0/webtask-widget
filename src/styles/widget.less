@@ -227,7 +227,7 @@
             margin-top: -(2* @triangle-size);
         }
         
-        &.-logs:after {
+        &.-split:after, &.-history:after {
             border-bottom-color: @logs-bg-color;
         }
     }
@@ -327,6 +327,10 @@
     }
     &.-back:before {
         content: "";
+    }
+    
+    &.-history:before {
+        content: "";
     }
 }
 

@@ -1,3 +1,4 @@
+import Genid from 'genid';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 import TimeAgo from 'react-timeago';
@@ -130,23 +131,22 @@ export default class A0CronJobList extends React.Component {
     }
     
     createJob() {
-        var editor = new A0EditorWidget(Object.assign({}, this.props, {
-            createCronJob: true,
-            onClickCancel: () => editor.destroy(),
-            onClickSave: createCronJob.bind(this),
-        }));
-        
-        function createCronJob(inst) {
-            return editor.save()
-                .then(webtask => webtask.createCronJob({
-                    schedule: inst.state.schedule,
-                }))
-                .catch(e => this.setState({ error: e }))
-                .finally(() => {
+        const backButton = (
+            <button className="a0-icon-button -back"
+                onClick={ e => {
                     editor.destroy();
                     this.refreshJobs();
-                });
-        }
+                }}
+            >Back</button>
+        );
+        
+        var editor = new A0EditorWidget(Object.assign({}, this.props, {
+            backButton,
+            cron: true,
+            mergeBody: false,
+            parseBody: true,
+            name: Genid(12),
+        }));
     }
     
     refreshJobs() {
@@ -176,7 +176,6 @@ export default class A0CronJobList extends React.Component {
         
                 const editor = new A0EditorWidget(Object.assign({}, this.props, {
                     backButton,
-                    createCronJob: true,
                     schedule: job.schedule,
                     cron: true,
                     edit: job,
@@ -315,7 +314,7 @@ class A0CronJobRow extends React.Component {
                                 <span className={ `a0-inline-text -sentence ${resultClasses[lastResult.type]}` }>{ lastResult.type }</span>
                             </div>
                         )
-                    : "&emdash;"
+                    : "-"
                     }
                     <button
                         className="a0-row-delete"

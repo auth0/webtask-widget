@@ -4,6 +4,8 @@ import Logs from 'components/logs';
 
 import AceEditor from './aceEditor';
 import EditorOptions from './editorOptions';
+import HistoryItemInspector from './historyItemInspector';
+import JobHistory from './jobHistory';
 import ScheduleEditor from './scheduleEditor';
 import SecretsEditor from './secretsEditor';
 
@@ -12,12 +14,18 @@ export const HistoryPane = {
     name: 'History',
     renderBody() {
         return (
-            null
+            <JobHistory
+                job={ this.state.subject }
+                onSelect={ item => this.onSelectHistoryItem(item) }
+                selected={ this.state.selectedHistoryItem }
+            />
         );
     },
     renderSidebar() {
         return (
-            null
+            <HistoryItemInspector
+                item={ this.state.selectedHistoryItem }
+            />
         );
     },
 };
