@@ -127,6 +127,10 @@ export default class WebtaskEditor extends React.Component {
         );
     }
     
+    getJobState() {
+        return this.strategy.getJobState.call(this);
+    }
+    
     onChangeCode(code) {
         this.setState({ code });
     }

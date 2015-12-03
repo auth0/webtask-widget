@@ -48,16 +48,12 @@ var baseConfig = {
             }, {
                 test: /\.json$/,
                 loader: 'json-loader'
-            }, {
-                test: require.resolve('localforage'),
-                loaders: ['exports-loader?localforage', 'script-loader'],
-            }, {
-                test: require.resolve('zeroclipboard'),
-                loaders: ['expose-loader?ZeroClipboard'],
+            // }, {
+            //     test: require.resolve('zeroclipboard'),
+            //     loaders: ['expose-loader?ZeroClipboard'],
             }
         ],
         noParse: [
-            require.resolve('localforage'),
         ],
     },
     plugins: [

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactZeroClipboard from 'react-zeroclipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import Sandbox from 'sandboxjs';
 
 export default class A0WebtaskUrl extends React.Component {
@@ -31,9 +31,9 @@ export default class A0WebtaskUrl extends React.Component {
                 );
         
         const copyButton = (
-            <ReactZeroClipboard text={ fullUrl }>
+            <CopyToClipboard text={ fullUrl }>
                 <button className="a0-icon-button -copy"></button>
-            </ReactZeroClipboard>
+            </CopyToClipboard>
         );
         
         return (

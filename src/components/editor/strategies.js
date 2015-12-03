@@ -17,6 +17,7 @@ export const CreateWebtaskStrategy = {
     defaultMergeBody: false,
     defaultPane: SecretsPane,
     defaultParseBody: true,
+    getJobState: () => undefined,
     onSave: saveWebtask,
     panes: [SecretsPane, SettingsPane, LogsPane],
     readOnlyUrl: false,
@@ -27,6 +28,7 @@ export const EditWebtaskStrategy = {
     defaultMergeBody: false,
     defaultPane: SecretsPane,
     defaultParseBody: true,
+    getJobState: () => undefined,
     onSave: saveWebtask,
     panes: [SecretsPane, SettingsPane, LogsPane],
     readOnlyUrl: false,
@@ -37,6 +39,10 @@ export const CreateCronJobStrategy = {
     defaultMergeBody: false,
     defaultPane: SchedulePane,
     defaultParseBody: true,
+    getJobState: function() { return this.state.jobState; },
+    onChangeState: function (state) {
+        this.setState({ jobState: state });
+    },
     onSave: saveCronJob,
     panes: [SecretsPane, SchedulePane, LogsPane],
     readOnlyUrl: false,
@@ -47,6 +53,15 @@ export const EditCronJobStrategy = {
     defaultMergeBody: false,
     defaultPane: HistoryPane,
     defaultParseBody: true,
+    getJobState: function () { return this.state.subject.state; },
+    onChangeState: function (state) {
+        this.setState({ jobStateChangePending: true });
+        
+        this.state.subject.setJobState({ state })
+            .tap(job => this.forceUpdate())
+            .catch(error => this.setState({ error }))
+            .finally(() => this.setState({ jobStateChangePending: false }));
+    },
     onSave: saveCronJob,
     panes: [SecretsPane, SchedulePane, HistoryPane, LogsPane],
     readOnlyUrl: true,
@@ -54,12 +69,9 @@ export const EditCronJobStrategy = {
 
 
 function saveCronJob() {
-    return saveWebtask.call(this, CreateCronJobStrategy)
+    return saveWebtask.call(this, EditCronJobStrategy)
         .then(webtask => webtask.createCronJob({ schedule: this.state.schedule }))
-        .tap(subject => {
-            this.setState({ subject });
-            this.setStrategy(EditCronJobStrategy);
-        });
+        .tap(subject => this.setState({ subject }));
 }
 
 function saveWebtask(nextStrategy = EditWebtaskStrategy) {

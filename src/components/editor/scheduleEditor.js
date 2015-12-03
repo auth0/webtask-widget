@@ -105,8 +105,9 @@ export default class ScheduleEditor extends React.Component {
                     <ToggleButton
                         ref="state"
                         disabled={ jobState !== 'active' && jobState !== 'inactive' }
+                        loading={ props.stateChangePending }
                         checked={ jobState === 'active' }
-                        onChange={ checked => this.onChangeState(checked) }
+                        onChange={ checked => this.onChangeState(!checked) }
                     />
                 </div>
                 <div className="a0-schedule-editor" disabled={ state.advanced }>
@@ -249,7 +250,9 @@ export default class ScheduleEditor extends React.Component {
     onChangeState(state) {
         const newState = state ? 'active' : 'inactive';
         
-        this.onChangeState(newState);
+        console.log('onChangeState', state, newState);
+        
+        this.props.onChangeState(newState);
     }
 }
 
@@ -299,9 +302,11 @@ ScheduleEditor.propTypes = {
     onChangeState: React.PropTypes.func.isRequired,
     schedule: React.PropTypes.string,
     state: React.PropTypes.oneOf(['active', 'inactive', 'invalid', 'expired']),
+    stateChangePending: React.PropTypes.bool,
 };
 
 ScheduleEditor.defaultProps = {
     schedule: '',
     state: 'inactive',
+    stateChangePending: false,
 };
