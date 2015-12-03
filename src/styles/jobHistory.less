@@ -1,0 +1,98 @@
+@import (reference) "~styles/widget.less";
+
+.a0-cron-history {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    
+    .a0-table-header {
+        flex: 0 0 auto;
+    }
+    
+    .a0-table-body {
+        flex: 1 1 auto;
+    }
+}
+
+.a0-table-header {
+    display: flex;
+    flex-direction: row;
+    
+    background-color: rgb(249, 250, 253);
+    color: @fg-color;
+    border-bottom: 1px solid rgb(211, 213, 214);
+    
+    & > .a0-header {
+        flex: 0 0 33%;
+        text-align: center;
+    }
+}
+
+.a0-table-body {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    
+    .a0-table-row {
+        flex: 0 0 3em;
+    }
+}
+
+.a0-table-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: stretch;
+    background-color: @tbody-bg-color;
+    height: 62px;
+    position: relative;
+    
+    &:nth-of-type(odd) {
+        background-color: @tbody-stripe-bg-color;
+    }
+    
+    &.-active {
+        background-color: #E8EEF9;
+        
+        .-icon();
+        
+        &:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            margin-top: -0.6em;
+            left: 0.5em;
+        }
+    }
+    
+    &:hover {
+        background-color: #E8EEF9;
+        cursor: pointer;
+    }
+    
+    & > .a0-cell {
+        flex: 0 0 33%;
+        
+        text-align: center;
+        vertical-align: middle;
+        
+    
+        &.-success {
+            color: desaturate(@success-bg-color, 20%);
+        }
+        
+        &.-danger {
+            color: desaturate(@danger-bg-color, 20%);
+        }
+        
+        &.-type {
+            &:first-letter {
+                text-transform: capitalize;
+            }
+        }
+    }
+}

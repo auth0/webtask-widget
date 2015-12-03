@@ -1,11 +1,107 @@
-@import (reference) "~styles/widget.less";
+@import "~styles/widget.less";
 
-.a0-cronlist {
+.a0-cron-list {
     .a0-widget();
 }
 
-.a0-cronlist-job {
-    &:hover {
-        cursor: pointer;
+.a0-vertical-table {
+    width: 100%;
+    max-width: 100%;
+    border: none;
+    border-spacing: 0;
+    border-collapse: collapse;
+    
+    & > thead > tr {
+        background-color: @thead-bg-color;
+        height: 62px;
+        
+        & > th {
+            background: transparent;
+            color: @thead-fg-color;
+            line-height: 24px;
+            font-size: 13px;
+            font-weight: normal;
+            width: 20%;
+            
+            &:first-child {
+                padding-left: 2em;
+            }
+            
+            &:last-child {
+                padding-right: 2em;
+            }
+        }
+    }
+    
+    & > tbody > tr {
+        background-color: @tbody-bg-color;
+        height: 62px;
+        
+        & > td {
+            background: transparent;
+            color: @tbody-fg-color;
+            line-height: 24px;
+            font-size: 13px;
+            font-weight: normal;
+            padding-right: 2em;
+            
+            &:first-child {
+                padding-left: 2em;
+            }
+            
+            &:last-child {
+                padding-right: 6em;
+                position: relative;
+                
+                & > .a0-row-delete {
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                }
+            }
+            
+            &._fit-content {
+                width: 1%;
+                white-space: nowrap;
+            }
+        }
+        
+        &:hover > td > .a0-row-delete {
+            display: block;
+        }
+    }
+    
+    &.-striped {
+        & > tbody > tr:nth-of-type(odd) {
+            background-color: @tbody-stripe-bg-color;
+        }
+    }
+    
+    &.-hover {
+        & > tbody > tr:hover {
+            background-color: #E8EEF9;
+            
+            & > td:first-child {
+                color: #4D97C0;
+            }
+        }
+    }
+}
+
+.a0-row-delete {
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0.5em 1em;
+    background-color: #F85C5B;
+    color: @fg-color;
+    font-size: 140%;
+    font-weight: bold;
+    vertical-align: middle;
+    
+    &:focus {
+        outline: none;
     }
 }

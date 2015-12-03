@@ -128,7 +128,7 @@ export default class A0CronJobView extends React.Component {
     getHistory(e) {
         if (e) e.preventDefault();
 
-        this.props.profile.getCronJobHistory({ name: this.props.job.name })
+        this.props.job.getHistory()
             .then(history => this.setState({ jobHistory: history }))
             .catch(e => console.error(e));
     }

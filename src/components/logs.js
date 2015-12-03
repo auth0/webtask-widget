@@ -2,6 +2,9 @@ import React from 'react';
 import Sandbox from 'sandboxjs';
 
 import Alert from '../components/alert';
+import Inspector from 'react-object-inspector';
+
+import '../styles/logs.less';
 
 export default class A0Logs extends React.Component {
     constructor(props) {
@@ -9,32 +12,40 @@ export default class A0Logs extends React.Component {
 
         this.logStream = null;
         this.state = {
-            error: null,
-            logs: []
+            logs: Array.isArray(props.logs) ? props.logs.slice() : [],
         };
     }
 
     componentDidMount() {
-        this.logStream = this.props.profile.createLogStream();
+        this.logStream = this.props.sandbox.createLogStream();
+        
+        this.logStream.on('open', (e) => {
+            this.push({
+                msg: 'Connected to ' + this.props.sandbox.container,
+                className: '-success',
+            });
+        });
 
         this.logStream.on('error', (e) => {
-            console.error(e);
-
-            this.setState({
-                error: new Error(e.message),
+            this.push({
+                msg: e.message,
+                className: '-danger',
             });
             
             if (this.props.onError) this.props.onError(e);
         });
 
         this.logStream.on('data', (event) => {
-            const logs = this.state.logs.slice();
-
             if (event.name === 'sandbox-logs') {
-                logs.push(event);
-                logs.sort((a, b) => new Date(b) - new Date(a));
-
-                this.setState({ logs });
+                if (event.msg.match(/^webtask container (assigned|recycled)$/)) {
+                    event.className = '-muted';
+                } else {
+                    event.className = '';
+                }
+                
+                event.time = new Date(event.time);
+                
+                this.push(event);
                 
                 if (this.props.onMessage) this.props.onMessage(event.msg);
             }
@@ -43,50 +54,56 @@ export default class A0Logs extends React.Component {
         });
     }
 
-    componentDidUpdate() {
-        if(this.refs['log-view']) {
-            let logs = this.refs['log-view'];
+    componentWillUpdate() {
+        var element = this.refs.lines;
 
-            logs.scrollTop = logs.scrollHeight;
-        }
+        // Set scroll flag if we are within 20px of scroll bottom
+        this.shouldScroll = Math.abs(element.scrollHeight - element.scrollTop - element.offsetHeight) < 20;
     }
     
     componentWillUnmount() {
         this.logStream.destroy();
         this.logStream = null;
     }
+    
+    componentDidUpdate() {
+        var element = this.refs.lines;
+        
+        if (this.shouldScroll) {
+            element.scrollTop = element.scrollHeight;
+        }
+    }
 
     render() {
-        const error = this.state.error
-            ? 'Error: ' + this.state.error.message
-            : null;
-
-        const logs = this.state.logs.length
-        ?   (
-                <pre className="well pre-scrollable" ref="log-view">
-                    {
-                        this.state.logs.map(line => line.msg + '\n')
-                    }
-                </pre>
-            )
-        :   (
-                <Alert bsStyle="info">
-                    Nothing to report
-                </Alert>
-            );
-
         return (
-            <div className="a0-logs">
-                <Alert bsStyle={this.state.error ? 'danger' : 'success'}>
-                  {error || 'Connected to ' + this.props.profile.container}
-                </Alert>
-
-                { this.state.error
-                ?   null
-                :   logs
+            <div className="a0-logs-viewer" ref="lines">
+                {
+                    this.state.logs.map((line, i) => (
+                        <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>
+                            { line.time.toLocaleTimeString() + ': ' }
+                            { line.data
+                            ?   (
+                                    <div className="a0-inline-inspector">
+                                        <Inspector data={ line.data } name="result" />
+                                    </div>
+                                )
+                            :   line.msg
+                            }
+                        </span>
+                    ))
                 }
             </div>
         );
+    }
+    
+    push(event) {
+        const logs = this.state.logs.slice();
+        
+        if (!event.time) event.time = new Date();
+        
+        logs.push(event);
+        
+        this.setState({ logs });
     }
     
     clear() {
@@ -99,7 +116,7 @@ export default class A0Logs extends React.Component {
 A0Logs.title = 'View webtask logs';
 
 A0Logs.propTypes = {
-    profile: React.PropTypes.instanceOf(Sandbox).isRequired,
+    sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
     onMessage: React.PropTypes.func,
     onEvent: React.PropTypes.func,
     onError: React.PropTypes.func,

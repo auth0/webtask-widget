@@ -12,7 +12,7 @@
             
             #cron-jobs, #editor, #logs {
                 margin: 80px auto 0;
-                width: 50%;
+                width: 80%;
                 min-width: 400px;
                 
                 padding: 10px;
@@ -50,21 +50,24 @@
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
-            var editor = window.webtaskWidget.createEditor({
-                mount: document.getElementById('editor'),
-                storeProfile: true,
-                showScheduleInput: true,
-            });
-            
-            var logger = window.webtaskWidget.createLogger({
-                mount: document.getElementById('logs'),
-                storeProfile: true,
-            });
-        
             var cronJobs = window.webtaskWidget.createCronListing({
                 mount: document.getElementById('cron-jobs'),
                 storeProfile: true,
             });
+        
+            var editor = window.webtaskWidget.createEditor({
+                mount: document.getElementById('editor'),
+                storeProfile: true,
+                showScheduleInput: true,
+                name: 'webtask',
+                autoSaveOnLoad: true,
+                autoSaveOnChange: true,
+            });
+            
+            // var logger = window.webtaskWidget.createLogger({
+            //     mount: document.getElementById('logs'),
+            //     storeProfile: true,
+            // });
         </script>
     </body>
 

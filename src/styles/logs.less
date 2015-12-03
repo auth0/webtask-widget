@@ -1,0 +1,30 @@
+@import (reference) "~styles/widget.less";
+
+
+.a0-logs-viewer {
+    background-color: @logs-bg-color;
+    color: @logs-fg-color;
+    font-family: "Roboto Mono", monospace;
+    font-size: 13px;
+    padding: 1em;
+    white-space: pre;
+    overflow: auto;
+    
+    & > .a0-inline-text {
+        display: block;
+        margin-left: 2em;
+        text-indent: -2em;
+        white-space: pre-wrap;
+    }
+}
+
+.a0-inline-inspector {
+    &, > * {
+        display: inline;
+    }
+    
+    * {
+        font-family: inherit !important;
+        font-size: inherit !important;
+    }
+}

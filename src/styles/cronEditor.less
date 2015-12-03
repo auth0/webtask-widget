@@ -1,0 +1,53 @@
+@import (reference) "~styles/widget.less";
+
+.a0-cron-editor {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    padding: 0 1em;
+    
+    &[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+    }
+    
+    .a0-cron-segment {
+        flex: 0 0 4.5em;
+    }
+}
+
+.a0-cron-segment {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    
+    .a0-value {
+        background: transparent;
+        border: none;
+        outline: none;
+        border-radius: 0;
+        border-bottom: 1px solid @fg-color;
+        text-align: center;
+        
+        &:focus {
+            outline: none;
+            border-color: @inverted-fg-color;
+        }
+        
+        &.-invalid, &:focus.-invalid {
+        }
+    }
+    
+    .a0-title {
+        text-align: center;
+        font-size: 90%;
+    }
+            
+    &.-invalid > .a0-title {
+        color: @danger-bg-color;
+    }
+
+}

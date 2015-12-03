@@ -81,20 +81,16 @@ export default class A0Widget extends EventEmitter {
             });
         } else if (storeProfile) {
             readProfile = (options) => LocalForage.getItem(storageKey)
-                .then((profile) => {
-                    return profile
-                        ?   profile
-                        :   showLogin();
-                });
+                .then(sandbox => sandbox ? sandbox : showLogin());
     
             // When the 'storeProfile' options is provided, we set a default
             // 'writeProfile' handler to save the profile to the indicated (or default)
             // 'storageKey'.
             if (!writeProfile) {
-                writeProfile = (profile) => LocalForage.setItem(storageKey, {
-                    url: profile.url,
-                    container: profile.container,
-                    token: profile.token,
+                writeProfile = (sandbox) => LocalForage.setItem(storageKey, {
+                    url: sandbox.url,
+                    container: sandbox.container,
+                    token: sandbox.token,
                 });
             }
         } else {
@@ -102,7 +98,7 @@ export default class A0Widget extends EventEmitter {
         }
     
         // By default, a noop.
-        if (!writeProfile) writeProfile = (profile) => Bluebird.resolve(profile);
+        if (!writeProfile) writeProfile = (sandbox) => Bluebird.resolve(sandbox);
         
         const options = {
             mount,
@@ -117,21 +113,22 @@ export default class A0Widget extends EventEmitter {
         
         return Bluebird.resolve(readProfile(options))
             .then(validateProfile)
-            .tap((profile) => {
-                this.emit('profile', profile);
+            .tap((sandbox) => {
+                this.emit('sandbox', sandbox);
             })
             .tap(writeProfile)
-            .then((profile) => {
-                return this._mount(Component, Object.assign({}, props, { profile }));
+            .then((sandbox) => {
+                return this._mount(Component, Object.assign({}, props, { sandbox }));
             });
     
-        function validateProfile (profile) {
-            if (!profile.container) throw new Error('Invalid profile: missing container');
-            if (!profile.token) throw new Error('Invalid profile: missing token');
-            if (!profile.url) throw new Error('Invalid profile: missing url');
+        function validateProfile (sandbox) {
+            if (!sandbox.container) throw new Error('Invalid profile: missing container');
+            if (!sandbox.token) throw new Error('Invalid profile: missing token');
+            if (!sandbox.url) throw new Error('Invalid profile: missing url');
     
-            return Sandbox.init(profile);
-        }    }
+            return Sandbox.init(sandbox);
+        }
+    }
     
     destroy() {
         if (!this.mounted) throw new Error('Impossible to destroy a widget that has already been destroyed.');

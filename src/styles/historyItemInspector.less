@@ -1,0 +1,24 @@
+@import (reference) "~styles/widget.less";
+
+.a0-history-inspector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    
+    background-color: @logs-bg-color;
+    color: @logs-fg-color;
+    font-size: 13px;
+    font-family: "Roboto Mono", monospace;
+    padding: 1.5em;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-break: break-word;
+    
+    * {
+        font-family: inherit !important;
+        font-size: inherit !important;
+    }
+}

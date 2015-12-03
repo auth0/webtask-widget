@@ -1,5 +1,373 @@
-@import (reference) "~styles/widget.less";
+@import "~styles/widget.less";
+
+//    .a0-editor
+//        .a0-editor-split
+//            .a0-editor-left
+//                .a0-editor-toolbar
+//                .a0-editor-body
+//                    .a0-editor-ace
+//            .a0-editor-right
+//                .a0-editor-toolbar
+//                .a0-editor-sidebar
+//                    .a0-logs-viewer
+//        .a0-editor-footer
+//            .a0-webtask-url
+//                .a0-container-url
+//                .a0-name-input
+//                .a0-copy-button
+//            .a0-footer-actions
+//                TODO
+
+@widget-height: 500px;
+@toolbar-height: 42px;
+@footer-height: 47px;
+@editor-height: @widget-height - @toolbar-height - @footer-height;
+@editor-width: 60%;
 
 .a0-editor {
     .a0-widget();
+    
+    display: flex;
+    flex-direction: column;
+    
+    color: @fg-color;
+    font-family: 'avenir-next-web', ;
+    font-size: 14px;
+    
+    & > .a0-editor-split {
+        flex: 0 0 @toolbar-height + @editor-height;
+        flex-order: 0;
+    }
+    
+    & > .a0-editor-footer {
+        flex: 0 0 @footer-height;
+        flex-order: 2;
+    }
+}
+
+.a0-editor-split {
+    display: flex;
+    flex-direction: row;
+    
+    & > .a0-editor-left {
+        flex: 1 1 auto;
+    }
+    
+    & > .a0-editor-right {
+        flex: 0 0 auto;
+        min-width: 40%;
+    }
+}
+
+.a0-editor-left, .a0-editor-right {
+    display: flex;
+    flex-direction: column;
+    
+    & > .a0-editor-toolbar {
+        flex: 0 0 @toolbar-height;
+    }
+    
+    & > .a0-editor-body, .a0-editor-sidebar {
+        flex: 1 1;
+        height: @editor-height;
+    }
+}
+
+.a0-editor-toolbar {
+    display: flex;
+    flex-direction: row;
+    
+    background-color: @tb-bg-color;
+    
+    .a0-editor-left > & {
+        align-items: stretch;
+        justify-content: flex-start;
+        
+        & > .a0-icon-button {
+            flex: 0 0 auto;
+        }
+    }
+    
+    .a0-editor-right > & {
+        align-items: stretch;
+        justify-content: center;
+    
+        & > .a0-pane-selector {
+            flex: 1 1 auto;
+        }
+    }
+}
+
+.a0-pane-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+
+    & > .a0-icon-button {
+        flex: 1 1 auto;
+    }
+}
+
+
+.a0-editor-body {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    
+    & > .a0-error-message {
+        flex: 0 0 auto;
+        min-height: 25px;
+    }
+    
+    & > .a0-editor-ace {
+        flex: 1 1;
+        font-family: "Roboto Mono";
+    }
+}
+
+.a0-error-message {
+    background-color: @danger-bg-color;
+    color: @danger-fg-color;
+    padding: 0.5em 3em;
+}
+
+.a0-editor-ace {
+    &.ace_editor {
+        background-color: @editor-bg-color;
+        
+        .ace_gutter {
+            background-color: @lines-bg-color;
+            color: @fg-color;
+        }
+    }
+}
+
+.a0-editor-sidebar {
+    position: relative;
+    
+    background-color: @sidebar-bg-color;
+    color: @sidebar-fg-color;
+    
+    & > .a0-sidebar-pane {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.a0-sidebar-pane {
+    display: none;
+    
+    & > * {
+        flex: 1 1 auto;
+    }
+    
+    &.-active {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.a0-sidebar-logs {
+    position: relative;
+    
+    & > .a0-clear {
+        .a0-icon-button();
+        
+        position: absolute;
+        background-color: @danger-bg-color;
+        color: @danger-fg-color;
+        height: 2.5em;
+        width: 2.5em;
+        border-radius: 1.25em;
+        text-align: center;
+        vertical-align: middle;
+        right: 1em;
+        bottom: 1em;
+        opacity: 0.5;
+        z-index: 1;
+    }
+    
+    &:hover > .a0-clear {
+        opacity: 1;
+    }
+    
+    & > .a0-logs-viewer {
+        
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.a0-sidebar-intro {
+    margin-bottom: 1em;
+    
+    & > .a0-title {
+        color: @inverted-fg-color;
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0 0 1em;
+    }
+    
+    & > .a0-explanation {
+        color: darken(@inverted-fg-color, 30%);
+        font-size: 13px;
+        
+    }
+}
+
+.a0-editor-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    background-color: @tb-bg-color;
+    
+    & > .a0-webtask-url {
+        flex: 1 1 auto;
+        flex-order: 0;
+    }
+    
+    & > .a0-footer-actions {
+        flex: 0 0 auto;
+        flex-order: 1;
+    }
+}
+
+.a0-webtask-url {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    & > .a0-container-url {
+        flex: 0 0 auto;
+        flex-order: 0;
+        
+        margin-left: 1em;
+    }
+    & > .a0-name-input {
+        flex: 0 1 10em;
+        flex-order: 1;
+        
+        margin-left: 4px;
+    }
+    
+    & > .a0-copy-button {
+        flex: 0 0 20px;
+        flex-order: 2;
+        
+        margin-left: ;
+    }
+}
+
+.a0-name-input {
+    background-clip: padding-box;
+    -webkit-appearance: none;
+    background-color: @input-bg-color;
+    color: inherit;
+    height: 28px;
+    line-height: 28px;
+    border: none;
+    border-radius: 4px;
+    padding: 0 4px;
+    
+    &:focus {
+        outline: none;
+    }
+}
+
+.a0-footer-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    
+    & > .a0-inline-button {
+        flex: 0 0 auto;
+        margin-right: 1em;
+    }
+}
+
+
+
+
+.a0-schedule-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    padding-top: 2em;
+    
+    .a0-schedule-display {
+        order: 4;
+        margin: 1em auto;
+    }
+    
+    .a0-schedule-editor {
+        font-size: 120%;
+        margin: 1em auto;
+    }
+    
+    .a0-advanced-cron {
+        margin: 1em auto 1em;
+    }
+    
+    .a0-cron-editor {
+        margin: 2em auto;
+    }
+}
+
+.a0-schedule-display {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    .a0-next-run, .a0-toggle-button {
+        flex: 0 0 auto;
+    }
+    
+    .a0-toggle-button {
+        margin-left: 1em;
+    }
+}
+
+.a0-schedule-editor {
+    &[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+    }
+    
+    & > .a0-metric, & > .a0-value {
+        .a0-inline-text();
+        
+        margin: 0 0.5em;
+        
+        & > .btn {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            border-bottom: 1px solid @fg-color;
+            
+            &:hover, &:hover span, span:hover {
+                text-decoration: none;
+            }
+        }
+        
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.a0-advanced-cron {
+    .a0-label {
+        padding-left: 0.5em;
+    }
 }
