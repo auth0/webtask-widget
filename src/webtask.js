@@ -18,7 +18,7 @@ module.exports = {
      * @param {String} [options.container] - The webtask container of the current user. If missing, will be derived from {@see options.token}, from the result of {@see options.readProfile}, or finally from the result of the SMS/email login flow.
      * @param {function} [options.readProfile] - A function that should return a `Object` or a `Promise` for an object with `url`, `token` and `container` properties.
      * @param {function} [options.writeProfile] - A function that will be called with the resolved `Profile` that should return a `Promise` that resolves once the profile has been written.
-     * @param {function} [options.storageKey] - A key that will be used by {@see https://github.com/mozilla/localForage} to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions.
+     * @param {function} [options.storageKey] - A key that will be used by localStorage to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions.
      */
     createCronListing: createWidget(A0CronListWidget),
     createEditor: createWidget(A0EditorWidget),

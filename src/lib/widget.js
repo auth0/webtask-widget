@@ -1,6 +1,5 @@
 import Bluebird from 'bluebird';
 import EventEmitter from 'eventemitter3';
-import LocalForage from 'localforage';
 import Sandbox from 'sandboxjs';
 
 import mapValues from 'lodash.mapvalues';
@@ -80,18 +79,22 @@ export default class A0Widget extends EventEmitter {
                 url: url,
             });
         } else if (storeProfile) {
-            readProfile = (options) => LocalForage.getItem(storageKey)
+            readProfile = (options) => Bluebird.resolve(localStorage.getItem(storageKey))
+                .then(JSON.parse)
                 .then(sandbox => sandbox ? sandbox : showLogin());
     
             // When the 'storeProfile' options is provided, we set a default
             // 'writeProfile' handler to save the profile to the indicated (or default)
             // 'storageKey'.
             if (!writeProfile) {
-                writeProfile = (sandbox) => LocalForage.setItem(storageKey, {
+                writeProfile = (sandbox) => Bluebird.resolve({
                     url: sandbox.url,
                     container: sandbox.container,
                     token: sandbox.token,
-                });
+                })
+                    .tap(function (data) {
+                        return localStorage.setItem(storageKey, JSON.stringify(data));
+                    });
             }
         } else {
             readProfile = showLogin;

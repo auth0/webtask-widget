@@ -36,7 +36,7 @@ export default class A0CronJobList extends React.Component {
         const props = this.props;
         const state = this.state;
         
-        const loading = state.jobs.length === 0 && state.loadingJobs || state.inspectingJob;
+        const loading = state.jobs.length === 0 && state.loadingJobs;
         
         const loadingBody = (
             <tbody className="a0-conlist-loading">
@@ -160,7 +160,7 @@ export default class A0CronJobList extends React.Component {
     
     editJob(job) {
         this.setState({
-            inspectingJob: true,
+            inspectingJob: job,
         });
         
         job.inspect({
@@ -170,7 +170,7 @@ export default class A0CronJobList extends React.Component {
             .then(tokenData => {
                 const backButton = (
                     <button className="a0-icon-button -back"
-                        onClick={ e => editor.destroy() }
+                        onClick={ e => { editor.destroy(); this.refreshJobs(); } }
                     >Back</button>
                 );
         
@@ -187,7 +187,7 @@ export default class A0CronJobList extends React.Component {
                 }));
             })
             .catch(error => this.setState({ error }))
-            .finally(() => this.refreshJobs(), this.setState({ inspectingJob: false }));
+            .finally(() => this.setState({ inspectingJob: null }));
     }
     
     viewJob(job) {

@@ -51,7 +51,7 @@ export default class JobHistory extends React.Component {
                         ))
                     )
                 }
-                { this.state.refreshInProgress
+                { this.state.refreshInProgress && !this.state.loadInProgress
                 ?   (
                         <div
                             className="a0-table-row -more"

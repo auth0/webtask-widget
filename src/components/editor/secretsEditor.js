@@ -132,7 +132,7 @@ class A0SecretCreator extends React.Component {
         const isInvalid = !this.isValid();
         
         return (
-            <div className="a0-secret-editor">
+            <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
                     <input className="a0-text-input -dark" placeholder="Key"
                         onChange={ (e) => this.setState({ key: e.target.value }) }
@@ -146,10 +146,10 @@ class A0SecretCreator extends React.Component {
                 <div className="a0-actions">
                     <button className={ 'a0-icon-button -inverted -add ' + (isInvalid ? '-muted' : '-success') }
                         disabled={ isInvalid }
-                        onClick={ (e) => this.onClickAccept() }
+                        type="submit"
                     ></button>
                 </div>
-            </div>
+            </form>
         );
     }
     
@@ -157,8 +157,13 @@ class A0SecretCreator extends React.Component {
         return this.validKeyRx.test(this.state.key);
     }
     
-    onClickAccept() {
-        if (this.isValid() && this.props.onAccept) this.props.onAccept(this.getValue());
+    onSubmit(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (this.isValid() && this.props.onAccept) {
+            this.props.onAccept(this.getValue());
+        }
     }
     
     clear() {
@@ -197,7 +202,7 @@ class A0SecretEditor extends React.Component {
         const isInvalid = !this.isValid();
         
         return (
-            <div className="a0-secret-editor">
+            <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
                     <input className="a0-text-input -darker" placeholder="Key"
                         onChange={ (e) => this.setState({ key: e.target.value }) }
@@ -211,10 +216,10 @@ class A0SecretEditor extends React.Component {
                 <div className="a0-actions">
                     <button className={ 'a0-icon-button -inverted -confirm ' + (isInvalid ? '-muted' : '-bright') }
                         disabled={ isInvalid }
-                        onClick={ (e) => this.onClickAccept() }
+                        type="submit"
                     ></button>
                 </div>
-            </div>
+            </form>
         );
     }
     
@@ -222,8 +227,13 @@ class A0SecretEditor extends React.Component {
         return this.validKeyRx.test(this.state.key);
     }
     
-    onClickAccept() {
-        if (this.isValid() && this.props.onAccept) this.props.onAccept(this.getValue());
+    onSubmit(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (this.isValid() && this.props.onAccept) {
+            this.props.onAccept(this.getValue());
+        }
     }
 
     getValue() {
