@@ -18,9 +18,15 @@ export const CreateWebtaskStrategy = {
     defaultPane: SecretsPane,
     defaultParseBody: true,
     getJobState: () => undefined,
+    getUrlInfo: (sandbox) => {
+        return {
+            copyButton: true,
+            prefix: sandbox.url + '/api/run/' + sandbox.container + '/',
+            readonly: false,
+        };
+    },
     onSave: saveWebtask,
     panes: [SecretsPane, SettingsPane, LogsPane],
-    readOnlyUrl: false,
 };
 
 export const EditWebtaskStrategy = {
@@ -29,9 +35,15 @@ export const EditWebtaskStrategy = {
     defaultPane: SecretsPane,
     defaultParseBody: true,
     getJobState: () => undefined,
+    getUrlInfo: (sandbox) => {
+        return {
+            copyButton: true,
+            prefix: sandbox.url + '/api/run/' + sandbox.container + '/',
+            readonly: false,
+        };
+    },
     onSave: saveWebtask,
     panes: [SecretsPane, SettingsPane, LogsPane],
-    readOnlyUrl: false,
 };
 
 export const CreateCronJobStrategy = {
@@ -40,12 +52,18 @@ export const CreateCronJobStrategy = {
     defaultPane: SchedulePane,
     defaultParseBody: true,
     getJobState: function() { return this.state.jobState; },
+    getUrlInfo: (sandbox) => {
+        return {
+            copyButton: false,
+            prefix: 'Job name: ',
+            readonly: false,
+        };
+    },
     onChangeState: function (state) {
         this.setState({ jobState: state });
     },
     onSave: saveCronJob,
     panes: [SecretsPane, SchedulePane, LogsPane],
-    readOnlyUrl: false,
 };
 
 export const EditCronJobStrategy = {
@@ -54,6 +72,13 @@ export const EditCronJobStrategy = {
     defaultPane: HistoryPane,
     defaultParseBody: true,
     getJobState: function () { return this.state.subject.state; },
+    getUrlInfo: (sandbox) => {
+        return {
+            copyButton: false,
+            prefix: 'Job name: ',
+            readonly: true,
+        };
+    },
     onChangeState: function (state) {
         this.setState({ jobStateChangePending: true });
         
@@ -64,7 +89,6 @@ export const EditCronJobStrategy = {
     },
     onSave: saveCronJob,
     panes: [SecretsPane, SchedulePane, HistoryPane, LogsPane],
-    readOnlyUrl: true,
 };
 
 

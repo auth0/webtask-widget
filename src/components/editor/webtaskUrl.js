@@ -11,7 +11,7 @@ export default class A0WebtaskUrl extends React.Component {
     }
     
     render() {
-        const baseUrl = this.props.sandbox.url + '/api/run/' + this.props.sandbox.container + '/';
+        const baseUrl = this.props.prefix;
         const fullUrl = baseUrl + this.props.name;
         
         const url = (
@@ -30,11 +30,13 @@ export default class A0WebtaskUrl extends React.Component {
                     />
                 );
         
-        const copyButton = (
-            <CopyToClipboard text={ fullUrl }>
-                <button className="a0-icon-button -copy"></button>
-            </CopyToClipboard>
-        );
+        const copyButton = this.props.copyButton
+            ?   (
+                <CopyToClipboard text={ fullUrl }>
+                    <button className="a0-icon-button -copy"></button>
+                </CopyToClipboard>
+            )
+            :   null;
         
         return (
             <div className="a0-webtask-url">
@@ -55,14 +57,15 @@ export default class A0WebtaskUrl extends React.Component {
 }
 
 A0WebtaskUrl.propTypes = {
+    copyButton: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
     name: React.PropTypes.string.isRequired,
     onChangeName: React.PropTypes.func.isRequired,
     readonly: React.PropTypes.bool,
-    disabled: React.PropTypes.bool,
-    sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
+    prefix: React.PropTypes.string.isRequired,
 };
 
 A0WebtaskUrl.defaultProps = {
-    readonly: true,
     disabled: false,
+    readonly: true,
 };

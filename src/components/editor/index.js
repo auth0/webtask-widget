@@ -44,6 +44,7 @@ export default class WebtaskEditor extends React.Component {
     
     render() {
         const editorBody = this.state.currentPane.renderBody.call(this);
+        const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
         
         const error = this.state.error
             ?   (
@@ -85,11 +86,12 @@ export default class WebtaskEditor extends React.Component {
 
         const webtaskUrl = (
             <WebtaskUrl
-                name={ this.state.name }
-                readonly={ this.strategy.readOnlyUrl }
+                copyButton={ urlInfo.copyButton }
                 disabled={ this.state.saveInProgress }
-                sandbox={ this.props.sandbox }
+                name={ this.state.name }
                 onChangeName={ name => this.setState({ name }) }
+                prefix={ urlInfo.prefix }
+                readonly={ urlInfo.readonly }
             />
         );
         
