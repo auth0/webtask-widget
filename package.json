@@ -57,7 +57,7 @@
     "webpack-dev-server": "^1.12.1"
   },
   "scripts": {
-    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && webpack -p --output-path='./dist' --output-filename='[name].min.js'",
+    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack -p --output-path='./dist' --output-filename='[name].min.js'",
     "develop": "webpack-dev-server -w -d",
     "test": "lab -v"
   },

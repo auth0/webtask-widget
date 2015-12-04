@@ -38,13 +38,13 @@ export default class JobHistory extends React.Component {
                                 key={ item.started_at }
                                 onClick={ e => this.onClickItem(item) }
                             >
-                                <div className="a0-cell">
+                                <div className="a0-cell -w40">
                                     { new Date(item.started_at).toLocaleString().replace(/:\d\d /, ' ') }
                                 </div>
-                                <div className="a0-cell">
+                                <div className="a0-cell -w40">
                                     { new Date(item.completed_at).toLocaleString().replace(/:\d\d /, ' ') }
                                 </div>
-                                <div className={ 'a0-cell -type' + (item.type === 'success' ? ' -success' : '-danger') }>
+                                <div className={ 'a0-cell -type -w20' + (item.type === 'success' ? ' -success' : '-danger') }>
                                     { item.type }
                                 </div>
                             </div>
@@ -68,9 +68,9 @@ export default class JobHistory extends React.Component {
         return (
             <div className="a0-cron-history">
                 <div className="a0-table-header">
-                    <div className="a0-header">Started</div>
-                    <div className="a0-header">Completed</div>
-                    <div className="a0-header">Last Result</div>
+                    <div className="a0-header -w40">Started</div>
+                    <div className="a0-header -w40">Completed</div>
+                    <div className="a0-header -w20">Last Result</div>
                 </div>
                 <div className="a0-table-body">
                     { body }

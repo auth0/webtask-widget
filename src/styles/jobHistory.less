@@ -25,10 +25,20 @@
     background-color: rgb(249, 250, 253);
     color: @fg-color;
     border-bottom: 1px solid rgb(211, 213, 214);
+    padding-right: 16px; // Account for scrollbar
     
     & > .a0-header {
         flex: 0 0 33%;
-        text-align: center;
+        padding: 0.5em 0 0.5em 2em;
+        text-align: left;
+        
+        &.-w20 {
+            flex: 0 0 20%;
+        }
+        
+        &.-w40 {
+            flex: 0 0 40%;
+        }
     }
 }
 
@@ -48,7 +58,7 @@
     align-items: center;
     align-content: stretch;
     background-color: @tbody-bg-color;
-    height: 62px;
+    min-height: 62px;
     position: relative;
     
     &:nth-of-type(odd) {
@@ -77,7 +87,8 @@
     & > .a0-cell {
         flex: 0 0 33%;
         
-        text-align: center;
+        padding: 0.5em 0 0.5em 2em;
+        text-align: left;
         vertical-align: middle;
         
     
@@ -93,6 +104,14 @@
             &:first-letter {
                 text-transform: capitalize;
             }
+        }
+        
+        &.-w20 {
+            flex: 0 0 20%;
+        }
+        
+        &.-w40 {
+            flex: 0 0 40%;
         }
     }
 }

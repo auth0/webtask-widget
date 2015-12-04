@@ -7,7 +7,7 @@ var merge = require('lodash.merge');
 
 var baseConfig = {
     cache: true,
-    devtool: 'source-map',
+    // devtool: 'source-map',
     context: Path.join(__dirname, 'src'),
     output: {
         path: Path.join(__dirname, 'build'),
@@ -17,7 +17,7 @@ var baseConfig = {
         library: 'webtaskWidget',
         libraryTarget: 'umd',
     },
-    recordsPath: Path.join(__dirname, '.recordsCache'),
+    // recordsPath: Path.join(__dirname, '.recordsCache'),
     module: {
         loaders: [
             {
@@ -48,9 +48,6 @@ var baseConfig = {
             }, {
                 test: /\.json$/,
                 loader: 'json-loader'
-            // }, {
-            //     test: require.resolve('zeroclipboard'),
-            //     loaders: ['expose-loader?ZeroClipboard'],
             }
         ],
         noParse: [
@@ -67,14 +64,17 @@ var baseConfig = {
     },
     node: {
         fs: 'empty',
-    }
+    },
+    devServer: {
+        devtool: 'source-map',
+    },
 };
 
 module.exports = [
     merge({}, baseConfig, {
         entry: { 'webtask': './webtask.js', },
     }),
-    merge({}, baseConfig, {
-        entry: { 'webtask-bootstrap': './webtask.js', },
-    }),
+    // merge({}, baseConfig, {
+    //     entry: { 'webtask-bootstrap': './webtask.js', },
+    // }),
 ];
