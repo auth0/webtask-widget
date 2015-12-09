@@ -20,7 +20,7 @@ export const CreateWebtaskStrategy = {
     getJobState: () => undefined,
     getUrlInfo: (sandbox) => {
         return {
-            copyButton: true,
+            copyButton: false,
             prefix: sandbox.url + '/api/run/' + sandbox.container + '/',
             readonly: false,
         };

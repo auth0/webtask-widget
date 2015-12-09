@@ -135,10 +135,12 @@ class A0SecretCreator extends React.Component {
             <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
                     <input className="a0-text-input -dark" placeholder="Key"
+                        type="text"
                         onChange={ (e) => this.setState({ key: e.target.value }) }
                         value={ state.key }
                     />
                     <input className="a0-text-input -dark" placeholder="Value"
+                        type="password"
                         onChange={ (e) => this.setState({ value: e.target.value }) }
                         value={ state.value }
                     />
@@ -205,10 +207,12 @@ class A0SecretEditor extends React.Component {
             <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
                     <input className="a0-text-input -darker" placeholder="Key"
+                        type="text"
                         onChange={ (e) => this.setState({ key: e.target.value }) }
                         value={ state.key }
                     />
                     <input className="a0-text-input -darker" placeholder="Value"
+                        type="password"
                         onChange={ (e) => this.setState({ value: e.target.value }) }
                         value={ state.value }
                     />
@@ -265,7 +269,7 @@ class A0SecretView extends React.Component {
                     <div className="a0-value">
                         <span className="a0-inline-text -strong -bright">Value:</span>
                         { " " }
-                        <span className="a0-inline-text -bright">{ props.secret.value }</span>
+                        <span className="a0-inline-text -bright">********</span>
                     </div>
                 </div>
                 <div className="a0-actions">

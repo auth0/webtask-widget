@@ -138,6 +138,7 @@ export default class WebtaskEditor extends React.Component {
     }
     
     onChangeOptions(options) {
+        console.log('onChangeOptions', options);
         this.setState(options);
     }
     
