@@ -1,4 +1,6 @@
-@import (reference) "~styles/widget.less";
+@import "~styles/base.less";
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/icon.less";
 
 .a0-cron-history {
     position: absolute;
@@ -23,7 +25,7 @@
     flex-direction: row;
     
     background-color: rgb(249, 250, 253);
-    color: @fg-color;
+    color: @text-dark-color;
     border-bottom: 1px solid rgb(211, 213, 214);
     padding-right: 16px; // Account for scrollbar
     
@@ -68,15 +70,12 @@
     &.-active {
         background-color: #E8EEF9;
         
-        .-icon();
-        
-        &:before {
-            content: "";
+        .a0-set-icon(@symbol: triangle-right; @rules: {
             position: absolute;
             top: 50%;
             margin-top: -0.6em;
             left: 0.5em;
-        }
+        });
     }
     
     &:hover {
@@ -93,11 +92,11 @@
         
     
         &.-success {
-            color: desaturate(@success-bg-color, 20%);
+            color: desaturate(@success-dark-color, 20%);
         }
         
         &.-danger {
-            color: desaturate(@danger-bg-color, 20%);
+            color: desaturate(@danger-dark-color, 20%);
         }
         
         &.-type {

@@ -1,14 +1,32 @@
-@import (reference) "~styles/widget.less";
+@import "~styles/base.less";
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/fabButton.less";
 
 
-.a0-logs-viewer {
-    background-color: @logs-bg-color;
-    color: @logs-fg-color;
+.a0-logs-widget {
+    position: relative;
+    background-color: @logs-dark-color;
+    color: @logs-light-color;
+    
+    & > .a0-clear-button {
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+        opacity: 0.5;
+    }
+    
+    &:hover > .a0-clear-button {
+        opacity: 1;
+    }
+}
+
+.a0-logs-lines {
     font-family: "Roboto Mono", monospace;
     font-size: 13px;
     padding: 1em;
     white-space: pre;
     overflow: auto;
+    min-height: 5em;
     
     & > .a0-inline-text {
         display: block;
@@ -28,4 +46,8 @@
         font-size: inherit !important;
         line-height: inherit !important;
     }
+}
+
+.a0-clear-button {
+    .a0-create-fab-button(@style: danger, @symbol: trash);
 }

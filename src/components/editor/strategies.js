@@ -94,7 +94,7 @@ export const EditCronJobStrategy = {
 
 function saveCronJob() {
     return saveWebtask.call(this, EditCronJobStrategy)
-        .then(webtask => webtask.createCronJob({ schedule: this.state.schedule }))
+        .then(webtask => webtask.createCronJob({ schedule: this.state.schedule, state: this.state.subject.state }))
         .tap(subject => this.setState({ subject }));
 }
 

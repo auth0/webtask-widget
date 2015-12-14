@@ -1,4 +1,5 @@
 import Genid from 'genid';
+import ComponentStack from 'lib/componentStack';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
@@ -96,7 +97,7 @@ export default class WebtaskEditor extends React.Component {
         );
         
         return (
-            <div className="a0-editor">
+            <div className="a0-editor-widget">
                 <div className="a0-editor-split">
                     <div className="a0-editor-left">
                         <div className="a0-editor-toolbar">
@@ -252,12 +253,14 @@ WebtaskEditor.propTypes = {
         React.PropTypes.instanceOf(Sandbox.CronJob),
         React.PropTypes.instanceOf(Sandbox.Webtask),
     ]),
+    mergeBody: React.PropTypes.bool,
     name: React.PropTypes.string,
     pane: React.PropTypes.string,
+    parseBody: React.PropTypes.bool,
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
-    saveButton: React.PropTypes.node,
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
+    stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
 };
 
 WebtaskEditor.defaultProps = {

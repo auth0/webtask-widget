@@ -1,0 +1,61 @@
+@import "~styles/colors.less";
+
+
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/icon.less";
+
+
+.a0-create-text-input(@style: default) {
+    background-clip: padding-box;
+    -webkit-appearance: none;
+    height: 28px;
+    line-height: 28px;
+    border: none;
+    border-radius: 4px;
+    padding: 0 0.5em;
+    
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
+    
+    &::placeholder {
+        color: darken(@input-fg-color, 40%);
+    }
+    
+    &:focus {
+        outline: none;
+    }
+    
+    .a0-set-input-style(@style: @style);
+}
+
+.a0-set-input-style(@style: default) {
+    & when (@style = dark) {
+        background-color: @input-dark-bg-color;
+        color: @input-dark-fg-color;
+    }
+    
+    & when (@style = darker) {
+        background-color: @input-darker-bg-color;
+        color: @input-darker-fg-color;
+    }
+    
+    & when (@style = default) {
+        background-color: @input-bg-color;
+        color: @input-fg-color;
+    }
+}
+
+.a0-text-input {
+    .a0-create-text-input();
+    
+    &.-dark {
+        .a0-set-input-style(@style: dark);
+    }
+    
+    &.-darker {
+        .a0-set-input-style(@style: darker);
+    }
+}

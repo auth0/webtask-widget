@@ -50,12 +50,12 @@
         <div id="editor"></div>
         <div id="logs"></div>
         <script>
-            var cronJobs = window.webtaskWidget.createCronListing({
+            var cronJobs = window.webtaskWidget.showCronListing({
                 mount: document.getElementById('cron-jobs'),
                 storeProfile: true,
             });
         
-            var editor = window.webtaskWidget.createEditor({
+            var editor = window.webtaskWidget.showEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
                 showScheduleInput: true,
@@ -64,10 +64,10 @@
                 autoSaveOnChange: true,
             });
             
-            // var logger = window.webtaskWidget.createLogger({
-            //     mount: document.getElementById('logs'),
-            //     storeProfile: true,
-            // });
+            var logger = window.webtaskWidget.showLogs({
+                mount: document.getElementById('logs'),
+                storeProfile: true,
+            });
         </script>
     </body>
 

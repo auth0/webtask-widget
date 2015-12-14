@@ -1,4 +1,8 @@
-@import "~styles/widget.less";
+@import "~styles/base.less";
+@import "~styles/iconButton.less";
+@import "~styles/inlineButton.less";
+@import "~styles/textInput.less";
+@import (reference) "~styles/colors.less";
 
 //    .a0-editor
 //        .a0-editor-split
@@ -20,17 +24,21 @@
 
 @widget-height: 500px;
 @toolbar-height: 42px;
+@toolbar-bg-color: #F4F7FC;
 @footer-height: 47px;
 @editor-height: @widget-height - @toolbar-height - @footer-height;
 @editor-width: 60%;
+@editor-bg-color: #FFF;
+@lines-bg-color: #F8F9FC;
 
-.a0-editor {
-    .a0-widget();
-    
+@sidebar-dark-color: rgb(33, 43, 58);
+@sidebar-light-color: #CCC;
+
+.a0-editor-widget {
     display: flex;
     flex-direction: column;
     
-    color: @fg-color;
+    color: @text-dark-color;
     font-family: 'avenir-next-web', ;
     font-size: 14px;
     
@@ -77,7 +85,7 @@
     display: flex;
     flex-direction: row;
     
-    background-color: @tb-bg-color;
+    background-color: @toolbar-bg-color;
     
     .a0-editor-left > & {
         align-items: stretch;
@@ -106,6 +114,31 @@
 
     & > .a0-icon-button {
         flex: 1 1 auto;
+        
+        &.-arrow-below {
+            position: relative;
+            
+            @triangle-size: 8px;
+            
+            &:after {
+                top: 100%;
+                left: 50%;
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                pointer-events: none;
+                border: solid transparent;
+                border-bottom-color: @sidebar-dark-color;
+                border-width: @triangle-size;
+                margin-left: -@triangle-size;
+                margin-top: -(2* @triangle-size);
+            }
+            
+            &.-split:after, &.-history:after {
+                border-bottom-color: @logs-dark-color;
+            }
+        }
     }
 }
 
@@ -127,8 +160,8 @@
 }
 
 .a0-error-message {
-    background-color: @danger-bg-color;
-    color: @danger-fg-color;
+    background-color: @danger-dark-color;
+    color: @danger-light-color;
     padding: 0.5em 3em;
 }
 
@@ -138,7 +171,7 @@
         
         .ace_gutter {
             background-color: @lines-bg-color;
-            color: @fg-color;
+            color: @text-dark-color;
         }
     }
 }
@@ -146,8 +179,8 @@
 .a0-editor-sidebar {
     position: relative;
     
-    background-color: @sidebar-bg-color;
-    color: @sidebar-fg-color;
+    background-color: @sidebar-dark-color;
+    color: @sidebar-light-color;
     
     & > .a0-sidebar-pane {
         position: absolute;
@@ -174,28 +207,7 @@
 .a0-sidebar-logs {
     position: relative;
     
-    & > .a0-clear {
-        .a0-icon-button();
-        
-        position: absolute;
-        background-color: @danger-bg-color;
-        color: @danger-fg-color;
-        height: 2.5em;
-        width: 2.5em;
-        border-radius: 1.25em;
-        text-align: center;
-        vertical-align: middle;
-        right: 1em;
-        bottom: 1em;
-        opacity: 0.5;
-        z-index: 1;
-    }
-    
-    &:hover > .a0-clear {
-        opacity: 1;
-    }
-    
-    & > .a0-logs-viewer {
+    & > .a0-logs-widget {
         
         position: absolute;
         top: 0;
@@ -209,14 +221,14 @@
     margin-bottom: 1em;
     
     & > .a0-title {
-        color: @inverted-fg-color;
+        color: @text-light-color;
         font-size: 16px;
         font-weight: bold;
         margin: 0 0 1em;
     }
     
     & > .a0-explanation {
-        color: darken(@inverted-fg-color, 30%);
+        color: darken(@text-light-color, 30%);
         font-size: 13px;
         
     }
@@ -227,7 +239,7 @@
     flex-direction: row;
     align-items: center;
     
-    background-color: @tb-bg-color;
+    background-color: @toolbar-bg-color;
     
     & > .a0-webtask-url {
         flex: 1 1 auto;
@@ -344,8 +356,7 @@
     }
     
     & > .a0-metric, & > .a0-value {
-        .a0-inline-text();
-        
+        color: @text-dark-color;
         margin: 0 0.5em;
         
         & > .btn {
@@ -353,7 +364,7 @@
             border: none;
             outline: none;
             border-radius: 0;
-            border-bottom: 1px solid @fg-color;
+            border-bottom: 1px solid @text-dark-color;
             
             &:hover, &:hover span, span:hover {
                 text-decoration: none;

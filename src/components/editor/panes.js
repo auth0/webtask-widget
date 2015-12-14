@@ -36,15 +36,10 @@ export const LogsPane = {
     renderBody: renderEditor,
     renderSidebar() {
         return (
-            <div className="a0-sidebar-logs">
-                <button className="a0-clear -inverted -trash"
-                    onClick={ e => this.refs.logs.clear() }
-                ></button>
-                <Logs
-                    ref="logs"
-                    sandbox={ this.props.sandbox }
-                />
-            </div>
+            <Logs
+                ref="logs"
+                sandbox={ this.props.sandbox }
+            />
         );
     },
 };

@@ -1,20 +1,8 @@
-import LogsComponent from '../components/logs';
+import Logs from 'components/logs';
+import AuthenticatedWidget from 'lib/authenticatedWidget';
 
-import Widget from '../lib/widget';
-
-export class A0LogsWidget extends Widget {
-    constructor(props) {
-        super(LogsComponent, props, {
-            requireLogin: true,
-            events: {
-                onError: 'error',
-                onEvent: 'event',
-                onMessage: 'message',
-            }
-        });
-    }
-    
-    clear(cb) {
-        return this._enqueue('clear', [], cb);
+export default class LogsWidget extends AuthenticatedWidget {
+    constructor(options) {
+        super(Logs, options);
     }
 }

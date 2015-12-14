@@ -2,7 +2,7 @@ import Cron from 'cron-parser';
 import React from 'react';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
 
-import CronEditor from 'components/cronEditor';
+import CronEditor from './cronEditor';
 import ToggleButton from 'components/toggleButton';
 
 export default class ScheduleEditor extends React.Component {

@@ -1,0 +1,68 @@
+.a0-set-icon(@where: before; @symbol: none; @rules: {}) {
+    & when (@where = before) {
+        &:before {
+            .a0-set-icon-content(@symbol);
+            
+            font-family: "budicon-font" !important;
+            content: @content;
+            font-style: normal !important;
+            font-weight: normal !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            vertical-align: middle;
+            font-size: 110%;
+            @rules();
+        }
+    }
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = none) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = add) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = back) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = confirm) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = edit) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = gear) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = history) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = key) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = remove) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = split) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = trash) {
+    @content: "";
+}
+
+.a0-set-icon-content(@symbol) when (@symbol = triangle-right) {
+    @content: "";
+}

@@ -1,13 +1,13 @@
 import React from 'react';
 
-import '../styles/toggleButton.less';
+import 'styles/toggleButton.less';
 
-export default class A0ToggleButton extends React.Component {
+export default class ToggleButton extends React.Component {
     constructor(props) {
         super(props);
         
         this.state = {
-            id: 'a0-toggle-' + A0ToggleButton.seq++,
+            id: 'a0-toggle-' + ToggleButton.seq++,
             checked: !!props.checked,
         };
     }
@@ -48,16 +48,16 @@ export default class A0ToggleButton extends React.Component {
     }
 }
 
-A0ToggleButton.seq = 0;
+ToggleButton.seq = 0;
 
-A0ToggleButton.propTypes = {
+ToggleButton.propTypes = {
     checked: React.PropTypes.bool.isRequired,
     onChange: React.PropTypes.func,
     async: React.PropTypes.bool,
     loading: React.PropTypes.bool,
 };
 
-A0ToggleButton.defaultProps = {
+ToggleButton.defaultProps = {
     async: false,
     loading: false,
 };
