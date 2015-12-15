@@ -60,6 +60,7 @@ export const CreateCronJobStrategy = {
         };
     },
     onChangeState: function (state) {
+        console.log('CronCronJobStrategy.onChangeState', state);
         this.setState({ jobState: state });
     },
     onSave: saveCronJob,
@@ -93,8 +94,10 @@ export const EditCronJobStrategy = {
 
 
 function saveCronJob() {
+    const jobState = this.getJobState();
+    
     return saveWebtask.call(this, EditCronJobStrategy)
-        .then(webtask => webtask.createCronJob({ schedule: this.state.schedule, state: this.state.subject.state }))
+        .then(webtask => webtask.createCronJob({ schedule: this.state.schedule, state: jobState }))
         .tap(subject => this.setState({ subject }));
 }
 

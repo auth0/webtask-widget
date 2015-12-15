@@ -75,12 +75,18 @@
     }
     
     // Hovering
-    & > tbody > tr:hover {
+    & > tbody.a0-cronlist-listing > tr:hover {
         background-color: #E8EEF9;
         
         & > td:first-child {
             color: #4D97C0;
         }
+    }
+}
+
+.a0-cronlist-empty {
+    .a0-icon-button {
+        margin-right: 1em;
     }
 }
 
@@ -97,5 +103,20 @@
     
     &:focus {
         outline: none;
+    }
+}
+
+.a0-cron-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1em;
+    
+    &:empty {
+        display: none;
+    }
+    
+    & > .a0-inline-button {
+        flex: 0 0 auto;
     }
 }

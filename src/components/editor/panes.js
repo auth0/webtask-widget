@@ -55,7 +55,6 @@ export const SchedulePane = {
                 schedule={ this.state.schedule }
                 state={ this.getJobState() }
                 stateChangePending={ this.state.jobStateChangePending }
-                cronJob={ this.state.subject }
                 onChangeSchedule={ schedule => this.onChangeSchedule(schedule) }
                 onChangeState={ state => this.onChangeState(state) }
             />

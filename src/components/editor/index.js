@@ -27,6 +27,7 @@ export default class WebtaskEditor extends React.Component {
         this.state = {
             code: this.props.code || this.strategy.defaultCode,
             currentPane: this.strategy.defaultPane,
+            jobState: this.props.jobState,
             mergeBody: typeof this.props.mergeBody !== 'undefined'
                 ?   this.props.mergeBody
                 :   this.strategy.defaultMergeBody,
@@ -156,6 +157,7 @@ export default class WebtaskEditor extends React.Component {
     }
     
     onChangeState(state) {
+        console.log('Editor.onChangeState', state);
         this.strategy.onChangeState.call(this, state);
     }
     
@@ -190,15 +192,19 @@ export default class WebtaskEditor extends React.Component {
                     }
                 }
                 
+                const data = {
+                    data: {
+                        headers: headers,
+                        statusCode: res.status,
+                        body: res.body || res.text,
+                    },
+                };
+                
                 if (this.refs.logs) {
-                    this.refs.logs.push({
-                        data: {
-                            headers: headers,
-                            statusCode: res.status,
-                            body: res.body || res.text,
-                        },
-                    });
+                    this.refs.logs.push(data);
                 }
+                
+                if (this.props.onRun) this.props.onRun(data);
             })
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ runInProgress: false }));
@@ -206,6 +212,7 @@ export default class WebtaskEditor extends React.Component {
     
     onClickSave() {
         const error = this.validate();
+        const noop = () => undefined;
         
         if (error) {
             return this.setState({ error });
@@ -214,6 +221,7 @@ export default class WebtaskEditor extends React.Component {
         this.setState({ saveInProgress: true });
         
         this.strategy.onSave.call(this)
+            .tap(this.props.onSave || noop)
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ saveInProgress: false }));
     }
@@ -253,8 +261,11 @@ WebtaskEditor.propTypes = {
         React.PropTypes.instanceOf(Sandbox.CronJob),
         React.PropTypes.instanceOf(Sandbox.Webtask),
     ]),
+    jobState: React.PropTypes.oneOf(['active', 'inactive']),
     mergeBody: React.PropTypes.bool,
     name: React.PropTypes.string,
+    onRun: React.PropTypes.func,
+    onSave: React.PropTypes.func,
     pane: React.PropTypes.string,
     parseBody: React.PropTypes.bool,
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
@@ -265,6 +276,7 @@ WebtaskEditor.propTypes = {
 
 WebtaskEditor.defaultProps = {
     cron: false,
+    jobState: 'inactive',
     name: Genid(10),
     schedule: '',
     secrets: {},

@@ -108,7 +108,7 @@ CronListRow.propTypes = {
     createdAt: React.PropTypes.string.isRequired,
     lastResult: React.PropTypes.shape({
         type: React.PropTypes.oneOf(['success', 'error']),
-    }).isRequired,
+    }),
     name: React.PropTypes.string.isRequired,
     nextAvailableAt: React.PropTypes.string.isRequired,
     state: React.PropTypes.oneOf(['active', 'expired', 'inactive', 'invalid']).isRequired,

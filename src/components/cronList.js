@@ -26,11 +26,13 @@ export default class CronList extends React.Component {
     render() {
         const errorMessage = this.state.error
             ?   (
-                    <tr className="a0-error-row">
-                        <td className="a0-error-message" colSpan={ 99 }>
-                            { this.state.error.message }
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr className="a0-error-row">
+                            <td className="a0-error-message" colSpan={ 99 }>
+                                { this.state.error.message }
+                            </td>
+                        </tr>
+                    </tbody>
                 )
             :   null;
         
@@ -46,12 +48,12 @@ export default class CronList extends React.Component {
             <tbody className="a0-cronlist-empty">
                 <tr>
                     <td className="a0-cronlist-colspan" colSpan="99">
-                        <p>No cron jobs found.</p>
-                        <button className="a0-inline-button -primary"
+                        <button className="a0-icon-button -refresh"
                             onClick={ e => this.refreshJobs() }
                         >
                             Refresh
                         </button>
+                        No scheduled jobs were found.
                     </td>
                 </tr>
             </tbody>
@@ -62,7 +64,7 @@ export default class CronList extends React.Component {
                 ?   loadingBody
                 :   emptyBody
             :   (
-                    <tbody>
+                    <tbody className="a0-cronlist-listing">
                         {
                             this.state.jobs.map(job => (
                                 <CronListRow key={ job.name }
@@ -72,7 +74,7 @@ export default class CronList extends React.Component {
                                     name={ job.name }
                                     nextAvailableAt={ job.next_available_at }
                                     onClick={ () => this.onClickJob(job) }
-                                    onClickDestroy={ () => this.onDeleteJob(job) }
+                                    onClickDestroy={ () => this.onClickDestroy(job) }
                                     onChangeState={ (state) => this.onChangeJobState(job, state) }
                                     state={ job.state }
                                     stateChangeInProgress={ !!job.stateChangeInProgress }
@@ -81,6 +83,18 @@ export default class CronList extends React.Component {
                         }
                     </tbody>
                 );
+        
+        const createButton = this.props.showCreateButton
+            ?   (
+                    <button
+                        className="a0-inline-button -success"
+                        onClick={ e => this.onClickCreate() }
+                    >
+                        Create
+                    </button>
+                )
+            : null;
+
         
         return (
             <div className="a0-cron-widget">
@@ -94,8 +108,12 @@ export default class CronList extends React.Component {
                             <th>Last result</th>
                         </tr>
                     </thead>
+                    { errorMessage }
                     { tableBody }
                 </table>
+                <div className="a0-cron-actions">
+                    { createButton }
+                </div>
             </div>
         );
     }
@@ -113,6 +131,28 @@ export default class CronList extends React.Component {
                 
                 this.setState({ jobs: this.state.jobs.slice() });
             });
+    }
+    
+    onClickCreate() {
+        const unmount = () => {
+            editor.unmount();
+            this.refreshJobs();
+        };
+        
+        const backButton = (
+            <button className="a0-icon-button -back"
+                onClick={ unmount }
+            >Back</button>
+        );
+
+        const editor = this.props.stack.push(Editor, {
+            backButton,
+            cron: true,
+            sandbox: this.props.sandbox,
+            mergeBody: false,
+            onSave: unmount,
+            parseBody: true,
+        });
     }
     
     onClickDestroy(job) {
@@ -180,7 +220,12 @@ export default class CronList extends React.Component {
 }
 
 
-CronList.proptTypes = {
+CronList.propTypes = {
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
+    showCreateButton: React.PropTypes.bool,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+};
+
+CronList.defaultProps = {
+    showCreateButton: true,
 };
