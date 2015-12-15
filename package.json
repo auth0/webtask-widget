@@ -4,13 +4,11 @@
   "description": "Embeddable webtask toolkit",
   "main": "index.js",
   "dependencies": {
-    "auth0-styleguide": "auth0/styleguide",
     "bluebird": "^2.9.33",
     "bootstrap": "^3.3.5",
     "brace": "^0.5.1",
     "cron-parser": "^1.0.1",
     "element-resize-detector": "^1.0.3",
-    "eventemitter3": "^1.1.1",
     "genid": "^0.1.0",
     "human-to-cron": "^0.1.7",
     "jwt-decode": "^1.4.0",
@@ -18,13 +16,10 @@
     "lodash.isequal": "^3.0.4",
     "lodash.mapvalues": "^3.0.1",
     "lodash.merge": "^3.3.2",
-    "randexp": "^0.4.1",
     "react": "^0.14.3",
-    "react-bootstrap": "^0.27.3",
     "react-copy-to-clipboard": "^3.0.4",
     "react-dom": "^0.14.3",
     "react-json-inspector": "^6.0.0",
-    "react-mixin": "^3.0.1",
     "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
     "sandboxjs": "v2.0.0-pre.03",
@@ -54,7 +49,7 @@
     "uglifyjs": "^2.4.10",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.2",
-    "webpack-dev-server": "^1.12.1"
+    "webpack-dev-server": "^1.14.0"
   },
   "scripts": {
     "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack -p --output-path='./dist' --output-filename='[name].min.js'",
@@ -62,5 +57,6 @@
     "test": "lab -v"
   },
   "author": "Geoff Goodman",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }

@@ -1,22 +1,13 @@
-import Genid from 'genid';
+import CronListRow from 'components/cronListRow';
+import Editor from 'components/editor';
+import ComponentStack from 'lib/componentStack';
 import React from 'react';
 import Sandbox from 'sandboxjs';
-import TimeAgo from 'react-timeago';
 
-import ComponentStack from '../lib/componentStack';
-
-import Alert from '../components/alert';
-import Button from '../components/button';
-import CronView from '../components/cronView';
-import ToggleButton from '../components/toggleButton';
+import 'styles/cronList.less';
 
 
-import { A0EditorWidget } from '../widgets/editor';
-
-import '../styles/cronList.less';
-
-
-export default class A0CronJobList extends React.Component {
+export default class CronList extends React.Component {
     constructor(props) {
         super(props);
 
@@ -33,30 +24,81 @@ export default class A0CronJobList extends React.Component {
     }
     
     render() {
-        const props = this.props;
-        const state = this.state;
-        
-        const loading = state.jobs.length === 0 && state.loadingJobs;
+        const errorMessage = this.state.error
+            ?   (
+                    <tbody>
+                        <tr className="a0-error-row">
+                            <td className="a0-error-message" colSpan={ 99 }>
+                                { this.state.error.message }
+                            </td>
+                        </tr>
+                    </tbody>
+                )
+            :   null;
         
         const loadingBody = (
-            <tbody className="a0-conlist-loading">
+            <tbody className="a0-cronlist-loading">
                 <tr>
                     <td className="a0-cronlist-colspan" colSpan="99">Loading cron jobs...</td>
                 </tr>
             </tbody>
         );
         
+        const emptyBody = (
+            <tbody className="a0-cronlist-empty">
+                <tr>
+                    <td className="a0-cronlist-colspan" colSpan="99">
+                        <button className="a0-icon-button -refresh"
+                            onClick={ e => this.refreshJobs() }
+                        >
+                            Refresh
+                        </button>
+                        No scheduled jobs were found.
+                    </td>
+                </tr>
+            </tbody>
+        );
+        
+        const tableBody = this.state.jobs.length === 0
+            ?   this.state.loadingJobs
+                ?   loadingBody
+                :   emptyBody
+            :   (
+                    <tbody className="a0-cronlist-listing">
+                        {
+                            this.state.jobs.map(job => (
+                                <CronListRow key={ job.name }
+                                    createdAt={ job.created_at }
+                                    disabled={ this.state.inspectingJob }
+                                    lastResult={ job.results && job.results[0] }
+                                    name={ job.name }
+                                    nextAvailableAt={ job.next_available_at }
+                                    onClick={ () => this.onClickJob(job) }
+                                    onClickDestroy={ () => this.onClickDestroy(job) }
+                                    onChangeState={ (state) => this.onChangeJobState(job, state) }
+                                    state={ job.state }
+                                    stateChangeInProgress={ !!job.stateChangeInProgress }
+                                />
+                            ))
+                        }
+                    </tbody>
+                );
+        
+        const createButton = this.props.showCreateButton
+            ?   (
+                    <button
+                        className="a0-inline-button -success"
+                        onClick={ e => this.onClickCreate() }
+                    >
+                        Create
+                    </button>
+                )
+            : null;
+
+        
         return (
-            <div className="a0-cron-list">
-                { state.error
-                ?   (
-                        <Alert bsStyle="danger">
-                            { state.error.message }
-                        </Alert>
-                    )
-                :   null
-                }
-                <table className="a0-vertical-table -striped -hover">
+            <div className="a0-cron-widget">
+                <table className="a0-cron-listing">
                     <thead>
                         <tr>
                             <th>Job name</th>
@@ -66,138 +108,54 @@ export default class A0CronJobList extends React.Component {
                             <th>Last result</th>
                         </tr>
                     </thead>
-                    { loading
-                    ?   loadingBody
-                    :   (
-                            <tbody>
-                                { state.jobs && state.jobs.length
-                                ?   state.jobs.map((job, index) => 
-                                        <A0CronJobRow
-                                            key={ job.name } 
-                                            job={ job }
-                                            disabled={ loading }
-                                            loading={ job.loading }
-                                            onClick={ job => this.editJob(job) }
-                                            onClickDestroy={ job => this.onDeleteJob(job) }
-                                            onChangeState={ (job, state) => this.onChangeJobState(job, state) }
-                                            removeCronJob={ props.sandbox.removeCronJob.bind(props.sandbox) }
-                                        />
-                                    )
-                                :   (
-                                        <tr className="a0-cronlist-empty">
-                                            <td className="a0-cronlist-colspan" colSpan="99">
-                                                No jobs found.
-                                                
-                                                <Button
-                                                    bsStyle="link"
-                                                    bsSize="sm"
-                                                    onClick={ e => this.refreshJobs() }
-                                                >Refresh</Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                }
-                            </tbody>
-                        )
-                    }
+                    { errorMessage }
+                    { tableBody }
                 </table>
-                <div className="a0-button-list -right">
-                    <button
-                        className="a0-inline-button"
-                        disabled={ loading }
-                        onClick={ e => loading ? null : this.refreshJobs() }
-                    >
-                        { state.loadingJobs
-                        ?   'Refreshing...'
-                        :   'Refresh'
-                        }
-                    </button>
-
-                    { props.showCreateButton
-                    ?   (
-                            <button
-                                className="a0-inline-button -success"
-                                onClick={ e => this.createJob() }
-                            >
-                                Create
-                            </button>
-                        )
-                    : null
-                    }
+                <div className="a0-cron-actions">
+                    { createButton }
                 </div>
-
             </div>
         );
     }
     
-    createJob() {
+    // Non-React API:
+    
+    onChangeJobState(job, state) {
+        job.stateChangeInProgress = true;
+        
+        this.setState({ jobs: this.state.jobs.slice() });
+        
+        job.setJobState({ state })
+            .finally(() => {
+                job.stateChangeInProgress = false;
+                
+                this.setState({ jobs: this.state.jobs.slice() });
+            });
+    }
+    
+    onClickCreate() {
+        const unmount = () => {
+            editor.unmount();
+            this.refreshJobs();
+        };
+        
         const backButton = (
             <button className="a0-icon-button -back"
-                onClick={ e => {
-                    editor.destroy();
-                    this.refreshJobs();
-                }}
+                onClick={ unmount }
             >Back</button>
         );
-        
-        var editor = new A0EditorWidget(Object.assign({}, this.props, {
+
+        const editor = this.props.stack.push(Editor, {
             backButton,
             cron: true,
+            sandbox: this.props.sandbox,
             mergeBody: false,
+            onSave: unmount,
             parseBody: true,
-            name: Genid(12),
-        }));
-    }
-    
-    refreshJobs() {
-        this.setState({ loadingJobs: true, error: null });
-        
-        return this.props.sandbox.listCronJobs()
-            .tap((jobs) => this.setState({ jobs }))
-            .catch((error) => this.setState({ error }))
-            .finally(() => this.setState({ loadingJobs: false }));
-    }
-    
-    editJob(job) {
-        this.setState({
-            inspectingJob: job,
         });
-        
-        job.inspect({
-            fetch_code: true,
-            decrypt: true,
-        })
-            .then(tokenData => {
-                const backButton = (
-                    <button className="a0-icon-button -back"
-                        onClick={ e => { editor.destroy(); this.refreshJobs(); } }
-                    >Back</button>
-                );
-        
-                const editor = new A0EditorWidget(Object.assign({}, this.props, {
-                    backButton,
-                    schedule: job.schedule,
-                    cron: true,
-                    edit: job,
-                    code: tokenData.code,
-                    secrets: tokenData.ectx,
-                    mergeBody: !!tokenData.mb,
-                    parseBody: !!tokenData.pb,
-                    name: job.name || tokenData.jtn,
-                }));
-            })
-            .catch(error => this.setState({ error }))
-            .finally(() => this.setState({ inspectingJob: null }));
     }
     
-    viewJob(job) {
-        this.props.componentStack.push(CronView, Object.assign({}, this.props, { job }))
-            .promise
-            .catch(e => e)
-            .finally(() => this.refreshJobs());
-    }
-    
-    onDeleteJob(job) {
+    onClickDestroy(job) {
         if (confirm('Are you sure you want to delete this cron job?\n\n This action can not be undone.')) {
             const jobs = this.state.jobs.slice();
             const idx = this.state.jobs.indexOf(job);
@@ -208,137 +166,66 @@ export default class A0CronJobList extends React.Component {
             }
             
             job.remove()
-                .catch(error => this.setState({ error }));
+                .catch(error => {
+                    const jobs = this.state.jobs.slice();
+                    
+                    jobs.splice(idx, 0, job);
+                    
+                    this.setState({ error, jobs });
+                });
         }
     }
     
-    onChangeJobState(job, state) {
-    }
-}
-
-A0CronJobList.propTypes = {
-    componentStack:         React.PropTypes.instanceOf(ComponentStack).isRequired,
-    sandbox:                React.PropTypes.instanceOf(Sandbox).isRequired,
-    showCreateButton:       React.PropTypes.bool,
-};
-
-A0CronJobList.defaultProps = {
-    showCreateButton:       true,
-};
-
-class A0CronJobRow extends React.Component {
-    constructor() {
-        super();
-
-        this.state = {
-            destroyingJob: false 
-        };
-    }
-    destroyJob() {
-        this.setState({ destroyingJob: true });
+    onClickJob(job) {
+        this.setState({
+            inspectingJob: job,
+        });
         
-        this.props.removeCronJob({ name: this.props.job.name })
-            .tap(() => this.setState({ destroyingJob: false }))
-            .then(job => this.props.reject(new Error('User destroyed job.')))
-            .catch(error => this.setState({ error }));
-    }
-
-    render() {
-        const props = this.props;
-        const state = this.state;
+        job.inspect({
+            fetch_code: true,
+            decrypt: true,
+        })
+            .tap(tokenData => {
+                const backButton = (
+                    <button className="a0-icon-button -back"
+                        onClick={ e => { editor.unmount(); this.refreshJobs(); } }
+                    >Back</button>
+                );
         
-        const job = props.job;
-        const resultClasses = {
-            success: '-success',
-            error: '-danger',
-        };
-        const stateClasses = {
-            active: '-success',
-            invalid: '-danger',
-            expired: '-warning',
-        };
-        const lastResult = job.results.length
-        ?   job.results[0]
-        :   null;
-
-        const onClickRow = e => {
-            // Stop inline buttons from triggering row click
-            e.stopPropagation();
-
-            if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT')
-                return props.onClick(this.props.job);
-        };
-
-        const onClickDestroy = e => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (this.props.onClickDestroy) this.props.onClickDestroy(this.props.job);
-        }
-
-        
-        return (
-            <tr className="a0-cronlist-job" disabled={ props.disabled } onClick={ onClickRow }>
-                <td>{ job.name }</td>
-                <td>
-                    <TimeAgo
-                        date={ job.created_at }
-                    />
-                </td>
-                <td className="_fit-content">
-                    <ToggleButton
-                        ref="state"
-                        disabled={ job.state === 'expired' || job.state === 'invalid' }
-                        checked={ job.state === 'active' }
-                        loading={ state.changingState }
-                        async
-                        onChange={ checked => this.onChangeState(checked) }
-                    />
-                </td>
-                <td>
-                    { job.state === 'expired'
-                    ?   'Expired'
-                    :   job.state === 'active'
-                        ?   (
-                                <TimeAgo
-                                    date={ job.scheduled_at || job.next_available_at }
-                                />
-                            )
-                        :   '-'
-                    }
-                </td>
-                <td className="_fit-content">
-                    { lastResult
-                    ?   (
-                            <div>
-                                <span className={ `a0-inline-text -sentence ${resultClasses[lastResult.type]}` }>{ lastResult.type }</span>
-                            </div>
-                        )
-                    : "-"
-                    }
-                    <button
-                        className="a0-row-delete"
-                        type="button"
-                        onClick={ onClickDestroy }
-                    >
-                        &times;
-                    </button>
-                </td>
-            </tr>
-        );
+                const editor = this.props.stack.push(Editor, {
+                    backButton,
+                    code: tokenData.code,
+                    cron: true,
+                    edit: job,
+                    name: job.name || tokenData.jtn,
+                    sandbox: this.props.sandbox,
+                    schedule: job.schedule,
+                    secrets: tokenData.ectx,
+                    mergeBody: !!tokenData.mb,
+                    parseBody: !!tokenData.pb,
+                });
+            })
+            .catch(error => this.setState({ error }))
+            .finally(() => this.setState({ inspectingJob: null }));
     }
     
-    onChangeState(state) {
-        const job = this.props.job;
-        const newState = state ? 'active' : 'inactive';
+    refreshJobs() {
+        this.setState({ loadingJobs: true, error: null });
         
-        this.setState({ changingState: true });
-        
-        job.setJobState({ state: newState })
-            .finally(() => {
-                this.setState({ changingState: false });
-                // I feel dirty.
-                // this.refs.state.forceUpdate();
-            });
+        return this.props.sandbox.listCronJobs()
+            .tap((jobs) => this.setState({ jobs }))
+            .catch((error) => this.setState({ error }))
+            .finally(() => this.setState({ loadingJobs: false }));
     }
 }
+
+
+CronList.propTypes = {
+    sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
+    showCreateButton: React.PropTypes.bool,
+    stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+};
+
+CronList.defaultProps = {
+    showCreateButton: true,
+};

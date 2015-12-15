@@ -1,8 +1,7 @@
 import Cron from 'cron-parser';
 import React from 'react';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
 
-import CronEditor from 'components/cronEditor';
+import CronEditor from './cronEditor';
 import ToggleButton from 'components/toggleButton';
 
 export default class ScheduleEditor extends React.Component {
@@ -15,12 +14,11 @@ export default class ScheduleEditor extends React.Component {
         
         this.state = {
             advanced: !!props.schedule,
-            schedule: props.schedule || this.createIntervalSchedule(now, frequencyMetric, frequencyValue),
-            frequencyValue,
-            frequencyMetric,
-            cronJob: props.cronJob,
-            now: now,
             currentDate: now,
+            frequencyMetric,
+            frequencyValue,
+            now: now,
+            schedule: props.schedule || this.createIntervalSchedule(now, frequencyMetric, frequencyValue),
         };
     }
     
@@ -36,9 +34,6 @@ export default class ScheduleEditor extends React.Component {
     }
     
     render() {
-        const props = this.props;
-        const state = this.state;
-        
         const schedule = this.getValue();
         let nextRun;
         
@@ -47,7 +42,7 @@ export default class ScheduleEditor extends React.Component {
                 currentDate: this.state.currentDate,
             });
             const next = cron.next();
-            const startOfToday = new Date(state.now.valueOf());
+            const startOfToday = new Date(this.state.now.valueOf());
             const days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
             
             startOfToday.setHours(0);
@@ -78,11 +73,8 @@ export default class ScheduleEditor extends React.Component {
         } catch (e) { }
         
         const metrics = Object.keys(ScheduleEditor.frequencyMetrics);
-        const allowed = ScheduleEditor.frequencyMetrics[state.frequencyMetric].allowed;
-        const frequencyValueLabel = allowed[state.frequencyValue];
-        const jobState = props.cronJob
-            ?   props.cronJob.state
-            :   'disabled';
+        const allowed = ScheduleEditor.frequencyMetrics[this.state.frequencyMetric].allowed;
+        const frequencyValueLabel = allowed[this.state.frequencyValue];
         
         return (
             <div className="a0-schedule-pane">
@@ -90,7 +82,7 @@ export default class ScheduleEditor extends React.Component {
                     { nextRun
                     ?   (
                             <div className="a0-next-run">
-                                <span className="a0-inline-text -inverted -bright">Next run { state.cronJob && state.cronJob.state === 'active' ? 'will' : 'would' } be&nbsp;</span>
+                                <span className="a0-inline-text -inverted -bright">Next run { this.props.state === 'active' ? 'will' : 'would' } be&nbsp;</span>
                                 <span className="a0-inline-text -inverted -primary">{ nextRun.day }</span>
                                 <span className="a0-inline-text -inverted -bright">&nbsp;at&nbsp;</span>
                                 <span className="a0-inline-text -inverted -primary">{ nextRun.time }</span>
@@ -104,62 +96,60 @@ export default class ScheduleEditor extends React.Component {
                     }
                     <ToggleButton
                         ref="state"
-                        disabled={ jobState !== 'active' && jobState !== 'inactive' }
-                        loading={ props.stateChangePending }
-                        checked={ jobState === 'active' }
+                        disabled={ this.props.state !== 'active' && this.props.state !== 'inactive' }
+                        loading={ this.props.stateChangePending }
+                        checked={ this.props.state === 'active' }
                         onChange={ checked => this.onChangeState(!checked) }
                     />
                 </div>
-                <div className="a0-schedule-editor" disabled={ state.advanced }>
+                <div className="a0-schedule-editor" disabled={ this.state.advanced }>
                     <span className="a0-inline-text -inverted -bright">Run this every</span>
                     { Object.keys(allowed).length > 1
                     ?   (
-                            <DropdownButton
+                            <select
                                 className="a0-value"
-                                bsStyle="link"
-                                disabled={ state.advanced }
-                                noCaret={ false }
+                                disabled={ this.state.advanced }
                                 title={ frequencyValueLabel }
-                                onSelect={ (e, frequencyValue) => this.onChangeFrequencyValue(frequencyValue) }
+                                onChange={ (e) => this.onChangeFrequencyValue(e.target.value) }
                                 id="frequencyValue"
+                                value={ this.state.frequencyValue }
                             >
                                 {
                                     Object.keys(allowed).map(i => (
-                                        <MenuItem
+                                        <option
                                             eventKey={ i }
                                             key={ i }
-                                            active={ state.frequencyValue === i }
-                                        >{ allowed[i] }</MenuItem>
+                                            value={ i }
+                                        >{ allowed[i] }</option>
                                     ))
                                 }
-                            </DropdownButton>
+                            </select>
                         )
                     :   null
                     }
-                    <DropdownButton
+                    <select
                         className="a0-metric"
-                        bsStyle="link"
-                        disabled={ state.advanced }
-                        noCaret={ false }
-                        title={ state.frequencyMetric }
-                        onSelect={ (e, frequencyMetric) => this.onChangeFrequencyMetric(frequencyMetric) }
+                        disabled={ this.state.advanced }
+                        title={ this.state.frequencyMetric }
+                        onChange={ (e) => this.onChangeFrequencyMetric(e.target.value) }
                         id="frequencyMetric"
+                        value={ this.state.frequencyMetric }
                     >
                         {
                             metrics.map(value => (
-                                <MenuItem
+                                <option
                                     eventKey={ value }
                                     key={ value }
-                                    active={ state.frequencyMetric === value }
-                                >{ value }</MenuItem>
+                                    value={ value }
+                                >{ value }</option>
                             ))
                         }
-                    </DropdownButton>
+                    </select>
                 </div>
                 <div className="a0-advanced-cron">
                     <label>
                         <input className="a0-toggle" type="checkbox"
-                            checked={ state.advanced }
+                            checked={ this.state.advanced }
                             onChange={ e => this.setState({ advanced: e.target.checked }) }
                         />
                         <span className="a0-label -inverted -bright">Write an advanced schedule</span>
@@ -168,7 +158,7 @@ export default class ScheduleEditor extends React.Component {
                 <CronEditor
                     ref="schedule"
                     value={ schedule }
-                    disabled={ !state.advanced }
+                    disabled={ !this.state.advanced }
                     onChange={ (schedule) => this.onChangeSchedule(schedule) }
                 />
             </div>
@@ -250,7 +240,7 @@ export default class ScheduleEditor extends React.Component {
     onChangeState(state) {
         const newState = state ? 'active' : 'inactive';
         
-        console.log('onChangeState', state, newState);
+        console.log('ScheduleEditor.onChangeState', state, newState);
         
         this.props.onChangeState(newState);
     }
@@ -297,7 +287,6 @@ ScheduleEditor.frequencyMetrics = {
 };
 
 ScheduleEditor.propTypes = {
-    schedule: React.PropTypes.string,
     onChangeSchedule: React.PropTypes.func.isRequired,
     onChangeState: React.PropTypes.func.isRequired,
     schedule: React.PropTypes.string,

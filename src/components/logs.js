@@ -1,12 +1,11 @@
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
-import Alert from '../components/alert';
 import Inspector from 'react-object-inspector';
 
-import '../styles/logs.less';
+import 'styles/logs.less';
 
-export default class A0Logs extends React.Component {
+export default class Logs extends React.Component {
     constructor(props) {
         super(props);
 
@@ -76,22 +75,27 @@ export default class A0Logs extends React.Component {
 
     render() {
         return (
-            <div className="a0-logs-viewer" ref="lines">
-                {
-                    this.state.logs.map((line, i) => (
-                        <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>
-                            { line.time.toLocaleTimeString() + ': ' }
-                            { line.data
-                            ?   (
-                                    <div className="a0-inline-inspector">
-                                        <Inspector data={ line.data } name="result" />
-                                    </div>
-                                )
-                            :   line.msg
-                            }
-                        </span>
-                    ))
-                }
+            <div className="a0-logs-widget">
+                <div className="a0-logs-lines" ref="lines">
+                    {
+                        this.state.logs.map((line, i) => (
+                            <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>
+                                { line.time.toLocaleTimeString() + ': ' }
+                                { line.data
+                                ?   (
+                                        <div className="a0-inline-inspector">
+                                            <Inspector data={ line.data } name="result" />
+                                        </div>
+                                    )
+                                :   line.msg
+                                }
+                            </span>
+                        ))
+                    }
+                </div>
+                <button className="a0-clear-button"
+                    onClick={ e => this.clear() }
+                ></button>
             </div>
         );
     }
@@ -113,9 +117,9 @@ export default class A0Logs extends React.Component {
     }
 }
 
-A0Logs.title = 'View webtask logs';
+Logs.title = 'View webtask logs';
 
-A0Logs.propTypes = {
+Logs.propTypes = {
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
     onMessage: React.PropTypes.func,
     onEvent: React.PropTypes.func,

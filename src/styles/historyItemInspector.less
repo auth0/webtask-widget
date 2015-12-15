@@ -1,4 +1,5 @@
-@import (reference) "~styles/widget.less";
+@import "~styles/base.less";
+@import (reference) "~styles/colors.less";
 
 .a0-history-inspector {
     position: absolute;
@@ -8,8 +9,8 @@
     left: 0;
     overflow: auto;
     
-    background-color: @logs-bg-color;
-    color: @logs-fg-color;
+    background-color: @logs-dark-color;
+    color: @logs-light-color;
     font-size: 13px;
     font-family: "Roboto Mono", monospace;
     padding: 1.5em;

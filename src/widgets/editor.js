@@ -1,22 +1,8 @@
-import EditorComponent from '../components/editor';
+import Editor from 'components/editor';
+import AuthenticatedWidget from 'lib/authenticatedWidget';
 
-import Widget from '../lib/widget';
-
-export class A0EditorWidget extends Widget {
-    constructor(props) {
-        super(EditorComponent, props, {
-            requireLogin: true,
-            events: {
-                onSave: 'save',
-            }
-        });
-    }
-    
-    run(fn) {
-        return this._enqueue('runTestWebtask', [], fn);
-    }
-    
-    save(fn) {
-        return this._enqueue('saveWebtask', [], fn);
+export default class EditorWidget extends AuthenticatedWidget {
+    constructor(options) {
+        super(Editor, options);
     }
 }

@@ -1,0 +1,125 @@
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/icon.less";
+
+
+.a0-create-icon-button(@style: default; @symbol: none) {
+    border: none;
+    background: transparent;
+    color: inherit;
+    line-height: 28px;
+    margin: 0;
+    padding: 0 0.5em;
+    
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
+    
+    &:focus {
+        outline: none;
+    }
+     
+    &:not(:empty):before {
+        padding-right: 0.5em;
+    }
+   
+    .a0-set-icon(@symbol: @symbol);
+    .a0-set-icon-button-style(@style: @style);
+}
+
+.a0-set-icon-button-style(@style: default) {
+    & when (@style = danger) {
+        color: #fff;
+    }
+    
+    & when (@style = danger) {
+        color: @danger-dark-color;
+    }
+    
+    & when (@style = inverted) {
+        color: @text-light-color;
+    }
+    
+    & when (@style = muted) {
+        color: darken(@text-light-color, 40%);
+    }
+    
+    & when (@style = primary) {
+        color: @primary-dark-color;
+    }
+    
+    & when (@style = success) {
+        color: @success-dark-color;
+    }
+}
+
+.a0-icon-button {
+    .a0-create-icon-button();
+    
+    &.-bright {
+        .a0-set-icon-button-style(@style: bright);
+    }
+    
+    &.-danger {
+        .a0-set-icon-button-style(@style: danger);
+    }
+    
+    &.-inverted {
+        .a0-set-icon-button-style(@style: inverted);
+    }
+    
+    &.-muted {
+        .a0-set-icon-button-style(@style: muted);
+    }
+    
+    &.-primary {
+        .a0-set-icon-button-style(@style: primary);
+    }
+    
+    &.-success {
+        .a0-set-icon-button-style(@style: success);
+    }
+    
+    
+    
+    &.-add {
+        .a0-set-icon(@symbol: add);
+    }
+    
+    &.-back {
+        .a0-set-icon(@symbol: back);
+    }
+    
+    &.-confirm {
+        .a0-set-icon(@symbol: confirm);
+    }
+    
+    &.-edit {
+        .a0-set-icon(@symbol: edit);
+    }
+    
+    &.-gear {
+        .a0-set-icon(@symbol: gear);
+    }
+    
+    &.-history {
+        .a0-set-icon(@symbol: history);
+    }
+    
+    &.-key {
+        .a0-set-icon(@symbol: key);
+    }
+    
+    &.-refresh {
+        .a0-set-icon(@symbol: refresh);
+    }
+    
+    &.-remove {
+        .a0-set-icon(@symbol: remove);
+    }
+    
+    &.-split {
+        .a0-set-icon(@symbol: split);
+    }
+}

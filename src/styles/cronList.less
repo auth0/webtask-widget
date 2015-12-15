@@ -1,10 +1,6 @@
-@import "~styles/widget.less";
+@import (reference) "~styles/colors.less";
 
-.a0-cron-list {
-    .a0-widget();
-}
-
-.a0-vertical-table {
+.a0-cron-listing {
     width: 100%;
     max-width: 100%;
     border: none;
@@ -73,20 +69,24 @@
         }
     }
     
-    &.-striped {
-        & > tbody > tr:nth-of-type(odd) {
-            background-color: @tbody-stripe-bg-color;
-        }
+    // Striping
+    & > tbody > tr:nth-of-type(odd) {
+        background-color: @tbody-stripe-bg-color;
     }
     
-    &.-hover {
-        & > tbody > tr:hover {
-            background-color: #E8EEF9;
-            
-            & > td:first-child {
-                color: #4D97C0;
-            }
+    // Hovering
+    & > tbody.a0-cronlist-listing > tr:hover {
+        background-color: #E8EEF9;
+        
+        & > td:first-child {
+            color: #4D97C0;
         }
+    }
+}
+
+.a0-cronlist-empty {
+    .a0-icon-button {
+        margin-right: 1em;
     }
 }
 
@@ -96,12 +96,27 @@
     margin: 0;
     padding: 0.5em 1em;
     background-color: #F85C5B;
-    color: @fg-color;
+    color: @text-dark-color;
     font-size: 140%;
     font-weight: bold;
     vertical-align: middle;
     
     &:focus {
         outline: none;
+    }
+}
+
+.a0-cron-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1em;
+    
+    &:empty {
+        display: none;
+    }
+    
+    & > .a0-inline-button {
+        flex: 0 0 auto;
     }
 }

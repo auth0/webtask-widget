@@ -1,0 +1,65 @@
+@import "~styles/colors.less";
+
+
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/icon.less";
+
+
+.a0-create-inline-button(@style: default) {
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+    color: inherit;
+    height: 32px;
+    line-height: 32px;
+    margin: 0;
+    padding: 0 2em;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 95%;
+    
+    &[disabled] {
+        pointer-events: none;
+        cursor: default;
+        cursor: not-allowed;
+    }
+    
+    &:focus {
+        outline: none;
+    }
+    
+    .a0-set-inline-button-style(@style: @style);
+}
+
+.a0-set-inline-button-style(@style: default) {
+    & when (@style = danger) {
+        background-color: @danger-dark-color;
+        color: @danger-light-color;
+    }
+    
+    & when (@style = primary) {
+        background-color: @primary-dark-color;
+        color: @primary-light-color;
+    }
+    
+    & when (@style = success) {
+        background-color: @success-dark-color;
+        color: @success-light-color;
+    }
+}
+
+.a0-inline-button {
+    .a0-create-inline-button();
+    
+    &.-danger {
+        .a0-set-inline-button-style(@style: danger);
+    }
+    
+    &.-primary {
+        .a0-set-inline-button-style(@style: primary);
+    }
+    
+    &.-success {
+        .a0-set-inline-button-style(@style: success);
+    }
+}
