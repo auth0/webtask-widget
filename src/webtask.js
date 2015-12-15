@@ -29,6 +29,12 @@ export function showCronListing(options = {}) {
 }
 
 /**
+ * @alias showCronListing
+ */
+export { showCronListing as createCronListing };
+
+
+/**
  * Create a widget that lets users create or edit Webtasks and Cron Jobs
  * 
  * @param {Object} [options] - Customize the behaviour and appearance of the widget
@@ -45,6 +51,11 @@ export function showEditor(options = {}) {
 }
 
 /**
+ * @alias showEditor
+ */
+export { showEditor as createEditor };
+
+/**
  * Create a widget that allows users to obtain Sandbox credentials
  * 
  * @param {Object} [options] - Customize the behaviour and appearance of the widget
@@ -56,6 +67,11 @@ export function showEditor(options = {}) {
 export function showLogin(options = {}) {
     return new LoginWidget(options);
 }
+
+/**
+ * @alias showLogin
+ */
+export { showLogin as createLogin };
 
 /**
  * Create a widget that streams logs for a container
@@ -72,3 +88,8 @@ export function showLogin(options = {}) {
 export function showLogs(options = {}) {
     return new LogsWidget(options);
 }
+
+/**
+ * @alias showLogs
+ */
+export { showLogs as createLogs };
