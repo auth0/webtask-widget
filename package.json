@@ -5,12 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^2.9.33",
-    "bootstrap": "^3.3.5",
     "brace": "^0.5.1",
     "cron-parser": "^1.0.1",
     "element-resize-detector": "^1.0.3",
     "genid": "^0.1.0",
-    "human-to-cron": "^0.1.7",
     "jwt-decode": "^1.4.0",
     "lodash.debounce": "^3.1.1",
     "lodash.isequal": "^3.0.4",
@@ -22,7 +20,7 @@
     "react-json-inspector": "^6.0.0",
     "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
-    "sandboxjs": "v2.0.0-pre.03",
+    "sandboxjs": "^2.0.0",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },

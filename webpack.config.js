@@ -12,7 +12,7 @@ var baseConfig = {
     output: {
         path: Path.join(__dirname, 'build'),
         filename: '[name].js',
-        publicPath: '/build/',
+        publicPath: '/dist/',
         hash: true,
         library: 'webtaskWidget',
         libraryTarget: 'umd',

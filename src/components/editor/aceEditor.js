@@ -3,7 +3,6 @@ import React from 'react';
 import Resize from 'element-resize-detector';
 
 import 'brace/mode/javascript';
-import 'brace/mode/json';
 import 'brace/theme/textmate';
 
 const Editor = Ace.acequire('./editor').Editor;
