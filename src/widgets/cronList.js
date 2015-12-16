@@ -5,4 +5,8 @@ export default class CronListWidget extends AuthenticatedWidget {
     constructor(options) {
         super(CronList, options);
     }
+    
+    refresh() {
+        return this._enqueue('refreshJobs');
+    }
 }

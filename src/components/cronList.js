@@ -209,6 +209,8 @@ export default class CronList extends React.Component {
             .finally(() => this.setState({ inspectingJob: null }));
     }
     
+    // Public API
+    
     refreshJobs() {
         this.setState({ loadingJobs: true, error: null });
         

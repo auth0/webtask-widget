@@ -121,7 +121,8 @@ export default class AuthenticatedWidget extends Widget {
             .tap(writeProfile)
             .then((sandbox) => {
                 return this.stack.push(Component, Object.assign({}, props, { sandbox }));
-            });
+            })
+            .tap((component) => this.widgetDidMount(component));
     
         function validateProfile (sandbox) {
             if (!sandbox.container) throw new Error('Invalid profile: missing container');
