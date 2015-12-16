@@ -44,7 +44,7 @@ export default class JobHistory extends React.Component {
                                 <div className="a0-cell -w40">
                                     { new Date(item.completed_at).toLocaleString().replace(/:\d\d /, ' ') }
                                 </div>
-                                <div className={ 'a0-cell -type -w20' + (item.type === 'success' ? ' -success' : '-danger') }>
+                                <div className={ 'a0-cell -type -w20' + (item.type === 'success' ? ' -success' : ' -danger') }>
                                     { item.type }
                                 </div>
                             </div>

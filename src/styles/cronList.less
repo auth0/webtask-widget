@@ -120,3 +120,19 @@
         flex: 0 0 auto;
     }
 }
+
+.a0-job-result {
+    display: inline-block;
+    
+    &:first-letter {
+        text-transform: capitalize;
+    }
+
+    &.-success {
+        color: desaturate(@success-dark-color, 20%);
+    }
+    
+    &.-danger {
+        color: desaturate(@danger-dark-color, 20%);
+    }
+}
