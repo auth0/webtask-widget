@@ -70,14 +70,24 @@ export default class WebtaskEditor extends React.Component {
             <button className="a0-inline-button -success"
                 disabled={ this.state.runInProgress }
                 onClick={ e => this.onClickRun() }
-            >Run</button>
+            >
+                { this.state.runInProgress
+                ?   'Running...'
+                :   'Run'
+                }
+            </button>
         );
         
         const saveButton = (
             <button className="a0-inline-button -primary"
                 disabled={ this.state.saveInProgress }
                 onClick={ e => this.onClickSave() }
-            >Save</button>
+            >
+                { this.state.saveInProgress
+                ?   'Saving...'
+                :   'Save'
+                }
+            </button>
         );
         
         const sidebarBody = this.strategy.panes.map(pane => (
