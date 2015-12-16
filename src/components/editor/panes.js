@@ -32,7 +32,7 @@ export const HistoryPane = {
 
 export const LogsPane = {
     iconClass: '-split',
-    name: 'Logs',
+    name: 'Realtime Logs',
     renderBody: renderEditor,
     renderSidebar() {
         return (
