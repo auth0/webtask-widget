@@ -7,7 +7,8 @@ export default class CronListRow extends React.Component {
         super();
 
         this.state = {
-            destroyingJob: false 
+            destroyingJob: false,
+            now: new Date(),
         };
     }
 
@@ -36,6 +37,28 @@ export default class CronListRow extends React.Component {
 
             if (this.props.onClickDestroy) this.props.onClickDestroy(this.props.job);
         };
+        
+        if (this.refreshTimeout) {
+            clearTimeout(this.refreshTimeout);
+        }
+        
+        const timeout = Date.parse(this.props.nextAvailableAt) - Date.now();
+        
+        if (timeout > 0 && this.props.state === 'active') {
+            this.refreshTimeout = setTimeout(() => this.onScheduledRun(), timeout);
+        }
+        
+        const nextRun = this.props.state === 'expired'
+            ?   'Expired'
+            :   this.props.state !== 'active'
+                ?   '-'
+                :   Date.parse(this.props.nextAvailableAt) <= Date.now()
+                    ?   'Running...'
+                    :   (
+                            <TimeAgo
+                               date={ this.props.nextAvailableAt }
+                            />
+                        );
 
         
         return (
@@ -60,22 +83,13 @@ export default class CronListRow extends React.Component {
                     />
                 </td>
                 <td>
-                    { this.props.state === 'expired'
-                    ?   'Expired'
-                    :   this.props.state === 'active'
-                        ?   (
-                                <TimeAgo
-                                    date={ this.props.scheduledAt || this.props.nextAvailableAt }
-                                />
-                            )
-                        :   '-'
-                    }
+                    { nextRun }
                 </td>
                 <td className="_fit-content">
                     { this.props.lastResult
                     ?   (
                             <div>
-                                <span className={ `a0-inline-text -sentence ${resultClasses[this.props.lastResult.type]}` }>{ this.props.lastResult.type }</span>
+                                <span className={ `a0-job-result ${resultClasses[this.props.lastResult.type]}` }>{ this.props.lastResult.type }</span>
                             </div>
                         )
                     : "-"
@@ -101,6 +115,12 @@ export default class CronListRow extends React.Component {
     onClick() {
         this.props.onClick();
     }
+    
+    onScheduledRun() {
+        this.setState({ now: new Date() });
+        
+        if (this.props.onScheduledRun) this.props.onScheduledRun();
+    }
 }
 
 
@@ -116,4 +136,5 @@ CronListRow.propTypes = {
     onClick: React.PropTypes.func.isRequired,
     onClickDestroy: React.PropTypes.func.isRequired,
     onChangeState: React.PropTypes.func.isRequired,
+    onScheduledRun: React.PropTypes.func.isRequired,
 };

@@ -76,6 +76,7 @@ export default class CronList extends React.Component {
                                     onClick={ () => this.onClickJob(job) }
                                     onClickDestroy={ () => this.onClickDestroy(job) }
                                     onChangeState={ (state) => this.onChangeJobState(job, state) }
+                                    onScheduledRun={ () => this.onScheduledRun(job) }
                                     state={ job.state }
                                     stateChangeInProgress={ !!job.stateChangeInProgress }
                                 />
@@ -207,6 +208,18 @@ export default class CronList extends React.Component {
             })
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ inspectingJob: null }));
+    }
+    
+    onScheduledRun(job) {
+        // TODO: Need a better strategy to determine when to refresh specific
+        //       jobs since their actual run time is governed by the cron
+        //       scheduler's interval.
+        // job.refresh()
+        //     .then(() => {
+        //         const jobs = this.state.jobs.slice();
+                
+        //         this.setState({ jobs });
+        //     });
     }
     
     // Public API
