@@ -3,7 +3,16 @@ import ComponentStack from 'lib/componentStack';
 import React from 'react';
 import Sandbox from 'sandboxjs';
 
-import { CreateCronJobStrategy, CreateWebtaskStrategy, EditCronJobStrategy, EditWebtaskStrategy } from './strategies';
+import {
+    LogsPane
+} from './panes';
+
+import {
+    CreateCronJobStrategy,
+    CreateWebtaskStrategy,
+    EditCronJobStrategy,
+    EditWebtaskStrategy
+} from './strategies';
 
 import PaneSelector from './paneSelector';
 import WebtaskUrl from './webtaskUrl';
@@ -172,11 +181,7 @@ export default class WebtaskEditor extends React.Component {
     }
     
     onClickRun() {
-        this.setState({ runInProgress: true });
-                    
-        this.strategy.panes.forEach(pane => pane.name === 'Logs'
-            && this.setState({ currentPane: pane })
-        );
+        this.setState({ runInProgress: true, currentPane: LogsPane });
         
         const webtaskOptions = {
             name: this.state.name + '-run',
