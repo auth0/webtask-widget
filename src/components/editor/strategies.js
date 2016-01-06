@@ -82,20 +82,20 @@ export const EditCronJobStrategy = {
     },
     onChangeState: function (state) {
         this.setState({ jobStateChangePending: true });
-        
+
         this.state.subject.setJobState({ state })
             .tap(job => this.forceUpdate())
             .catch(error => this.setState({ error }))
             .finally(() => this.setState({ jobStateChangePending: false }));
     },
     onSave: saveCronJob,
-    panes: [SecretsPane, SchedulePane, HistoryPane, LogsPane],
+    panes: [SecretsPane, SchedulePane, LogsPane, HistoryPane],
 };
 
 
 function saveCronJob() {
     const jobState = this.getJobState();
-    
+
     return saveWebtask.call(this, EditCronJobStrategy)
         .then(webtask => webtask.createCronJob({ schedule: this.state.schedule, state: jobState }))
         .tap(subject => this.setState({ subject }));
