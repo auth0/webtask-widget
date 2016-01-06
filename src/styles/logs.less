@@ -4,6 +4,8 @@
 
 
 .a0-logs-widget {
+    display: flex;
+    flex-direction: column;
     position: relative;
     background-color: @logs-dark-color;
     color: @logs-light-color;
@@ -18,6 +20,11 @@
     &:hover > .a0-clear-button {
         opacity: 1;
     }
+    
+    .a0-logs-lines {
+        flex: 1 1 auto;
+        overflow: auto;
+    }
 }
 
 .a0-logs-lines {
@@ -25,7 +32,6 @@
     font-size: 13px;
     padding: 1em;
     white-space: pre;
-    overflow: auto;
     min-height: 5em;
     
     & > .a0-inline-text {
