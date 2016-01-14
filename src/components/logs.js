@@ -35,7 +35,7 @@ export default class Logs extends React.Component {
         });
 
         this.logStream.on('data', (event) => {
-            if (event.name === 'sandbox-logs') {
+            if (event.name && event.name.match(/^sandbox-logs|webtask-/)) {
                 if (event.msg.match(/^webtask container (assigned|recycled)$/)) {
                     event.className = '-muted';
                 } else {
