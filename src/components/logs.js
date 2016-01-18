@@ -11,46 +11,14 @@ export default class Logs extends React.Component {
 
         this.logStream = null;
         this.state = {
+            error: null,
             logs: Array.isArray(props.logs) ? props.logs.slice() : [],
+            reconnecting: false,
         };
     }
 
     componentDidMount() {
-        this.logStream = this.props.sandbox.createLogStream();
-        
-        this.logStream.on('open', (e) => {
-            this.push({
-                msg: 'Connected to ' + this.props.sandbox.container,
-                className: '-success',
-            });
-        });
-
-        this.logStream.on('error', (e) => {
-            this.push({
-                msg: e.message,
-                className: '-danger',
-            });
-            
-            if (this.props.onError) this.props.onError(e);
-        });
-
-        this.logStream.on('data', (event) => {
-            if (event.name && event.name.match(/^sandbox-logs|webtask-/)) {
-                if (event.msg.match(/^webtask container (assigned|recycled)$/)) {
-                    event.className = '-muted';
-                } else {
-                    event.className = '';
-                }
-                
-                event.time = new Date(event.time);
-                
-                this.push(event);
-                
-                if (this.props.onMessage) this.props.onMessage(event.msg);
-            }
-            
-            if (this.props.onEvent) this.props.onEvent(event);
-        });
+        this.reconnect();
     }
 
     componentWillUpdate() {
@@ -74,30 +42,62 @@ export default class Logs extends React.Component {
     }
 
     render() {
+        const error = this.state.error
+            ?   (
+                    <div className="a0-logs-error">
+                        { this.state.error.message }
+                        {   this.state.error.code === 'E_TIMEDOUT'
+                            ?   (
+                                    <button className="a0-reconnect-button" onClick={ e => this.onClickReconnect() }>Reconnect</button>
+                                )
+                            : null
+                        }
+                    </div>
+                )
+            :   null;
+        
+        const reconnecting = this.state.reconnecting
+            ?   (
+                    <div className="a0-logs-reconnecting">
+                        { this.state.reconnecting }
+                    </div>
+                )
+            :   null;
+        
         return (
             <div className="a0-logs-widget">
-                <div className="a0-logs-lines" ref="lines">
-                    {
-                        this.state.logs.map((line, i) => (
-                            <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>
-                                { line.time.toLocaleTimeString() + ': ' }
-                                { line.data
-                                ?   (
-                                        <div className="a0-inline-inspector">
-                                            <Inspector data={ line.data } name="result" />
-                                        </div>
-                                    )
-                                :   line.msg
-                                }
-                            </span>
-                        ))
-                    }
+                <div className="a0-logs-scroller">
+                    <div className="a0-logs-lines" ref="lines">
+                        {
+                            this.state.logs.map((line, i) => (
+                                <span key={i} className={ 'a0-inline-text -inverted ' + (line.className || '') }>
+                                    { line.time.toLocaleTimeString() + ': ' }
+                                    { line.data
+                                    ?   (
+                                            <div className="a0-inline-inspector">
+                                                <Inspector data={ line.data } name="result" />
+                                            </div>
+                                        )
+                                    :   line.msg
+                                    }
+                                </span>
+                            ))
+                        }
+                    </div>
+                    <button className="a0-clear-button"
+                        onClick={ e => this.clear() }
+                    ></button>
                 </div>
-                <button className="a0-clear-button"
-                    onClick={ e => this.clear() }
-                ></button>
+                { error }
+                { reconnecting }
             </div>
         );
+    }
+    
+    clear() {
+        this.setState({
+            logs: [],
+        });
     }
     
     push(event) {
@@ -109,11 +109,75 @@ export default class Logs extends React.Component {
         
         this.setState({ logs });
     }
-    
-    clear() {
+
+    reconnect() {
+        const message = this.logStream
+            ?   'Reconnecting...'
+            :   'Connecting...';
+        
+        if (this.logStream) {
+            this.logStream.destroy();
+            this.logStream.removeAllListeners();
+        }
+        
         this.setState({
-            logs: [],
+            reconnecting: message,
+            error: null
         });
+                
+        this.logStream = this.props.sandbox.createLogStream({ json: true });
+        
+        this.logStream.on('open', (e) => {
+            this.setState({
+                error: null,
+                reconnecting: false
+            });
+                        
+            this.push({
+                msg: 'Connected to ' + this.props.sandbox.container,
+                className: '-success',
+            });
+        });
+
+        this.logStream.on('error', (error) => {
+            this.setState({
+                error: error,
+                reconnecting: false,
+            });
+            
+            if (!this.state.error) {
+                this.push({
+                    msg: error.message,
+                    className: '-danger',
+                });
+            }
+            
+            if (this.props.onError) this.props.onError(error);
+        });
+
+        this.logStream.on('data', (event) => {
+            this.setState({ error: null, reconnecting: false });
+            
+            if (event.name && event.name.match(/^sandbox-logs|^webtask-/)) {
+                if (!event.sandbox) {
+                    event.className = '-muted';
+                } else {
+                    event.className = '';
+                }
+                
+                event.time = new Date(event.time);
+                
+                this.push(event);
+                
+                if (this.props.onMessage) this.props.onMessage(event.msg);
+            }
+            
+            if (this.props.onEvent) this.props.onEvent(event);
+        });
+    }
+    
+    onClickReconnect() {
+        this.reconnect();
     }
 }
 

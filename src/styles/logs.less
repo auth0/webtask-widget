@@ -1,29 +1,45 @@
 @import "~styles/base.less";
 @import (reference) "~styles/colors.less";
 @import (reference) "~styles/fabButton.less";
+@import (reference) "~styles/inlineButton.less";
+@import "~styles/inlineText.less";
 
 
 .a0-logs-widget {
     display: flex;
     flex-direction: column;
-    position: relative;
     background-color: @logs-dark-color;
     color: @logs-light-color;
     
+    .a0-logs-scroller {
+        flex: 1 1 auto;
+    }
+    
+    .a0-logs-error {
+        flex: 0 0 auto;
+    }
+}
+
+.a0-logs-scroller {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    
+    .a0-logs-lines {
+        flex: 1;
+        min-height: 5em;
+    }
+    
     & > .a0-clear-button {
         position: absolute;
-        right: 1em;
+        right: 2em;
         bottom: 1em;
         opacity: 0.5;
     }
     
     &:hover > .a0-clear-button {
         opacity: 1;
-    }
-    
-    .a0-logs-lines {
-        flex: 1 1 auto;
-        overflow: auto;
     }
 }
 
@@ -32,14 +48,60 @@
     font-size: 13px;
     padding: 1em;
     white-space: pre;
-    min-height: 5em;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    
+    &::-webkit-scrollbar {
+        width: 1em;
+        height: 1em;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: lighten(@logs-dark-color, 20%);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: lighten(@logs-dark-color, 30%);
+        border-radius: 0.5em;
+    }
+    
+    &:hover {
+        &::-webkit-scrollbar-thumb {
+            background: lighten(@logs-dark-color, 40%);
+        }
+    }
     
     & > .a0-inline-text {
         display: block;
         margin-left: 2em;
         text-indent: -2em;
         white-space: pre-wrap;
+        word-break: break-word;
     }
+}
+
+.a0-logs-error {
+    background-color: @danger-dark-color;
+    color: @danger-light-color;
+    padding: 0.5em 1em;
+    
+    .a0-reconnect-button {
+        float: right;
+    }
+}
+
+    
+.a0-reconnect-button {
+    .a0-create-inline-button();
+    
+    padding: 0;
+    height: auto;
+    line-height: inherit;
+}
+.a0-logs-reconnecting {
+    background-color: @success-dark-color;
+    color: @success-light-color;
+    padding: 0.5em 1em;
 }
 
 .a0-inline-inspector {

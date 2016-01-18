@@ -1,0 +1,60 @@
+@import "~styles/colors.less";
+
+
+@import (reference) "~styles/colors.less";
+@import (reference) "~styles/icon.less";
+
+
+.a0-create-inline-text(@style: default) {
+    .a0-set-inline-text-style(@style: @style);
+}
+
+.a0-set-inline-text-style(@style: default) {
+    & when (@style = default) {
+        color: @text-light-color;
+    }
+    
+    & when (@style = bright) {
+        color: #fff;
+    }
+    
+    & when (@style = danger) {
+        color: @danger-dark-color;
+    }
+    
+    & when (@style = muted) {
+        color: darken(@text-light-color, 20%);
+    }
+    
+    & when (@style = primary) {
+        color: @primary-dark-color;
+    }
+    
+    & when (@style = success) {
+        color: @success-dark-color;
+    }
+}
+
+.a0-inline-text {
+    .a0-create-inline-text();
+    
+    &.-bright {
+        .a0-set-inline-text-style(@style: bright);
+    }
+    
+    &.-danger {
+        .a0-set-inline-text-style(@style: danger);
+    }
+    
+    &.-muted {
+        .a0-set-inline-text-style(@style: muted);
+    }
+    
+    &.-primary {
+        .a0-set-inline-text-style(@style: primary);
+    }
+    
+    &.-success {
+        .a0-set-inline-text-style(@style: success);
+    }
+}
