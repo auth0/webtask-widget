@@ -86,7 +86,7 @@ export default class Logs extends React.Component {
                     </div>
                     <button className="a0-clear-button"
                         onClick={ e => this.clear() }
-                    ></button>
+                    ><span className="a0-clear-text">Clear console</span></button>
                 </div>
                 { error }
                 { reconnecting }
