@@ -2,7 +2,7 @@
     & when (@where = before) {
         &:before {
             .a0-set-icon-content(@symbol);
-            
+
             font-family: "budicon-font" !important;
             content: @content;
             font-style: normal !important;
@@ -32,7 +32,7 @@
 }
 
 .a0-set-icon-content(@symbol) when (@symbol = clock) {
-    @content: "";
+    @content: "";
 }
 
 .a0-set-icon-content(@symbol) when (@symbol = confirm) {
