@@ -37,15 +37,15 @@
 .a0-editor-widget {
     display: flex;
     flex-direction: column;
-    
+
     color: @text-dark-color;
     font-family: 'avenir-next-web', ;
     font-size: 14px;
-    
+
     & > .a0-editor-split {
         flex: 0 0 @toolbar-height + @editor-height;
     }
-    
+
     & > .a0-editor-footer {
         flex: 0 0 @footer-height;
     }
@@ -54,11 +54,11 @@
 .a0-editor-split {
     display: flex;
     flex-direction: row;
-    
+
     & > .a0-editor-left {
         flex: 1 1 auto;
     }
-    
+
     & > .a0-editor-right {
         flex: 0 0 auto;
         min-width: 40%;
@@ -68,11 +68,11 @@
 .a0-editor-left, .a0-editor-right {
     display: flex;
     flex-direction: column;
-    
+
     & > .a0-editor-toolbar {
         flex: 0 0 @toolbar-height;
     }
-    
+
     & > .a0-editor-body, .a0-editor-sidebar {
         flex: 1 1;
         height: @editor-height;
@@ -82,22 +82,22 @@
 .a0-editor-toolbar {
     display: flex;
     flex-direction: row;
-    
+
     background-color: @toolbar-bg-color;
-    
+
     .a0-editor-left > & {
         align-items: stretch;
         justify-content: flex-start;
-        
+
         & > .a0-icon-button {
             flex: 0 0 auto;
         }
     }
-    
+
     .a0-editor-right > & {
         align-items: stretch;
         justify-content: center;
-    
+
         & > .a0-pane-selector {
             flex: 1 1 auto;
         }
@@ -112,12 +112,12 @@
 
     & > .a0-icon-button {
         flex: 1 1 auto;
-        
+
         &.-arrow-below {
             position: relative;
-            
+
             @triangle-size: 8px;
-            
+
             &:after {
                 top: 100%;
                 left: 50%;
@@ -132,8 +132,9 @@
                 margin-left: -@triangle-size;
                 margin-top: -(2* @triangle-size);
             }
-            
-            &.-split:after, &.-history:after {
+
+            // &.-history:after,
+            &.-split:after {
                 border-bottom-color: @logs-dark-color;
             }
         }
@@ -145,12 +146,12 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    
+
     & > .a0-error-message {
         flex: 0 0 auto;
         min-height: 25px;
     }
-    
+
     & > .a0-editor-ace {
         flex: 1 1;
         font-family: "Roboto Mono";
@@ -166,7 +167,7 @@
 .a0-editor-ace {
     &.ace_editor {
         background-color: @editor-bg-color;
-        
+
         .ace_gutter {
             background-color: @lines-bg-color;
             color: @text-dark-color;
@@ -176,10 +177,10 @@
 
 .a0-editor-sidebar {
     position: relative;
-    
+
     background-color: @sidebar-dark-color;
     color: @sidebar-light-color;
-    
+
     & > .a0-sidebar-pane {
         position: absolute;
         top: 0;
@@ -192,18 +193,18 @@
 .a0-sidebar-pane {
     display: none;
     position: relative;
-    
+
     & > * {
         flex: 1 1 auto;
     }
-    
+
     &.-active {
         display: flex;
         flex-direction: column;
     }
-    
+
     & > .a0-logs-widget {
-        
+
         position: absolute;
         top: 0;
         right: 0;
@@ -214,18 +215,18 @@
 
 .a0-sidebar-intro {
     margin-bottom: 1em;
-    
+
     & > .a0-title {
         color: @text-light-color;
         font-size: 16px;
         font-weight: bold;
         margin: 0 0 1em;
     }
-    
+
     & > .a0-explanation {
         color: darken(@text-light-color, 30%);
         font-size: 13px;
-        
+
     }
 }
 
@@ -233,14 +234,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    
+
     background-color: @toolbar-bg-color;
-    
+
     & > .a0-webtask-url {
         flex: 1 1 auto;
         margin-right: 1em;
     }
-    
+
     & > .a0-footer-actions {
         flex: 0 0 auto;
     }
@@ -251,22 +252,20 @@
     flex-direction: row;
     align-items: center;
     overflow: hidden;
-    
+
     & > .a0-container-url {
         flex: 0 1 auto;
-        
+
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        
         margin-left: 1em;
     }
     & > .a0-name-input {
         flex: 0 1 10em;
-        
         margin-left: 4px;
     }
-    
+
     & > .a0-copy-button {
         flex: 0 0 20px;
     }
@@ -282,7 +281,7 @@
     border: none;
     border-radius: 4px;
     padding: 0 4px;
-    
+
     &:focus {
         outline: none;
     }
@@ -292,7 +291,7 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    
+
     & > .a0-inline-button {
         flex: 0 0 auto;
         margin: 0 1em 0 0;
@@ -306,22 +305,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     padding-top: 2em;
-    
+
     .a0-schedule-display {
         margin: 1em auto;
     }
-    
+
     .a0-schedule-editor {
         font-size: 120%;
         margin: 1em auto;
     }
-    
+
     .a0-advanced-cron {
         margin: 1em auto 1em;
     }
-    
+
     .a0-cron-editor {
         margin: 2em auto;
     }
@@ -331,11 +330,11 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    
+
     .a0-next-run, .a0-toggle-button {
         flex: 0 0 auto;
     }
-    
+
     .a0-toggle-button {
         margin-left: 1em;
     }
@@ -347,23 +346,23 @@
         pointer-events: none;
         user-select: none;
     }
-    
+
     & > .a0-metric, & > .a0-value {
         color: @text-dark-color;
         margin: 0 0.5em;
-        
+
         & > .btn {
             background: transparent;
             border: none;
             outline: none;
             border-radius: 0;
             border-bottom: 1px solid @text-dark-color;
-            
+
             &:hover, &:hover span, span:hover {
                 text-decoration: none;
             }
         }
-        
+
         &:focus {
             outline: none;
         }
