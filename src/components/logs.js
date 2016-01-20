@@ -140,17 +140,17 @@ export default class Logs extends React.Component {
         });
 
         this.logStream.on('error', (error) => {
-            this.setState({
-                error: error,
-                reconnecting: false,
-            });
-            
             if (!this.state.error) {
                 this.push({
                     msg: error.message,
                     className: '-danger',
                 });
             }
+            
+            this.setState({
+                error: error,
+                reconnecting: false,
+            });
             
             if (this.props.onError) this.props.onError(error);
         });
