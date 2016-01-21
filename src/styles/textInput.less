@@ -20,12 +20,9 @@
         cursor: not-allowed;
     }
     
-    &::placeholder {
-        color: darken(@input-fg-color, 40%);
-    }
-    
     &:focus {
-        outline: none;
+        outline: 0;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
     }
     
     .a0-set-input-style(@style: @style);
@@ -35,16 +32,28 @@
     & when (@style = dark) {
         background-color: @input-dark-bg-color;
         color: @input-dark-fg-color;
+    
+        &::placeholder {
+            color: darken(@input-dark-fg-color, 40%);
+        }
     }
     
     & when (@style = darker) {
         background-color: @input-darker-bg-color;
         color: @input-darker-fg-color;
+    
+        &::placeholder {
+            color: darken(@input-darker-fg-color, 40%);
+        }
     }
     
     & when (@style = default) {
         background-color: @input-bg-color;
         color: @input-fg-color;
+    
+        &::placeholder {
+            color: lighten(@input-fg-color, 40%);
+        }
     }
 }
 

@@ -1,0 +1,33 @@
+@import (reference) "~styles/textInput.less";
+
+.a0-login-widget, .a0-token-widget, .a0-verify-widget {
+    background-color: #F4F7FC;
+    padding: 1em;
+    color: @text-dark-color;
+}
+
+.a0-form-group {
+    label {
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+}
+
+.a0-form-control {
+    .a0-create-text-input();
+    
+    display: block;
+    width: 100%;
+    padding: 0.5em;
+    height: auto;
+    line-height: inherit;
+}
+
+.a0-help-block {
+    margin: 5px 0 10px;
+    color: lighten(@text-dark-color, 30%);
+}
+
+.a0-button-list {
+    padding-top: 1em;
+}
