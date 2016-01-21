@@ -1,33 +1,5 @@
 # Auth0 Webtask Widget
 
-## Build
-
-### Development workflow
-
-```shell
-git clone git@github.com:auth0/auth0-webtask-widget.git
-cd auth0-webtask-widget
-npm install
-npm run develop
-```
-
-This starts `webpack-dev-server` at [http://localhost:8080](http://localhost:8080).
-The script will watch all dependencies and recompile on changes. Everything is
-served from memory with source-maps.
-
-### Production build
-
-```shell
-npm run build
-```
-
-This creates builds in the `./dist` folder.
-
-Two builds are created:
-
-1. `webtask-bootstrap.min.js` - This is a version with Bootstrap styles built-in.
-2. `webtask.min.js` - This is a version for use in contexts that already have Bootstrap available.
-
 ## Usage
 
 ```js
@@ -136,6 +108,34 @@ Create a widget that streams logs for a container
 | [options.storageKey] | <code>function</code> | A key that will be used by localStorage to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions. |
 
 
+
+## Build
+
+### Development workflow
+
+```shell
+git clone git@github.com:auth0/auth0-webtask-widget.git
+cd auth0-webtask-widget
+npm install
+npm run develop
+```
+
+This starts `webpack-dev-server` at [http://localhost:8080](http://localhost:8080).
+The script will watch all dependencies and recompile on changes. Everything is
+served from memory with source-maps.
+
+### Production build
+
+```shell
+npm run build
+```
+
+This creates builds in the `./dist` folder.
+
+Two builds are created:
+
+1. `webtask.js` - Production bundle.
+1. `webtask.min.js` - Development bundle.
 
 ## Concepts
 
