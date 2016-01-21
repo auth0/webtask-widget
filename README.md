@@ -152,3 +152,15 @@ A webtask token is a JSON Web Token that encodes a user's claims to perform acti
 
 A webtask is a claim to run code at a url where that code will have access to any secrets embedded in the webtask.
 Webtask objects [expose several properties and methods](https://github.com/auth0/sandboxjs).
+
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
+
+## Author
+
+[Auth0](auth0.com)
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
