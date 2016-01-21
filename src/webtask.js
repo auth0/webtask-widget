@@ -28,9 +28,6 @@ export function showCronListing(options = {}) {
     return new CronListWidget(options);
 }
 
-/**
- * @alias showCronListing
- */
 export { showCronListing as createCronListing };
 
 
@@ -50,9 +47,6 @@ export function showEditor(options = {}) {
     return new EditorWidget(options);
 }
 
-/**
- * @alias showEditor
- */
 export { showEditor as createEditor };
 
 /**
@@ -68,9 +62,6 @@ export function showLogin(options = {}) {
     return new LoginWidget(options);
 }
 
-/**
- * @alias showLogin
- */
 export { showLogin as createLogin };
 
 /**
@@ -89,7 +80,4 @@ export function showLogs(options = {}) {
     return new LogsWidget(options);
 }
 
-/**
- * @alias showLogs
- */
 export { showLogs as createLogs };

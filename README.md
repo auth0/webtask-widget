@@ -53,81 +53,87 @@ editor.on('save', function (webtask) {
 
 ## API
 
-#### `webtaskWidget.createEditor ([options])`
+## Functions
 
-Creates an instance of the Webtask Editor widget that allows users to easily create, edit and test webtasks.
+<dl>
+<dt><a href="#showCronListing">showCronListing([options])</a></dt>
+<dd><p>Create a widget that lists cron jobs associated with the active profile</p>
+</dd>
+<dt><a href="#showEditor">showEditor([options])</a></dt>
+<dd><p>Create a widget that lets users create or edit Webtasks and Cron Jobs</p>
+</dd>
+<dt><a href="#showLogin">showLogin([options])</a></dt>
+<dd><p>Create a widget that allows users to obtain Sandbox credentials</p>
+</dd>
+<dt><a href="#showLogs">showLogs([options])</a></dt>
+<dd><p>Create a widget that streams logs for a container</p>
+</dd>
+</dl>
 
-Returns an instance of [EditorWidget](#EditorWidget).
+<a name="showCronListing"></a>
+## showCronListing([options])
+Create a widget that lists cron jobs associated with the active profile
 
-Option | Type | Default | Description
---- | --- | --- | ---
-mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
-name | `String` | `''` | The default name of the webtask.
-mergeBody | `Boolean` | `true` | Set the initial value of the merge body setting.
-parseBody | `Boolean` | `true` | Set the initial value of the parse body setting.
-autoSaveOnLoad | `Boolean` | `false` | Automatically trigger a save when the widget loads.
-autoSaveOnChange | `Boolean` | `false` | Automatically trigger a save when the code changes.
-autoSaveInterval | `Number` | `1000` | Adjust how frequently a save will be triggered if `autoSaveOnChange` is `true`.
-showWebtaskUrl | `Boolean` | true | Toggle whether the box with the saved webtask's url should be shown when it is saved.
-showTryWebtaskUrl | `Boolean` | true | Toggle whether the temporary testing webtask's url should be shown.
-secrets | `Object` |  `{}` | Set default secrets for the editor.
-code | `String` |   | Overwrite the default code that will be displayed in the editor.
-tryParams | `Object` |   | Overwrite the default params that will be shown in the 'try' dialog.
-onSave | `Function` |  | Callback that will be invoked every time the webtask is saved. The callback will be passed an instance of the saved [Webtask](#webtask).
+**Kind**: global function  
 
-The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile):
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>Object</code> | Customize the behaviour and appearance of the widget |
+| [options.mount] | <code>HTMLElement</code> | Indicate where the widget should be mounted. If not specified the widget will be shown as a modal dialog. |
+| [options.url] | <code>String</code> | The url of the Webtask cluster to be used. Defaults to https://webtask.it.auth0.com. |
+| [options.token] | <code>String</code> | The webtask token of the current user. If missing, and no {@see options.readProfile} profided, the SMS/email login flow will be triggered. |
+| [options.container] | <code>String</code> | The webtask container of the current user. If missing, will be derived from {@see options.token}, from the result of {@see options.readProfile}, or finally from the result of the SMS/email login flow. |
+| [options.readProfile] | <code>function</code> | A function that should return a `Object` or a `Promise` for an object with `url`, `token` and `container` properties. |
+| [options.writeProfile] | <code>function</code> | A function that will be called with the resolved `Profile` that should return a `Promise` that resolves once the profile has been written. |
+| [options.storageKey] | <code>function</code> | A key that will be used by localStorage to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions. |
 
-Option | Type | Default | Description
---- | --- | --- | ---
-url | `String` | `CLUSTER_URL` | The url of the webtask cluster
-token | `String` |  | The current user's webtask token.
-container | `String` |   | The current user's container.
-readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
-writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
-storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
-storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+<a name="showEditor"></a>
+## showEditor([options])
+Create a widget that lets users create or edit Webtasks and Cron Jobs
 
+**Kind**: global function  
 
-#### `webtaskWidget.createLogger ([options])`
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>Object</code> | Customize the behaviour and appearance of the widget |
+| [options.mount] | <code>HTMLElement</code> | Indicate where the widget should be mounted. If not specified the widget will be shown as a modal dialog. |
+| [options.url] | <code>String</code> | The url of the Webtask cluster to be used. Defaults to https://webtask.it.auth0.com. |
+| [options.token] | <code>String</code> | The webtask token of the current user. If missing, and no {@see options.readProfile} profided, the SMS/email login flow will be triggered. |
+| [options.container] | <code>String</code> | The webtask container of the current user. If missing, will be derived from {@see options.token}, from the result of {@see options.readProfile}, or finally from the result of the SMS/email login flow. |
+| [options.readProfile] | <code>function</code> | A function that should return a `Object` or a `Promise` for an object with `url`, `token` and `container` properties. |
+| [options.writeProfile] | <code>function</code> | A function that will be called with the resolved `Profile` that should return a `Promise` that resolves once the profile has been written. |
+| [options.storageKey] | <code>function</code> | A key that will be used by localStorage to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions. |
 
-Creates an instance of the real-time logs widget that lets users stream logs directly from their webtask container to the browser.
+<a name="showLogin"></a>
+## showLogin([options])
+Create a widget that allows users to obtain Sandbox credentials
 
-Option | Type | Default | Description
---- | --- | --- | ---
-mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
+**Kind**: global function  
 
-The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile)
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>Object</code> | Customize the behaviour and appearance of the widget |
+| [options.mount] | <code>HTMLElement</code> | Indicate where the widget should be mounted. If not specified the widget will be shown as a modal dialog. |
+| [options.url] | <code>String</code> | The url of the Webtask cluster to be used. Defaults to https://webtask.it.auth0.com. |
+| [options.token] | <code>String</code> | The webtask token of the current user. If missing, and no {@see options.readProfile} profided, the SMS/email login flow will be triggered. |
+| [options.container] | <code>String</code> | The webtask container of the current user. If missing, will be derived from {@see options.token}, from the result of {@see options.readProfile}, or finally from the result of the SMS/email login flow. |
 
-Option | Type | Default | Description
---- | --- | --- | ---
-url | `String` | `CLUSTER_URL` | The url of the webtask cluster
-token | `String` |  | The current user's webtask token.
-container | `String` |   | The current user's container.
-readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
-writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
-storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
-storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+<a name="showLogs"></a>
+## showLogs([options])
+Create a widget that streams logs for a container
 
+**Kind**: global function  
 
-#### `webtaskWidget.createLogger ([options])`
-
-Creates an instance of the real-time logs widget that lets users stream logs directly from their webtask container to the browser.
-
-Option | Type | Default | Description
---- | --- | --- | ---
-mount | `HTMLElement` | `null` | The element into which the widget will be added. If set to `null`, the widget will be shown in a Modal.
-
-The following options can be used to modify how the widget is bootstrapped with a valid [Profile](#profile):
-
-Option | Type | Default | Description
---- | --- | --- | ---
-url | `String` | `CLUSTER_URL` | The url of the webtask cluster
-token | `String` |  | The current user's webtask token.
-container | `String` |   | The current user's container.
-readProfile | `Function` |  | A function that is expected to return a [Profile](#profile) or a Promise that will resolve to a profile.
-writeProfile | `Function` |   | A function that will be called after the user completes login. If the save is asynchronous, it should return a Promise.
-storeProfile | `Boolean` | `false` | In the absense of `readProfile` and `writeProfile`, if this is `true`, the user's [Profile](#profile) will be stored at `storageKey` using localForage.
-storageKey | `String` | `'webtask.profile'` | The key at which the user's profile is stored if `storeProfile` is `true`.
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>Object</code> | Customize the behaviour and appearance of the widget |
+| [options.mount] | <code>HTMLElement</code> | Indicate where the widget should be mounted. If not specified the widget will be shown as a modal dialog. |
+| [options.url] | <code>String</code> | The url of the Webtask cluster to be used. Defaults to https://webtask.it.auth0.com. |
+| [options.token] | <code>String</code> | The webtask token of the current user. If missing, and no {@see options.readProfile} profided, the SMS/email login flow will be triggered. |
+| [options.container] | <code>String</code> | The webtask container of the current user. If missing, will be derived from {@see options.token}, from the result of {@see options.readProfile}, or finally from the result of the SMS/email login flow. |
+| [options.readProfile] | <code>function</code> | A function that should return a `Object` or a `Promise` for an object with `url`, `token` and `container` properties. |
+| [options.writeProfile] | <code>function</code> | A function that will be called with the resolved `Profile` that should return a `Promise` that resolves once the profile has been written. |
+| [options.storageKey] | <code>function</code> | A key that will be used by localStorage to read/write the resolved Profile when you *do not* use pass in custom {@see options.readProfile} and {@see options.writeProfile} functions. |
 
 
 
