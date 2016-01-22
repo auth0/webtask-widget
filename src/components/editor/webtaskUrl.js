@@ -32,10 +32,10 @@ export default class A0WebtaskUrl extends React.Component {
         
         const copyButton = this.props.copyButton
             ?   (
-                <CopyToClipboard text={ fullUrl }>
-                    <button className="a0-icon-button -copy"></button>
-                </CopyToClipboard>
-            )
+                    <CopyToClipboard text={ fullUrl }>
+                        <button className="a0-icon-button -copy"></button>
+                    </CopyToClipboard>
+                )
             :   null;
         
         return (
