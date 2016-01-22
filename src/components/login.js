@@ -6,6 +6,9 @@ import React from 'react';
 import Superagent from 'superagent';
 import { WEBTASK_CLUSTER_URL, WEBTASK_VERIFICATION_PATH, WEBTASK_SMS_EMAIL_TOKEN } from 'lib/constants';
 
+import 'styles/login.less';
+
+
 export default class Login extends React.Component {
     constructor(props) {
         super(props);
