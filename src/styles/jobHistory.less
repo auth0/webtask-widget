@@ -10,11 +10,11 @@
     bottom: 0;
     display: flex;
     flex-direction: column;
-    
+
     .a0-table-header {
         flex: 0 0 auto;
     }
-    
+
     .a0-table-body {
         flex: 1 1 auto;
     }
@@ -23,21 +23,22 @@
 .a0-table-header {
     display: flex;
     flex-direction: row;
-    
+
     background-color: rgb(249, 250, 253);
     color: @text-dark-color;
     border-bottom: 1px solid rgb(211, 213, 214);
-    padding-right: 16px; // Account for scrollbar
-    
+    // Account for scrollbar
+    // padding-right: 16px;
+
     & > .a0-header {
         flex: 0 0 33%;
         padding: 0.5em 0 0.5em 2em;
         text-align: left;
-        
+
         &.-w20 {
             flex: 0 0 20%;
         }
-        
+
         &.-w40 {
             flex: 0 0 40%;
         }
@@ -48,7 +49,7 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-    
+
     .a0-table-row {
         flex: 0 0 3em;
     }
@@ -62,14 +63,14 @@
     background-color: @tbody-bg-color;
     min-height: 62px;
     position: relative;
-    
+
     &:nth-of-type(odd) {
         background-color: @tbody-stripe-bg-color;
     }
-    
+
     &.-active {
         background-color: #E8EEF9;
-        
+
         .a0-set-icon(@symbol: triangle-right; @rules: {
             position: absolute;
             top: 50%;
@@ -77,38 +78,38 @@
             left: 0.5em;
         });
     }
-    
+
     &:hover {
         background-color: #E8EEF9;
         cursor: pointer;
     }
-    
+
     & > .a0-cell {
         flex: 0 0 33%;
-        
+
         padding: 0.5em 0 0.5em 2em;
         text-align: left;
         vertical-align: middle;
-        
-    
+
+
         &.-success {
             color: desaturate(@success-dark-color, 20%);
         }
-        
+
         &.-danger {
             color: desaturate(@danger-dark-color, 20%);
         }
-        
+
         &.-type {
             &:first-letter {
                 text-transform: capitalize;
             }
         }
-        
+
         &.-w20 {
             flex: 0 0 20%;
         }
-        
+
         &.-w40 {
             flex: 0 0 40%;
         }
