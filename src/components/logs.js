@@ -103,6 +103,7 @@ export default class Logs extends React.Component {
     push(event) {
         const logs = this.state.logs.slice();
         
+        if (typeof event === 'string') event = { msg: event };
         if (!event.time) event.time = new Date();
         
         logs.push(event);
@@ -132,11 +133,13 @@ export default class Logs extends React.Component {
                 error: null,
                 reconnecting: false
             });
-                        
+            
             this.push({
                 msg: 'Connected to ' + this.props.sandbox.container,
                 className: '-success',
             });
+            
+            if (this.props.onConnect) this.props.onConnect(e);
         });
 
         this.logStream.on('error', (error) => {
@@ -185,6 +188,7 @@ Logs.title = 'View webtask logs';
 
 Logs.propTypes = {
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
+    onConnect: React.PropTypes.func,
     onMessage: React.PropTypes.func,
     onEvent: React.PropTypes.func,
     onError: React.PropTypes.func,

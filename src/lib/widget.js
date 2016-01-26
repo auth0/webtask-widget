@@ -4,7 +4,7 @@ import ComponentStack from 'lib/componentStack';
 
 
 export default class Widget extends EventEmitter {
-    constructor(Component, options) {
+    constructor(Component, options = {}) {
         super();
         
         if (!options.mount) {
@@ -17,6 +17,21 @@ export default class Widget extends EventEmitter {
             ?   options.stack
             :   new ComponentStack(options.mount);
         
+        if (options.events) {
+            for (let eventName of Object.keys(options.events)) {
+                const handlerName = options.events[eventName];
+                const handler = options[handlerName];
+                
+                options[handlerName] = (...args) => {
+                    if (handler) {
+                        handler.apply(this.component, args);
+                    }
+                    
+                    this.emit(eventName, ...args);
+                };
+            }
+        }
+        
         this.widgetWillMount(Component, options);
     }
     
@@ -28,7 +43,7 @@ export default class Widget extends EventEmitter {
     
     widgetDidMount(component) {
         this.component = component;
-        
+
         this._flushQueue();
     }
     
@@ -47,7 +62,7 @@ export default class Widget extends EventEmitter {
         this.component = null;
     }
     
-    _enqueue(method, args) {
+    _enqueue(method, ...args) {
         const dfd = defer();
         
         this._queue.push({ method, args, dfd });

@@ -181,6 +181,18 @@ export default class WebtaskEditor extends React.Component {
     }
     
     onClickRun() {
+        this.run();
+    }
+    
+    onClickSave() {
+        this.save();
+    }
+    
+    onSelectHistoryItem(item) {
+        this.setState({ selectedHistoryItem: item });
+    }
+    
+    run() {
         this.setState({ runInProgress: true, currentPane: LogsPane });
         
         const webtaskOptions = {
@@ -190,7 +202,7 @@ export default class WebtaskEditor extends React.Component {
             secrets: this.state.secrets,
         };
         
-        this.props.sandbox.create(this.state.code, webtaskOptions)
+        return this.props.sandbox.create(this.state.code, webtaskOptions)
             .then(webtask => webtask.run({
                 method: 'get',
                 query: {
@@ -220,12 +232,14 @@ export default class WebtaskEditor extends React.Component {
                 }
                 
                 if (this.props.onRun) this.props.onRun(data);
+                
+                return data;
             })
-            .catch(error => this.setState({ error }))
+            .catch(error => { this.setState({ error }); throw error; })
             .finally(() => this.setState({ runInProgress: false }));
     }
     
-    onClickSave() {
+    save() {
         const error = this.validate();
         const noop = () => undefined;
         
@@ -235,14 +249,10 @@ export default class WebtaskEditor extends React.Component {
         
         this.setState({ saveInProgress: true });
         
-        this.strategy.onSave.call(this)
+        return this.strategy.onSave.call(this)
             .tap(this.props.onSave || noop)
-            .catch(error => this.setState({ error }))
+            .catch(error => { this.setState({ error }); throw error; })
             .finally(() => this.setState({ saveInProgress: false }));
-    }
-    
-    onSelectHistoryItem(item) {
-        this.setState({ selectedHistoryItem: item });
     }
     
     setStrategy(strategy) {

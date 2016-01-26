@@ -59,15 +59,47 @@
                 mount: document.getElementById('editor'),
                 storeProfile: true,
                 showScheduleInput: true,
-                // name: 'webtask',
+                name: 'test',
                 autoSaveOnLoad: true,
                 autoSaveOnChange: true,
             });
             
-            var logger = window.webtaskWidget.showLogs({
+            editor.on('run', function () {
+                console.log('editor.run', arguments);
+            });
+            
+            editor.on('save', function () {
+                console.log('editor.save', arguments);
+            });
+            
+            editor.run()
+                .then(function () {
+                    console.log('editor#run', arguments);
+                });
+            
+            
+            var logs = window.webtaskWidget.showLogs({
                 mount: document.getElementById('logs'),
                 storeProfile: true,
             });
+            
+            logs.on('connect', function () {
+                console.log('logs.connect', arguments);
+            });
+            
+            logs.on('error', function () {
+                console.log('logs.error', arguments);
+            });
+            
+            logs.on('event', function () {
+                console.log('logs.event', arguments);
+            });
+            
+            logs.on('message', function () {
+                console.log('logs.message', arguments);
+            });
+            
+            logs.push('This message was manually pushed.');
         </script>
     </body>
 
