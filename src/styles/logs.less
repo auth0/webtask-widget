@@ -35,6 +35,7 @@
         position: absolute;
         right: 2em;
         bottom: 1em;
+        opacity: 0.5;
     }
 }
 
@@ -120,21 +121,26 @@
     }
 
     .a0-logs-scroller:hover & {
-        .a0-create-inline-button(@style: danger);
+        opacity: 1;
+        transition: opacity .25s ease-in-out;
 
-        // Match height of fab-button
-        font-size: 100%;
-        height: 35px;
-        line-height: 35px;
-        border-radius: 17.5px;
-        vertical-align: middle;
+        &:hover {
+            .a0-create-inline-button(@style: danger);
 
-        & > .a0-clear-text {
-            display: inline;
-        }
+            // Match height of fab-button
+            font-size: 100%;
+            height: 35px;
+            line-height: 35px;
+            border-radius: 17.5px;
+            vertical-align: middle;
 
-        &:before {
-            display: none;
+            & > .a0-clear-text {
+                display: inline;
+            }
+
+            &:before {
+                display: none;
+            }
         }
     }
 }
