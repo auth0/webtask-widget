@@ -14,17 +14,17 @@
     border-radius: 1.25em;
     text-align: center;
     vertical-align: middle;
-    
+
     &[disabled] {
         pointer-events: none;
         cursor: default;
         cursor: not-allowed;
     }
-    
+
     &:focus {
         outline: none;
     }
-    
+
     .a0-set-icon(@symbol: @symbol);
 
     & when (@style = danger) {
