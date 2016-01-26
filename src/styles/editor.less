@@ -44,12 +44,12 @@
     
     & > .a0-editor-split {
         flex: 0 0 @toolbar-height + @editor-height;
-        flex-order: 0;
+        order: 0;
     }
     
     & > .a0-editor-footer {
         flex: 0 0 @footer-height;
-        flex-order: 2;
+        order: 2;
     }
 }
 
@@ -240,12 +240,13 @@
     
     & > .a0-webtask-url {
         flex: 1 1 auto;
-        flex-order: 0;
+        order: 0;
+        margin-right: 1em;
     }
     
     & > .a0-footer-actions {
         flex: 0 0 auto;
-        flex-order: 1;
+        order: 1;
     }
 }
 
@@ -255,23 +256,25 @@
     align-items: center;
     
     & > .a0-container-url {
-        flex: 0 0 auto;
-        flex-order: 0;
+        flex: 0 1 auto;
+        order: 0;
+        
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
         
         margin-left: 1em;
     }
     & > .a0-name-input {
         flex: 0 1 10em;
-        flex-order: 1;
+        order: 1;
         
         margin-left: 4px;
     }
     
     & > .a0-copy-button {
         flex: 0 0 20px;
-        flex-order: 2;
-        
-        margin-left: ;
+        order: 2;
     }
 }
 
