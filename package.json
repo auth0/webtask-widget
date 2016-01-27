@@ -54,7 +54,8 @@
     "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack -p --output-path='./dist' --output-filename='[name].min.js'",
     "build-readme": "jsdoc2md -t docs/README.md src/webtask.js > README.md",
     "develop": "webpack-dev-server -w -d",
-    "test": "lab -v"
+    "test": "lab -v",
+    "start": "npm run develop"
   },
   "author": "Geoff Goodman",
   "license": "MIT",
