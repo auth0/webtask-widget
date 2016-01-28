@@ -35,6 +35,10 @@
         opacity: 0.5;
         pointer-events: none;
         user-select: none;
+
+        .a0-value {
+            border-color: #ccc;
+        }
     }
 
     .a0-cron-segment {
@@ -54,14 +58,16 @@
     display: flex;
     flex-direction: column;
     text-align: center;
+    padding: 0 1em;
 
     .a0-value {
         background: transparent;
         border: none;
         outline: none;
         border-radius: 0;
-        border-bottom: 1px solid @text-dark-color;
+        border-bottom: 1px solid fade(@text-light-color, 20);
         text-align: center;
+        padding-bottom: .5em;
 
         &:focus {
             outline: none;
@@ -75,6 +81,7 @@
     .a0-title {
         text-align: center;
         font-size: 90%;
+        margin-top: .4em
     }
 
     &.-invalid > .a0-title {
