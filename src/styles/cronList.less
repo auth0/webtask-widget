@@ -6,11 +6,11 @@
     border: none;
     border-spacing: 0;
     border-collapse: collapse;
-    
+
     & > thead > tr {
         background-color: @thead-bg-color;
         height: 62px;
-        
+
         & > th {
             background: transparent;
             color: @thead-fg-color;
@@ -18,21 +18,21 @@
             font-size: 13px;
             font-weight: normal;
             width: 20%;
-            
+
             &:first-child {
                 padding-left: 2em;
             }
-            
+
             &:last-child {
                 padding-right: 2em;
             }
         }
     }
-    
+
     & > tbody > tr {
         background-color: @tbody-bg-color;
         height: 62px;
-        
+
         & > td {
             background: transparent;
             color: @tbody-fg-color;
@@ -40,15 +40,15 @@
             font-size: 13px;
             font-weight: normal;
             padding-right: 2em;
-            
+
             &:first-child {
                 padding-left: 2em;
             }
-            
+
             &:last-child {
                 padding-right: 6em;
                 position: relative;
-                
+
                 & > .a0-row-delete {
                     display: none;
                     position: absolute;
@@ -57,28 +57,28 @@
                     bottom: 0;
                 }
             }
-            
+
             &._fit-content {
                 width: 1%;
                 white-space: nowrap;
             }
         }
-        
+
         &:hover > td > .a0-row-delete {
             display: block;
         }
     }
-    
+
     // Striping
     & > tbody > tr:nth-of-type(odd) {
         background-color: @tbody-stripe-bg-color;
     }
-    
+
     // Hovering
     & > tbody.a0-cronlist-listing > tr:hover {
         background-color: #E8EEF9;
         cursor: pointer;
-        
+
         & > td:first-child {
             color: #4D97C0;
         }
@@ -101,9 +101,14 @@
     font-size: 140%;
     font-weight: bold;
     vertical-align: middle;
-    
+
     &:focus {
         outline: none;
+    }
+
+    &:hover {
+        background-color: darken(#F85C5B, 10%);
+        transition: background .25s ease;
     }
 }
 
@@ -112,11 +117,11 @@
     flex-direction: row;
     justify-content: flex-end;
     padding: 1em;
-    
+
     &:empty {
         display: none;
     }
-    
+
     & > .a0-inline-button {
         flex: 0 0 auto;
     }
@@ -124,7 +129,7 @@
 
 .a0-job-result {
     display: inline-block;
-    
+
     &:first-letter {
         text-transform: capitalize;
     }
@@ -132,7 +137,7 @@
     &.-success {
         color: desaturate(@success-dark-color, 20%);
     }
-    
+
     &.-danger {
         color: desaturate(@danger-dark-color, 20%);
     }
