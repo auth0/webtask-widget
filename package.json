@@ -55,7 +55,7 @@
     "build-readme": "jsdoc2md -t docs/README.md src/webtask.js > README.md",
     "develop": "webpack-dev-server -w -d --port ${PORT:-8080}",
     "test": "lab -v",
-    "start": "webpack-dev-server -d --port ${PORT:-8080}"
+    "start": "webpack-dev-server -d --inline --port ${PORT:-8080}"
   },
   "author": "Geoff Goodman",
   "license": "MIT",
