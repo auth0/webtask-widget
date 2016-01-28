@@ -18,18 +18,18 @@
     text-transform: uppercase;
     text-align: center;
     font-size: 95%;
-    
+
     &[disabled] {
         pointer-events: none;
         cursor: default;
         cursor: not-allowed;
     }
-    
+
     &:focus {
         outline: 0;
         box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
     }
-    
+
     .a0-set-inline-button-style(@style: @style);
 }
 
@@ -38,12 +38,12 @@
         background-color: @danger-dark-color;
         color: @danger-light-color;
     }
-    
+
     & when (@style = primary) {
         background-color: @primary-dark-color;
         color: @primary-light-color;
     }
-    
+
     & when (@style = success) {
         background-color: @success-dark-color;
         color: @success-light-color;
@@ -52,19 +52,31 @@
 
 .a0-inline-button {
     .a0-create-inline-button();
-    
+
     &.-danger {
         .a0-set-inline-button-style(@style: danger);
+        &:hover {
+            background-color: darken(@danger-dark-color, 10%);
+            transition: background .25s ease;
+        }
     }
-    
+
     &.-primary {
         .a0-set-inline-button-style(@style: primary);
+        &:hover {
+            background-color: darken(@primary-dark-color, 10%);
+            transition: background .25s ease;
+        }
     }
-    
+
     &.-success {
         .a0-set-inline-button-style(@style: success);
+        &:hover {
+            background-color: darken(@success-dark-color, 10%);
+            transition: background .25s ease;
+        }
     }
-    
+
     & + .a0-inline-button {
         margin-left: 1em;
     }
