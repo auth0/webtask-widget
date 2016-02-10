@@ -118,6 +118,7 @@
 
     & > .a0-clear-text {
         display: none;
+        white-space: nowrap;
     }
 
     .a0-logs-scroller:hover & {
@@ -134,7 +135,12 @@
             border-radius: 17.5px;
             vertical-align: middle;
 
-            & > .a0-clear-text {
+            width: 171px;
+            padding: 0;
+            transition: width .25s ease;
+            overflow: hidden;
+
+            & .a0-clear-text {
                 display: inline;
             }
 
