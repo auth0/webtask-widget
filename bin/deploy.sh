@@ -8,7 +8,7 @@ VERSION=$(node -e "console.log(require('$DIR/../package.json').version)")
 PACKAGE=$(node -e "console.log(require('$DIR/../package.json').name)")
 VERSIONS=$(node -e "var s = require('semver').parse(require('./package.json').version); if (!s.prerelease.length) { console.log([s.major].join('.')); console.log([s.major,s.minor].join('.')); } console.log(s.version);")
 CDN_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" https://cdn.auth0.com/js/$PACKAGE-$VERSION.min.js | grep 200 || true)
-PATH_PREFIX="js/$PACKAGE"
+PATH_PREFIX="webtaskWidget/$PACKAGE"
 
 if [ ! -z "$CDN_EXISTS" ]; then
     echo "There is already a version $VERSION in the CDN. Skipping CDN publish."
