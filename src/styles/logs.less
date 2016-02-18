@@ -10,11 +10,11 @@
     flex-direction: column;
     background-color: @logs-dark-color;
     color: @logs-light-color;
-    
+
     .a0-logs-scroller {
         flex: 1 1 auto;
     }
-    
+
     .a0-logs-error {
         flex: 0 0 auto;
     }
@@ -25,16 +25,17 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    
+
     .a0-logs-lines {
         flex: 1;
         min-height: 5em;
     }
-    
+
     & > .a0-clear-button {
         position: absolute;
         right: 2em;
         bottom: 1em;
+        opacity: 0.5;
     }
 }
 
@@ -44,28 +45,28 @@
     padding: 1em;
     white-space: pre;
     overflow-x: hidden;
-    overflow-y: scroll;
-    
+    overflow-y: auto;
+
     &::-webkit-scrollbar {
         width: 1em;
         height: 1em;
     }
-    
+
     &::-webkit-scrollbar-track {
         background: lighten(@logs-dark-color, 20%);
     }
-    
+
     &::-webkit-scrollbar-thumb {
         background: lighten(@logs-dark-color, 30%);
         border-radius: 0.5em;
     }
-    
+
     &:hover {
         &::-webkit-scrollbar-thumb {
             background: lighten(@logs-dark-color, 40%);
         }
     }
-    
+
     & > .a0-inline-text {
         display: block;
         margin-left: 2em;
@@ -79,16 +80,16 @@
     background-color: @danger-dark-color;
     color: @danger-light-color;
     padding: 0.5em 1em;
-    
+
     .a0-reconnect-button {
         float: right;
     }
 }
 
-    
+
 .a0-reconnect-button {
     .a0-create-inline-button();
-    
+
     padding: 0;
     height: auto;
     line-height: inherit;
@@ -104,7 +105,7 @@
     &, > * {
         display: inline;
     }
-    
+
     * {
         font-family: inherit !important;
         font-size: inherit !important;
@@ -114,27 +115,38 @@
 
 .a0-clear-button {
     .a0-create-fab-button(@style: danger, @symbol: trash);
-    
+
     & > .a0-clear-text {
         display: none;
+        white-space: nowrap;
     }
-    
+
     .a0-logs-scroller:hover & {
-        .a0-create-inline-button(@style: danger);
-        
-        // Match height of fab-button
-        font-size: 100%;
-        height: 35px;
-        line-height: 35px;
-        border-radius: 17.5px;
-        vertical-align: middle;
-        
-        & > .a0-clear-text {
-            display: inline;
-        }
-        
-        &:before {
-            display: none;
+        opacity: 1;
+        transition: opacity .25s ease-in-out;
+
+        &:hover {
+            .a0-create-inline-button(@style: danger);
+
+            // Match height of fab-button
+            font-size: 100%;
+            height: 35px;
+            line-height: 35px;
+            border-radius: 17.5px;
+            vertical-align: middle;
+
+            width: 171px;
+            padding: 0;
+            transition: width .25s ease;
+            overflow: hidden;
+
+            & .a0-clear-text {
+                display: inline;
+            }
+
+            &:before {
+                display: none;
+            }
         }
     }
 }

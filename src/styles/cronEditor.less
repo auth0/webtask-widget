@@ -3,21 +3,54 @@
 @import (reference) "~styles/icon.less";
 
 .a0-cron-editor {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    // display: -webkit-box;
+    // flex-direction: row;
+    // justify-content: space-between;
+    // align-items: center;
+
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
+
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    box-pack: center;
+
+    -webkit-box-direction: normal;
+    -moz-box-direction: normal;
+    box-direction: normal;
+
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    box-align: center;
+
     max-width: 100%;
     padding: 0 1em;
-    
+
     &[disabled] {
         opacity: 0.5;
         pointer-events: none;
         user-select: none;
+
+        .a0-value {
+            border-color: #ccc;
+        }
     }
-    
+
     .a0-cron-segment {
-        flex: 0 0 4.5em;
+        // flex: 0 0 4.5em;
+
+        -webkit-box-ordinal-group: 1;
+        -moz-box-ordinal-group: 1;
+        box-ordinal-group: 1;
+
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        box-flex: 1;
     }
 }
 
@@ -25,29 +58,32 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    
+    padding: 0 0.5em;
+
     .a0-value {
         background: transparent;
         border: none;
         outline: none;
         border-radius: 0;
-        border-bottom: 1px solid @text-dark-color;
+        border-bottom: 1px solid fade(@text-light-color, 20);
         text-align: center;
-        
+        padding-bottom: .5em;
+
         &:focus {
             outline: none;
             border-color: @text-light-color;
         }
-        
+
         &.-invalid, &:focus.-invalid {
         }
     }
-    
+
     .a0-title {
         text-align: center;
         font-size: 90%;
+        margin-top: .4em
     }
-            
+
     &.-invalid > .a0-title {
         color: @danger-dark-color;
     }
