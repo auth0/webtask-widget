@@ -272,7 +272,7 @@ export default class WebtaskEditor extends React.Component {
     validate() {
         const name = this.state.name.trim();
 
-        if (!name.match(/^[-_\.a-zA-Z0-9]*$/)) {
+        if (!name.match(/^[-_\.a-zA-Z0-9]+$/)) {
             return new Error('Invalid name: Webtask names must contain alphanumeric characters.');
         }
     }
