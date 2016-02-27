@@ -31,8 +31,8 @@ export default class A0SecretsEditor extends React.Component {
         return (
             <div className="a0-secrets-editor">
                 <div className="a0-sidebar-intro">
-                    <h2 className="a0-title">Adding secrets</h2>
-                    <p className="a0-explanation">You can create webtasks that depend on a set of secrets (ie: a mongodb connection string, API keys, etc...)</p>
+                    <h2 className="a0-title">Secrets</h2>
+                    <p className="a0-explanation">You can create webtasks that depend on a set of encrypted secrets, like an API key or connection string. To access the secret use: <code>context.secrets.KEY</code>.</p>
                 </div>
                 { state.secrets.map((secret, i) => (
                     secret.editing
