@@ -1,6 +1,6 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Embeddable webtask toolkit",
   "main": "index.js",
   "dependencies": {
@@ -20,7 +20,7 @@
     "react-json-inspector": "^6.0.0",
     "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
-    "sandboxjs": "^2.0.1",
+    "sandboxjs": "^2.3.1",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },
