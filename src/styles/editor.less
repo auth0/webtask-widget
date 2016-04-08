@@ -65,7 +65,7 @@
     }
 }
 
-.a0-editor-left, .a0-editor-right {
+.a0-editor-left, .a0-editor-right, .a0-editor-center{
     display: flex;
     flex-direction: column;
 
@@ -76,6 +76,20 @@
     & > .a0-editor-body, .a0-editor-sidebar {
         flex: 1 1;
         height: @editor-height;
+    }
+
+    & > .a0-editor-loading {
+        flex: 0 0 @toolbar-height;
+        display: flex;
+        flex-direction: row;
+
+        background-color: @toolbar-bg-color;
+
+        span {
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-left: 25px;
+        }
     }
 }
 

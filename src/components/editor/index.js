@@ -31,10 +31,12 @@ export default class WebtaskEditor extends React.Component {
                 :   CreateCronJobStrategy
             :   this.props.edit
                 ?   EditWebtaskStrategy
-                :   CreateWebtaskStrategy;
+                :   this.props.inspect
+                    ?   EditWebtaskStrategy
+                    :   CreateWebtaskStrategy;
 
         this.state = {
-            code: this.props.code || this.strategy.defaultCode,
+            code: this.props.code || (this.props.inspect ? '' : this.strategy.defaultCode),
             currentPane: this.strategy.defaultPane,
             jobState: this.props.jobState,
             mergeBody: typeof this.props.mergeBody !== 'undefined'
@@ -46,11 +48,17 @@ export default class WebtaskEditor extends React.Component {
                 :   this.strategy.defaultParseBody,
             runInProgress: false,
             saveInProgress: false,
+            inspectInProgress: false,
             schedule: props.schedule,
             secrets: props.secrets,
             subject: props.edit,
         };
+    }
 
+    componentDidMount() {
+        if (this.props.inspect) {
+            this.inspect();
+        }
     }
 
     render() {
@@ -116,36 +124,52 @@ export default class WebtaskEditor extends React.Component {
             />
         );
 
+        const body = this.state.inspectInProgress
+           ?    (
+                    <div key="loading" className="a0-editor-widget">
+                        <div className="a0-editor-center">
+                            <div className="a0-editor-loading">
+                                <span>Loading ...</span>
+                            </div>
+                        </div>
+                    </div>
+                )
+            :   (
+                    <div>
+                        <div className="a0-editor-split">
+                            <div className="a0-editor-left">
+                                <div className="a0-editor-toolbar">
+                                    { this.props.backButton }
+                                </div>
+                                <div className="a0-editor-body">
+                                    { error }
+                                    { editorBody }
+                                </div>
+                            </div>
+                            <div className="a0-editor-right">
+                                <div className="a0-editor-toolbar">
+                                    { paneSelector }
+                                </div>
+                                <div className="a0-editor-sidebar">
+                                    { sidebarBody }
+                                </div>
+                            </div>
+                        </div>
+                        <div className="a0-editor-footer">
+                            <div className="a0-webtask-url">
+                                { webtaskUrl }
+                            </div>
+                            <div className="a0-footer-actions">
+                                { saveButton }
+                                { runButton }
+                            </div>
+                        </div>
+                    </div>
+                );
+
         return (
             <div className="a0-editor-widget">
-                <div className="a0-editor-split">
-                    <div className="a0-editor-left">
-                        <div className="a0-editor-toolbar">
-                            { this.props.backButton }
-                        </div>
-                        <div className="a0-editor-body">
-                            { error }
-                            { editorBody }
-                        </div>
-                    </div>
-                    <div className="a0-editor-right">
-                        <div className="a0-editor-toolbar">
-                            { paneSelector }
-                        </div>
-                        <div className="a0-editor-sidebar">
-                            { sidebarBody }
-                        </div>
-                    </div>
-                </div>
-                <div className="a0-editor-footer">
-                    <div className="a0-webtask-url">
-                        { webtaskUrl }
-                    </div>
-                    <div className="a0-footer-actions">
-                        { saveButton }
-                        { runButton }
-                    </div>
-                </div>
+            {body}
             </div>
         );
     }
@@ -190,6 +214,26 @@ export default class WebtaskEditor extends React.Component {
 
     onSelectHistoryItem(item) {
         this.setState({ selectedHistoryItem: item });
+    }
+
+    inspect() {
+        this.setState({ inspectInProgress: true });
+
+        return this.props.sandbox.inspectWebtask({
+            name:       this.props.name,
+            decrypt:    true,
+            fetch_code: true
+        })
+        .then((claims) => {
+            this.setState({
+                code: claims.code,
+                secrets: claims.ectx || {},
+                mergeBody: !!claims.mb,
+                parseBody: !!claims.pb,
+            })
+        })
+        .catch(error => { this.setState({ error }); throw error; })
+        .finally(() => this.setState({ inspectInProgress: false }));
     }
 
     run() {
@@ -297,6 +341,7 @@ WebtaskEditor.propTypes = {
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+    inspect: React.PropTypes.bool
 };
 
 WebtaskEditor.defaultProps = {
