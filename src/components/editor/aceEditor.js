@@ -15,14 +15,14 @@ const resize = Resize();
 export default class AceEditor extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onCopy = this.onCopy.bind(this);
         this.onPaste = this.onPaste.bind(this);
         this.onChange = this.onChange.bind(this);
     }
-    
+
     componentDidMount() {
         this.renderer = new VirtualRenderer(this.node, `ace/theme/${this.props.theme}`);
         this.undoManager = new UndoManager();
@@ -30,7 +30,7 @@ export default class AceEditor extends React.Component {
         this.editSession.setUndoManager(this.undoManager);
         this.editor = new Editor(this.renderer);
         this.editor.setSession(this.editSession);
-        
+
         this.componentWillReceiveProps(this.props);
 
         this.editor.on('focus', this.onFocus);
@@ -52,7 +52,7 @@ export default class AceEditor extends React.Component {
             this.editor.removeListener('paste', this.onPaste);
             this.editor.removeListener('change', this.onChange);
         }
-        
+
         this.renderer = null;
         this.undoManager = null;
         this.editSession = null;
@@ -63,15 +63,15 @@ export default class AceEditor extends React.Component {
         if (this.editor) {
             this.renderer.setTheme(`ace/theme/${nextProps.theme}`);
             this.renderer.setShowGutter(nextProps.showGutter);
-            
+
             if (this.editSession.getValue() !== nextProps.value) {
                 this.silent = true;
                 this.editSession.setValue(nextProps.value);
                 this.silent = false;
             }
-            
+
             this.editSession.setMode(`ace/mode/${nextProps.mode}`);
-            
+
             this.editor.setFontSize(nextProps.fontSize);
             // this.editor.setOption('maxLines', nextProps.maxLines);
             this.editor.setOption('minLines', nextProps.minLines);
@@ -82,7 +82,7 @@ export default class AceEditor extends React.Component {
             this.editor.setShowPrintMargin(nextProps.setShowPrintMargin);
         }
     }
-    
+
     shouldComponentUpdate(nextProps, nextStyle) {
         return nextProps.width !== this.props.width
             || nextProps.height !== this.props.height
@@ -109,38 +109,34 @@ export default class AceEditor extends React.Component {
             this.props.onChange(value);
         }
     }
-    
+
     onFocus() {
         if (this.props.onFocus) {
             this.props.onFocus();
         }
     }
-    
+
     onBlur() {
         if (this.props.onBlur) {
             this.props.onBlur();
         }
     }
-    
+
     onCopy(text) {
         if (this.props.onCopy) {
             this.props.onCopy(text);
         }
     }
-    
+
     onPaste(text) {
         if (this.props.onPaste) {
             this.props.onPaste(text);
         }
     }
-    
+
     onUpdateRef(node) {
-        if (this.node) {
-            resize.uninstall(this.node);
-        }
-        
         this.node = node;
-        
+
         if (this.node) {
             resize.listenTo(this.node, e => this.editor.resize());
         }
