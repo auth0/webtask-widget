@@ -55,7 +55,7 @@ var baseConfig = {
     },
     plugins: [
         new Webpack.optimize.OccurenceOrderPlugin(),
-        new Webpack.optimize.DedupePlugin(),
+        new Webpack.optimize.DedupePlugin()
     ],
     resolve: {
         modulesDirectories: ['node_modules', 'src'],
@@ -69,6 +69,19 @@ var baseConfig = {
         devtool: 'source-map',
     },
 };
+
+if (process.env === 'production') {
+    baseConfig.plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            mangle: {
+                except: ['CronJob', 'Webtask']
+            }
+        })
+    );
+}
 
 module.exports = [
     merge({}, baseConfig, {
