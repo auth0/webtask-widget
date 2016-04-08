@@ -1,8 +1,8 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Embeddable webtask toolkit",
-  "main": "index.js",
+  "main": "src/webtask.js",
   "dependencies": {
     "bluebird": "^2.9.33",
     "brace": "^0.5.1",
@@ -61,6 +61,5 @@
     "start": "npm run build && serve -D --compress --port ${PORT:-3000} ."
   },
   "author": "Geoff Goodman",
-  "license": "MIT",
-  "private": true
+  "license": "MIT"
 }
