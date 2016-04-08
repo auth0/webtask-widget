@@ -1,6 +1,6 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Embeddable webtask toolkit",
   "main": "index.js",
   "dependencies": {
@@ -53,7 +53,7 @@
     "webpack-dev-server": "^1.14.0"
   },
   "scripts": {
-    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack -p --output-path='./dist' --output-filename='[name].min.js'",
+    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack --output-path='./dist' --output-filename='[name].min.js'",
     "deploy": "./bin/deploy.sh",
     "build-readme": "jsdoc2md -t docs/README.md src/webtask.js > README.md",
     "develop": "webpack-dev-server -w -d --port ${PORT:-8080}",
