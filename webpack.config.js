@@ -70,9 +70,9 @@ var baseConfig = {
     },
 };
 
-if (process.env === 'production') {
+if (process.env.NODE_ENV === 'production') {
     baseConfig.plugins.push(
-        new webpack.optimize.UglifyJsPlugin({
+        new Webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false
             },
