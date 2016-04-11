@@ -1,7 +1,14 @@
 import dedent from 'lib/dedent';
 
 
-import { HistoryPane, LogsPane, SchedulePane, SecretsPane, SettingsPane } from './panes';
+import {
+    CodePane,
+    HistoryPane,
+    LogsPane,
+    SchedulePane,
+    SecretsPane,
+    SettingsPane,
+} from './panes';
 
 
 const defaultCode = dedent`
@@ -26,7 +33,7 @@ export const CreateWebtaskStrategy = {
         };
     },
     onSave: saveWebtask,
-    panes: [SecretsPane, SettingsPane, LogsPane],
+    panes: [CodePane, SecretsPane, SettingsPane, LogsPane],
 };
 
 export const EditWebtaskStrategy = {
@@ -43,7 +50,7 @@ export const EditWebtaskStrategy = {
         };
     },
     onSave: saveWebtask,
-    panes: [SecretsPane, SettingsPane, LogsPane],
+    panes: [CodePane, SecretsPane, SettingsPane, LogsPane],
 };
 
 export const CreateCronJobStrategy = {
@@ -64,7 +71,7 @@ export const CreateCronJobStrategy = {
         this.setState({ jobState: state });
     },
     onSave: saveCronJob,
-    panes: [SecretsPane, SchedulePane, LogsPane],
+    panes: [CodePane, SecretsPane, SchedulePane, LogsPane],
 };
 
 export const EditCronJobStrategy = {
@@ -89,7 +96,7 @@ export const EditCronJobStrategy = {
             .finally(() => this.setState({ jobStateChangePending: false }));
     },
     onSave: saveCronJob,
-    panes: [SecretsPane, SchedulePane, LogsPane, HistoryPane],
+    panes: [CodePane, SecretsPane, SchedulePane, LogsPane, HistoryPane],
 };
 
 

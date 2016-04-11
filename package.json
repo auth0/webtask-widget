@@ -1,8 +1,8 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "1.0.1",
+  "version": "1.0.6",
   "description": "Embeddable webtask toolkit",
-  "main": "index.js",
+  "main": "src/webtask.js",
   "dependencies": {
     "bluebird": "^2.9.33",
     "brace": "^0.5.1",
@@ -20,7 +20,7 @@
     "react-json-inspector": "^6.0.0",
     "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
-    "sandboxjs": "^2.0.1",
+    "sandboxjs": "^2.3.1",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },
@@ -53,7 +53,7 @@
     "webpack-dev-server": "^1.14.0"
   },
   "scripts": {
-    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack -p --output-path='./dist' --output-filename='[name].min.js'",
+    "build": "webpack -d --output-path='./dist' --output-filename='[name].js' && NODE_ENV=production webpack --output-path='./dist' --output-filename='[name].min.js'",
     "deploy": "./bin/deploy.sh",
     "build-readme": "jsdoc2md -t docs/README.md src/webtask.js > README.md",
     "develop": "webpack-dev-server -w -d --port ${PORT:-8080}",
@@ -61,6 +61,5 @@
     "start": "npm run build && serve -D --compress --port ${PORT:-3000} ."
   },
   "author": "Geoff Goodman",
-  "license": "MIT",
-  "private": true
+  "license": "MIT"
 }

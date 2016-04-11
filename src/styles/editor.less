@@ -4,6 +4,7 @@
 @import "~styles/textInput.less";
 @import (reference) "~styles/colors.less";
 
+// When showing both body and sidebar
 //    .a0-editor
 //        .a0-editor-split
 //            .a0-editor-left
@@ -14,6 +15,23 @@
 //                .a0-editor-toolbar
 //                .a0-editor-sidebar
 //                    .a0-logs-viewer
+//        .a0-editor-footer
+//            .a0-webtask-url
+//                .a0-container-url
+//                .a0-name-input
+//                .a0-copy-button
+//            .a0-footer-actions
+//                TODO
+
+// When showing only the body
+//    .a0-editor
+//        .a0-editor-split
+//            .a0-editor-left
+//                .a0-editor-toolbar
+//            .a0-editor-right
+//                .a0-editor-toolbar
+//        .a0-editor-body
+//            .a0-editor-ace
 //        .a0-editor-footer
 //            .a0-webtask-url
 //                .a0-container-url
@@ -41,13 +59,25 @@
     color: @text-dark-color;
     font-family: 'avenir-next-web', ;
     font-size: 14px;
+    height: @widget-height;
 
     & > .a0-editor-split {
-        flex: 0 0 @toolbar-height + @editor-height;
+        flex: 1 0 auto;
+        order: 1;
+    }
+
+    & > .a0-editor-body {
+        flex: 1 0 auto;
+        order: 2;
+        
+        & + .a0-editor-split {
+            flex: 0 0 auto;
+        }
     }
 
     & > .a0-editor-footer {
         flex: 0 0 @footer-height;
+        order: 3;
     }
 }
 
@@ -75,7 +105,6 @@
 
     & > .a0-editor-body, .a0-editor-sidebar {
         flex: 1 1;
-        height: @editor-height;
     }
 }
 
@@ -142,6 +171,10 @@
             // &.-history:after,
             &.-split:after {
                 border-bottom-color: @logs-dark-color;
+            }
+            
+            &.-code:after {
+                border-bottom-color: @editor-bg-color;
             }
         }
     }

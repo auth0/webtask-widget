@@ -56,6 +56,8 @@ export default class WebtaskEditor extends React.Component {
     render() {
         const editorBody = this.state.currentPane.renderBody.call(this);
         const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
+        const hideSidebar = this.state.currentPane
+            && !!this.state.currentPane.hideSidebar;
         
         const error = this.state.error
             ?   (
@@ -116,27 +118,52 @@ export default class WebtaskEditor extends React.Component {
             />
         );
         
+        const splitBody = hideSidebar
+            ?   [
+                    // Body is put before split to allow for some css
+                    // adjacency trickery.
+                    <div className="a0-editor-body" key="body">
+                        { error }
+                        { editorBody }
+                    </div>,
+                    <div className="a0-editor-split" key="split">
+                        <div className="a0-editor-left">
+                            <div className="a0-editor-toolbar">
+                                { this.props.backButton }
+                            </div>
+                        </div>
+                        <div className="a0-editor-right">
+                            <div className="a0-editor-toolbar">
+                                { paneSelector }
+                            </div>
+                        </div>
+                    </div>,
+                ]
+            :   (
+                    <div className="a0-editor-split">
+                        <div className="a0-editor-left">
+                            <div className="a0-editor-toolbar">
+                                { this.props.backButton }
+                            </div>
+                            <div className="a0-editor-body">
+                                { error }
+                                { editorBody }
+                            </div>
+                        </div>
+                        <div className="a0-editor-right">
+                            <div className="a0-editor-toolbar">
+                                { paneSelector }
+                            </div>
+                            <div className="a0-editor-sidebar">
+                                { sidebarBody }
+                            </div>
+                        </div>
+                    </div>
+                 );
+        
         return (
             <div className="a0-editor-widget">
-                <div className="a0-editor-split">
-                    <div className="a0-editor-left">
-                        <div className="a0-editor-toolbar">
-                            { this.props.backButton }
-                        </div>
-                        <div className="a0-editor-body">
-                            { error }
-                            { editorBody }
-                        </div>
-                    </div>
-                    <div className="a0-editor-right">
-                        <div className="a0-editor-toolbar">
-                            { paneSelector }
-                        </div>
-                        <div className="a0-editor-sidebar">
-                            { sidebarBody }
-                        </div>
-                    </div>
-                </div>
+                { splitBody }
                 <div className="a0-editor-footer">
                     <div className="a0-webtask-url">
                         { webtaskUrl }
