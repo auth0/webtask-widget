@@ -27,15 +27,15 @@ export default class Logs extends React.Component {
         // Set scroll flag if we are within 20px of scroll bottom
         this.shouldScroll = Math.abs(element.scrollHeight - element.scrollTop - element.offsetHeight) < 20;
     }
-    
+
     componentWillUnmount() {
         this.logStream.destroy();
         this.logStream = null;
     }
-    
+
     componentDidUpdate() {
         var element = this.refs.lines;
-        
+
         if (this.shouldScroll) {
             element.scrollTop = element.scrollHeight;
         }
@@ -55,7 +55,7 @@ export default class Logs extends React.Component {
                     </div>
                 )
             :   null;
-        
+
         const reconnecting = this.state.reconnecting
             ?   (
                     <div className="a0-logs-reconnecting">
@@ -63,7 +63,7 @@ export default class Logs extends React.Component {
                     </div>
                 )
             :   null;
-        
+
         return (
             <div className="a0-logs-widget">
                 <div className="a0-logs-scroller">
@@ -93,21 +93,21 @@ export default class Logs extends React.Component {
             </div>
         );
     }
-    
+
     clear() {
         this.setState({
             logs: [],
         });
     }
-    
+
     push(event) {
         const logs = this.state.logs.slice();
-        
+
         if (typeof event === 'string') event = { msg: event };
         if (!event.time) event.time = new Date();
-        
+
         logs.push(event);
-        
+
         this.setState({ logs });
     }
 
@@ -115,30 +115,30 @@ export default class Logs extends React.Component {
         const message = this.logStream
             ?   'Reconnecting...'
             :   'Connecting...';
-        
+
         if (this.logStream) {
             this.logStream.destroy();
             this.logStream.removeAllListeners();
         }
-        
+
         this.setState({
             reconnecting: message,
             error: null
         });
-                
+
         this.logStream = this.props.sandbox.createLogStream({ json: true });
-        
+
         this.logStream.on('open', (e) => {
             this.setState({
                 error: null,
                 reconnecting: false
             });
-            
+
             this.push({
                 msg: 'Connected to ' + this.props.sandbox.container,
                 className: '-success',
             });
-            
+
             if (this.props.onConnect) this.props.onConnect(e);
         });
 
@@ -149,36 +149,36 @@ export default class Logs extends React.Component {
                     className: '-danger',
                 });
             }
-            
+
             this.setState({
                 error: error,
                 reconnecting: false,
             });
-            
+
             if (this.props.onError) this.props.onError(error);
         });
 
         this.logStream.on('data', (event) => {
             this.setState({ error: null, reconnecting: false });
-            
+
             if (event.name && event.name.match(/^sandbox-logs|^webtask-/)) {
                 if (!event.sandbox) {
                     event.className = '-muted';
                 } else {
                     event.className = '';
                 }
-                
+
                 event.time = new Date(event.time);
-                
+
                 this.push(event);
-                
+
                 if (this.props.onMessage) this.props.onMessage(event.msg);
             }
-            
+
             if (this.props.onEvent) this.props.onEvent(event);
         });
     }
-    
+
     onClickReconnect() {
         this.reconnect();
     }

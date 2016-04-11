@@ -24,7 +24,7 @@ import 'styles/editor.less';
 export default class WebtaskEditor extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.strategy = this.props.cron
             ?   this.props.edit
                 ?   EditCronJobStrategy
@@ -32,7 +32,7 @@ export default class WebtaskEditor extends React.Component {
             :   this.props.edit
                 ?   EditWebtaskStrategy
                 :   CreateWebtaskStrategy;
-        
+
         this.state = {
             code: this.props.code || this.strategy.defaultCode,
             currentPane: this.strategy.defaultPane,
@@ -50,9 +50,9 @@ export default class WebtaskEditor extends React.Component {
             secrets: props.secrets,
             subject: props.edit,
         };
-        
+
     }
-    
+
     render() {
         const editorBody = this.state.currentPane.renderBody.call(this);
         const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
@@ -68,7 +68,7 @@ export default class WebtaskEditor extends React.Component {
                     </div>
                 )
             :   null;
-        
+
         const paneSelector = (
             <PaneSelector
                 currentPane={ this.state.currentPane }
@@ -76,7 +76,7 @@ export default class WebtaskEditor extends React.Component {
                 onChange={ pane => this.onChangePane(pane) }
             />
         );
-        
+
         const runButton = (
             <button className="a0-inline-button -success"
                 disabled={ this.state.runInProgress }
@@ -88,7 +88,7 @@ export default class WebtaskEditor extends React.Component {
                 }
             </button>
         );
-        
+
         const saveButton = (
             <button className="a0-inline-button -primary"
                 disabled={ this.state.saveInProgress }
@@ -100,7 +100,7 @@ export default class WebtaskEditor extends React.Component {
                 }
             </button>
         );
-        
+
         const sidebarBody = this.strategy.panes.map(pane => (
             <div key={ pane.name } className={ 'a0-sidebar-pane ' + (pane === this.state.currentPane ? '-active' : '') }>
                 { pane.renderSidebar.call(this) }
@@ -176,59 +176,59 @@ export default class WebtaskEditor extends React.Component {
             </div>
         );
     }
-    
+
     getJobState() {
         return this.strategy.getJobState.call(this);
     }
-    
+
     onChangeCode(code) {
         this.setState({ code });
     }
-    
+
     onChangeOptions(options) {
         console.log('onChangeOptions', options);
         this.setState(options);
     }
-    
+
     onChangePane(pane) {
         this.setState({ currentPane: pane });
     }
-    
+
     onChangeSchedule(schedule) {
         this.setState({ schedule });
     }
-    
+
     onChangeSecrets(secrets) {
         this.setState({ secrets });
     }
-    
+
     onChangeState(state) {
         console.log('Editor.onChangeState', state);
         this.strategy.onChangeState.call(this, state);
     }
-    
+
     onClickRun() {
         this.run();
     }
-    
+
     onClickSave() {
         this.save();
     }
-    
+
     onSelectHistoryItem(item) {
         this.setState({ selectedHistoryItem: item });
     }
-    
+
     run() {
         this.setState({ runInProgress: true, currentPane: LogsPane });
-        
+
         const webtaskOptions = {
             name: this.state.name + '-run',
             mergeBody: this.state.mergeBody,
             parseBody: this.state.parseBody,
             secrets: this.state.secrets,
         };
-        
+
         return this.props.sandbox.create(this.state.code, webtaskOptions)
             .then(webtask => webtask.run({
                 method: 'get',
@@ -245,7 +245,7 @@ export default class WebtaskEditor extends React.Component {
                         headers[header] = JSON.parse(headers[header]);
                     }
                 }
-                
+
                 const data = {
                     data: {
                         headers: headers,
@@ -253,54 +253,54 @@ export default class WebtaskEditor extends React.Component {
                         body: res.body || res.text,
                     },
                 };
-                
+
                 if (this.refs.logs) {
                     this.refs.logs.push(data);
                 }
-                
+
                 if (this.props.onRun) this.props.onRun(data);
-                
+
                 return data;
             })
             .catch(error => { this.setState({ error }); throw error; })
             .finally(() => this.setState({ runInProgress: false }));
     }
-    
+
     save() {
         const error = this.validate();
         const noop = () => undefined;
-        
+
         if (error) {
             return this.setState({ error });
         }
-        
+
         this.setState({ saveInProgress: true });
-        
+
         return this.strategy.onSave.call(this)
             .tap(this.props.onSave || noop)
             .catch(error => { this.setState({ error }); throw error; })
             .finally(() => this.setState({ saveInProgress: false }));
     }
-    
+
     setStrategy(strategy) {
         if (this.strategy.onDeactivate) {
             this.strategy.onDeactivate();
         }
-        
+
         this.strategy = strategy;
-        
+
         if (this.strategy.onActivate) {
             this.strategy.onActivate();
         }
-        
+
         this.forceUpdate();
     }
-    
+
     validate() {
         const name = this.state.name.trim();
-        
-        if (!name.match(/^[-_\.a-zA-Z0-9]{1,32}$/)) {
-            return new Error('Invalid name: Webtask names must contain between 1 and 32 alphanumeric characters.');
+
+        if (!name.match(/^[-_\.a-zA-Z0-9]+$/)) {
+            return new Error('Invalid name: Webtask names must contain alphanumeric characters.');
         }
     }
 }
