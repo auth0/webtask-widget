@@ -1,3 +1,5 @@
+/*global localStorage*/
+
 import Bluebird from 'bluebird';
 import Login from 'components/login';
 import Widget from 'lib/widget';

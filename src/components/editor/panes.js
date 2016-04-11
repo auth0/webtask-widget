@@ -9,6 +9,14 @@ import JobHistory from './jobHistory';
 import ScheduleEditor from './scheduleEditor';
 import SecretsEditor from './secretsEditor';
 
+export const CodePane = {
+    hideSidebar: true,
+    iconClass: '-code',
+    name: 'Code',
+    renderBody: renderEditor,
+    renderSidebar: noRender,
+};
+
 export const HistoryPane = {
     iconClass: '-history',
     name: 'History',
@@ -93,6 +101,10 @@ export const SettingsPane = {
     },
 };
 
+
+function noRender() {
+    return;
+}
 
 function renderEditor () {
     return (
