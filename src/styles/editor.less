@@ -62,17 +62,25 @@
     height: @widget-height;
 
     & > .a0-editor-split {
-        flex: 1 0 auto;
+        flex: 0 0 auto;
         order: 1;
+        
+        & > .a0-editor-right > .a0-editor-sidebar {
+            display: none;
+        }
+    }
+    
+    & > .a0-editor-placeholder + .a0-editor-split {
+        flex: 1 0 auto;
+        
+        & > .a0-editor-right > .a0-editor-sidebar {
+            display: flex;
+        }
     }
 
     & > .a0-editor-body {
         flex: 1 0 auto;
         order: 2;
-        
-        & + .a0-editor-split {
-            flex: 0 0 auto;
-        }
     }
 
     & > .a0-editor-footer {
@@ -195,6 +203,18 @@
         flex: 1 1;
         font-family: "Roboto Mono";
     }
+    
+    & > .a0-editor-loading {
+        flex: 1 1;
+    }
+}
+
+.a0-editor-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: @toolbar-bg-color;
 }
 
 .a0-error-message {

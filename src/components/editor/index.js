@@ -1,3 +1,4 @@
+import Bluebird from 'bluebird';
 import Genid from 'genid';
 import ComponentStack from 'lib/componentStack';
 import React from 'react';
@@ -24,6 +25,8 @@ import 'styles/editor.less';
 export default class WebtaskEditor extends React.Component {
     constructor(props) {
         super(props);
+        
+        this.requiresInspection = typeof this.props.edit === 'string';
 
         this.strategy = this.props.cron
             ?   this.props.edit
@@ -32,29 +35,60 @@ export default class WebtaskEditor extends React.Component {
             :   this.props.edit
                 ?   EditWebtaskStrategy
                 :   CreateWebtaskStrategy;
-
+        
         this.state = {
-            code: this.props.code || this.strategy.defaultCode,
-            currentPane: this.strategy.defaultPane,
+            code: this.requiresInspection
+                ?   ''
+                :   this.props.code || this.strategy.defaultCode,
+            currentPane: null,
+            inspectionInProgress: false,
             jobState: this.props.jobState,
             mergeBody: typeof this.props.mergeBody !== 'undefined'
                 ?   this.props.mergeBody
                 :   this.strategy.defaultMergeBody,
-            name: props.name,
+            name: this.requiresInspection
+                ?   ''
+                :   props.name,
             parseBody: typeof this.props.parseBody !== 'undefined'
                 ?   this.props.parseBody
                 :   this.strategy.defaultParseBody,
             runInProgress: false,
             saveInProgress: false,
             schedule: props.schedule,
-            secrets: props.secrets,
+            secrets: this.requiresInspection
+                ?   {}
+                :   props.secrets,
             subject: props.edit,
         };
-
+    }
+    
+    componentWillMount() {
+        let initialPane = this.strategy.defaultPane;
+        
+        for (let i in this.strategy.panes) {
+            let pane = this.strategy.panes[i];
+            
+            if (pane.id === this.props.pane) {
+                initialPane = pane;
+            }
+        }
+        
+        this.inspected$ = this.requiresInspection
+            ?   this.inspect()
+            :   Bluebird.resolve();
+        
+        this.inspected$
+            .tap(() => this.setState({ currentPane: initialPane }));
     }
 
     render() {
-        const editorBody = this.state.currentPane.renderBody.call(this);
+        const editorBody = this.state.currentPane
+            ?   this.state.currentPane.renderBody.call(this)
+            :   (
+                    <div className="a0-editor-loading">
+                        <span>Loading...</span>
+                    </div>
+                );
         const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
         const hideSidebar = this.state.currentPane
             && !!this.state.currentPane.hideSidebar;
@@ -79,7 +113,7 @@ export default class WebtaskEditor extends React.Component {
 
         const runButton = (
             <button className="a0-inline-button -success"
-                disabled={ this.state.runInProgress }
+                disabled={ this.state.runInProgress || this.state.inspectionInProgress }
                 onClick={ e => this.onClickRun() }
             >
                 { this.state.runInProgress
@@ -91,7 +125,7 @@ export default class WebtaskEditor extends React.Component {
 
         const saveButton = (
             <button className="a0-inline-button -primary"
-                disabled={ this.state.saveInProgress }
+                disabled={ this.state.saveInProgress || this.state.inspectionInProgress }
                 onClick={ e => this.onClickSave() }
             >
                 { this.state.saveInProgress
@@ -110,7 +144,7 @@ export default class WebtaskEditor extends React.Component {
         const webtaskUrl = (
             <WebtaskUrl
                 copyButton={ urlInfo.copyButton }
-                disabled={ this.state.saveInProgress }
+                disabled={ this.state.saveInProgress || this.state.inspectionInProgress }
                 name={ this.state.name }
                 onChangeName={ name => this.setState({ name }) }
                 prefix={ urlInfo.prefix }
@@ -118,14 +152,8 @@ export default class WebtaskEditor extends React.Component {
             />
         );
         
-        const splitBody = hideSidebar
+        const splitBody = hideSidebar || this.state.inspectionInProgress
             ?   [
-                    // Body is put before split to allow for some css
-                    // adjacency trickery.
-                    <div className="a0-editor-body" key="body">
-                        { error }
-                        { editorBody }
-                    </div>,
                     <div className="a0-editor-split" key="split">
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
@@ -136,11 +164,23 @@ export default class WebtaskEditor extends React.Component {
                             <div className="a0-editor-toolbar">
                                 { paneSelector }
                             </div>
+                            {
+                                // Keep the sidebars in the DOM, but hide them via css.
+                                // This means the Logs sidebar Widget isn't wiped out.
+                            }
+                            <div className="a0-editor-sidebar" key="sidebar">
+                                { sidebarBody }
+                            </div>
                         </div>
                     </div>,
+                    <div className="a0-editor-body" key="body">
+                        { error }
+                        { editorBody }
+                    </div>,
                 ]
-            :   (
-                    <div className="a0-editor-split">
+            :   [
+                    <div className="a0-editor-placeholder" key="placeholder"></div>,
+                    <div className="a0-editor-split" key="split">
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
                                 { this.props.backButton }
@@ -154,12 +194,12 @@ export default class WebtaskEditor extends React.Component {
                             <div className="a0-editor-toolbar">
                                 { paneSelector }
                             </div>
-                            <div className="a0-editor-sidebar">
+                            <div className="a0-editor-sidebar" key="sidebar">
                                 { sidebarBody }
                             </div>
                         </div>
                     </div>
-                 );
+                 ];
         
         return (
             <div className="a0-editor-widget">
@@ -186,7 +226,6 @@ export default class WebtaskEditor extends React.Component {
     }
 
     onChangeOptions(options) {
-        console.log('onChangeOptions', options);
         this.setState(options);
     }
 
@@ -203,7 +242,6 @@ export default class WebtaskEditor extends React.Component {
     }
 
     onChangeState(state) {
-        console.log('Editor.onChangeState', state);
         this.strategy.onChangeState.call(this, state);
     }
 
@@ -218,68 +256,135 @@ export default class WebtaskEditor extends React.Component {
     onSelectHistoryItem(item) {
         this.setState({ selectedHistoryItem: item });
     }
+    
+    onCronInspection(job) {
+        this.setState({
+            jobState: job.state,
+            schedule: job.schedule,
+            subject: job,
+        });
+    }
+    
+    onWebtaskInspection(claims) {
+        this.setState({
+            code: claims.code,
+            mergeBody: !!claims.mb,
+            name: claims.jtn || this.state.name,
+            parseBody: !!claims.pb,
+            secrets: claims.ectx || {},
+        });
+    }
+    
+    inspect() {
+        this.inspection$ = this.props.cron
+            ?   this.inspectCronJob()
+            :   this.inspectWebtask();
+        
+        this.setState({ inspectionInProgress: true });
+        
+        return this.inspection$
+            .catch(error => { this.setState({ error }); throw error; })
+            .finally(() => this.setState({ inspectionInProgress: false }));
+    }
+    
+    inspectCronJob() {
+        const onCronJob = (job) => {
+            const inspectionOptions = {
+                decrypt: true,
+                fetch_code: true
+            };
+            
+            return job.inspect(inspectionOptions)
+                .tap(this.onWebtaskInspection.bind(this));
+        };
+        
+        return this.props.sandbox.getCronJob({ name: this.props.edit })
+            .tap(onCronJob)
+            .tap(this.onCronInspection.bind(this));
+    }
+    
+    inspectWebtask() {
+        const inspectionOptions = {
+            name: this.props.edit,
+            decrypt: true,
+            fetch_code: true
+        };
+        
+        return this.props.sandbox.inspectWebtask(inspectionOptions)
+            .tap(this.onWebtaskInspection.bind(this));
+    }
 
     run() {
-        this.setState({ runInProgress: true, currentPane: LogsPane });
-
-        const webtaskOptions = {
-            name: this.state.name + '-run',
-            mergeBody: this.state.mergeBody,
-            parseBody: this.state.parseBody,
-            secrets: this.state.secrets,
-        };
-
-        return this.props.sandbox.create(this.state.code, webtaskOptions)
-            .then(webtask => webtask.run({
-                method: 'get',
-                query: {
-                    webtask_no_cache: 1,
-                },
-            }))
-            .tap((res) => {
-                const headers = res.header;
-                const auth0HeaderRx = /^x-auth0/;
-
-                for (let header in headers) {
-                    if (auth0HeaderRx.test(header)) {
-                        headers[header] = JSON.parse(headers[header]);
-                    }
-                }
-
-                const data = {
-                    data: {
-                        headers: headers,
-                        statusCode: res.status,
-                        body: res.body || res.text,
+        const runImpl = () => {
+            this.setState({ runInProgress: true, currentPane: LogsPane });
+    
+            const webtaskOptions = {
+                name: this.state.name + '-run',
+                mergeBody: this.state.mergeBody,
+                parseBody: this.state.parseBody,
+                secrets: this.state.secrets,
+            };
+            
+            return this.props.sandbox.create(this.state.code, webtaskOptions)
+                .then(webtask => webtask.run({
+                    method: 'get',
+                    query: {
+                        webtask_no_cache: 1,
                     },
-                };
-
-                if (this.refs.logs) {
-                    this.refs.logs.push(data);
-                }
-
-                if (this.props.onRun) this.props.onRun(data);
-
-                return data;
-            })
-            .catch(error => { this.setState({ error }); throw error; })
-            .finally(() => this.setState({ runInProgress: false }));
+                }))
+                .tap((res) => {
+                    const headers = res.header;
+                    const auth0HeaderRx = /^x-auth0/;
+    
+                    for (let header in headers) {
+                        if (auth0HeaderRx.test(header)) {
+                            headers[header] = JSON.parse(headers[header]);
+                        }
+                    }
+    
+                    const data = {
+                        data: {
+                            headers: headers,
+                            statusCode: res.status,
+                            body: res.body || res.text,
+                        },
+                    };
+    
+                    if (this.refs.logs) {
+                        this.refs.logs.push(data);
+                    }
+    
+                    if (this.props.onRun) this.props.onRun(data);
+    
+                    return data;
+                })
+                .catch(error => { this.setState({ error }); throw error; })
+                .finally(() => this.setState({ runInProgress: false }));
+        };
+        
+        return this.inspected$
+            .then(runImpl);
     }
 
     save() {
-        const error = this.validate();
-        const noop = () => undefined;
-
-        if (error) {
-            return this.setState({ error });
-        }
-
-        this.setState({ saveInProgress: true });
-
-        return this.strategy.onSave.call(this)
-            .tap(this.props.onSave || noop)
-            .catch(error => { this.setState({ error }); throw error; })
-            .finally(() => this.setState({ saveInProgress: false }));
+        const saveImpl = () => {
+            const error = this.validate();
+            const noop = () => undefined;
+    
+            if (error) {
+                return this.setState({ error });
+            }
+    
+            this.setState({ saveInProgress: true });
+    
+            return this.strategy.onSave.call(this)
+                .tap(this.props.onSave || noop)
+                .catch(error => { this.setState({ error }); throw error; })
+                .finally(() => this.setState({ saveInProgress: false }));
+        };
+        
+        return this.inspected$
+            .then(saveImpl);
     }
 
     setStrategy(strategy) {
@@ -310,6 +415,7 @@ WebtaskEditor.propTypes = {
     code: React.PropTypes.string,
     cron: React.PropTypes.bool,
     edit: React.PropTypes.oneOfType([
+        React.PropTypes.string,
         React.PropTypes.instanceOf(Sandbox.CronJob),
         React.PropTypes.instanceOf(Sandbox.Webtask),
     ]),
