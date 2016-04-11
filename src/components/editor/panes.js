@@ -12,6 +12,7 @@ import SecretsEditor from './secretsEditor';
 export const CodePane = {
     hideSidebar: true,
     iconClass: '-code',
+    id: 'code',
     name: 'Code',
     renderBody: renderEditor,
     renderSidebar: noRender,
@@ -19,6 +20,7 @@ export const CodePane = {
 
 export const HistoryPane = {
     iconClass: '-history',
+    id: 'history',
     name: 'History',
     renderBody() {
         return (
@@ -40,6 +42,7 @@ export const HistoryPane = {
 
 export const LogsPane = {
     iconClass: '-split',
+    id: 'logs',
     name: 'Realtime Logs',
     renderBody: renderEditor,
     renderSidebar() {
@@ -54,6 +57,7 @@ export const LogsPane = {
 
 export const SchedulePane = {
     iconClass: '-clock',
+    id: 'schedule',
     name: 'Schedule',
     renderBody: renderEditor,
     renderSidebar() {
@@ -72,6 +76,7 @@ export const SchedulePane = {
 
 export const SecretsPane = {
     iconClass: '-key',
+    id: 'secrets',
     name: 'Secrets',
     renderBody: renderEditor,
     renderSidebar() {
@@ -87,6 +92,7 @@ export const SecretsPane = {
 
 export const SettingsPane = {
     iconClass: '-gear',
+    id: 'settings',
     name: 'Settings',
     renderBody: renderEditor,
     renderSidebar() {

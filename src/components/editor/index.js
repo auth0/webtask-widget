@@ -46,25 +46,39 @@ export default class WebtaskEditor extends React.Component {
             mergeBody: typeof this.props.mergeBody !== 'undefined'
                 ?   this.props.mergeBody
                 :   this.strategy.defaultMergeBody,
-            name: props.name,
+            name: this.requiresInspection
+                ?   ''
+                :   props.name,
             parseBody: typeof this.props.parseBody !== 'undefined'
                 ?   this.props.parseBody
                 :   this.strategy.defaultParseBody,
             runInProgress: false,
             saveInProgress: false,
             schedule: props.schedule,
-            secrets: props.secrets,
+            secrets: this.requiresInspection
+                ?   {}
+                :   props.secrets,
             subject: props.edit,
         };
     }
     
     componentWillMount() {
+        let initialPane = this.strategy.defaultPane;
+        
+        for (let i in this.strategy.panes) {
+            let pane = this.strategy.panes[i];
+            
+            if (pane.id === this.props.pane) {
+                initialPane = pane;
+            }
+        }
+        
         this.inspected$ = this.requiresInspection
             ?   this.inspect()
             :   Bluebird.resolve();
         
         this.inspected$
-            .tap(() => this.setState({ currentPane: this.strategy.defaultPane }));
+            .tap(() => this.setState({ currentPane: initialPane }));
     }
 
     render() {
@@ -140,12 +154,6 @@ export default class WebtaskEditor extends React.Component {
         
         const splitBody = hideSidebar || this.state.inspectionInProgress
             ?   [
-                    // Body is put before split to allow for some css
-                    // adjacency trickery.
-                    <div className="a0-editor-body" key="body">
-                        { error }
-                        { editorBody }
-                    </div>,
                     <div className="a0-editor-split" key="split">
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
@@ -156,11 +164,23 @@ export default class WebtaskEditor extends React.Component {
                             <div className="a0-editor-toolbar">
                                 { paneSelector }
                             </div>
+                            {
+                                // Keep the sidebars in the DOM, but hide them via css.
+                                // This means the Logs sidebar Widget isn't wiped out.
+                            }
+                            <div className="a0-editor-sidebar" key="sidebar">
+                                { sidebarBody }
+                            </div>
                         </div>
                     </div>,
+                    <div className="a0-editor-body" key="body">
+                        { error }
+                        { editorBody }
+                    </div>,
                 ]
-            :   (
-                    <div className="a0-editor-split">
+            :   [
+                    <div className="a0-editor-placeholder" key="placeholder"></div>,
+                    <div className="a0-editor-split" key="split">
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
                                 { this.props.backButton }
@@ -174,12 +194,12 @@ export default class WebtaskEditor extends React.Component {
                             <div className="a0-editor-toolbar">
                                 { paneSelector }
                             </div>
-                            <div className="a0-editor-sidebar">
+                            <div className="a0-editor-sidebar" key="sidebar">
                                 { sidebarBody }
                             </div>
                         </div>
                     </div>
-                 );
+                 ];
         
         return (
             <div className="a0-editor-widget">
