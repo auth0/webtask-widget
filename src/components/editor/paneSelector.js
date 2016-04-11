@@ -31,7 +31,7 @@ export default class PaneSelector extends React.Component {
 }
 
 PaneSelector.propTypes = {
-    currentPane: React.PropTypes.object.isRequired,
+    currentPane: React.PropTypes.object,
     onChange: React.PropTypes.func.isRequired,
     panes: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
 };
