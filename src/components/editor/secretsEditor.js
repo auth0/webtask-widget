@@ -8,21 +8,31 @@ export default class A0SecretsEditor extends React.Component {
     constructor(props) {
         super(props);
 
+        this.keyRefs = [];
+        this.valueRefs = [];
+
+        this.state = {
+            secrets: []
+        };
+    }
+
+    componentWillReceiveProps(props) {
+        this._loadSecrets(props);
+    }
+
+    _loadSecrets (props) {
         const secrets = Object.keys(props.secrets)
             .reduce((secrets, key) => secrets.concat([{
                 key: key,
                 value: props.secrets[key],
                 editing: false,
             }]), []);
-        
+
         this.state = {
             secrets,
         };
-
-        this.keyRefs = [];
-        this.valueRefs = [];
     }
-    
+
     render() {
         const self = this;
         const props = this.props;
@@ -39,7 +49,7 @@ export default class A0SecretsEditor extends React.Component {
                         ?   <A0SecretEditor secret={ secret } key={ i }
                                 onAccept={ (accepted) => this.updateSecret(i, accepted) }
                             />
-                        :   <A0SecretView secret={ secret } key={ i } 
+                        :   <A0SecretView secret={ secret } key={ i }
                                 onEdit={ () => this.editSecret(i) }
                                 onRemove={ () => this.removeSecret(i) }
                             />
@@ -59,12 +69,12 @@ export default class A0SecretsEditor extends React.Component {
             return secrets;
         }, {});
     }
-    
+
     editSecret(i) {
         const secrets = this.state.secrets.slice();
-        
+
         secrets[i].editing = true;
-        
+
         this.setState({ secrets }, () => {
             if (this.props.onChange) this.props.onChange(this.getValue());
         });
@@ -73,9 +83,9 @@ export default class A0SecretsEditor extends React.Component {
 
     addSecret(secret) {
         const secrets = this.state.secrets.slice();
-        
+
         secrets.push(secret);
-        
+
         this.refs.creator.clear();
         this.setState({ secrets }, () => {
             if (this.props.onChange) this.props.onChange(this.getValue());
@@ -115,22 +125,22 @@ A0SecretsEditor.propTypes = {
 class A0SecretCreator extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             key: '',
             value: '',
         };
-        
+
         this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
-    
+
     render() {
         const self = this;
         const props = this.props;
         const state = this.state;
-        
+
         const isInvalid = !this.isValid();
-        
+
         return (
             <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
@@ -154,20 +164,20 @@ class A0SecretCreator extends React.Component {
             </form>
         );
     }
-    
+
     isValid() {
         return this.validKeyRx.test(this.state.key);
     }
-    
+
     onSubmit(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         if (this.isValid() && this.props.onAccept) {
             this.props.onAccept(this.getValue());
         }
     }
-    
+
     clear() {
         this.setState({
             key: '',
@@ -187,22 +197,22 @@ class A0SecretCreator extends React.Component {
 class A0SecretEditor extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             key: props.secret ? props.secret.key : '',
             value: props.secret ? props.secret.value : '',
         };
-        
+
         this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
-    
+
     render() {
         const self = this;
         const props = this.props;
         const state = this.state;
-        
+
         const isInvalid = !this.isValid();
-        
+
         return (
             <form className="a0-secret-editor" onSubmit={ e => this.onSubmit(e) }>
                 <div className="a0-secret-inputs">
@@ -226,15 +236,15 @@ class A0SecretEditor extends React.Component {
             </form>
         );
     }
-    
+
     isValid() {
         return this.validKeyRx.test(this.state.key);
     }
-    
+
     onSubmit(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         if (this.isValid() && this.props.onAccept) {
             this.props.onAccept(this.getValue());
         }
@@ -252,7 +262,7 @@ class A0SecretView extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
     render() {
         const self = this;
         const props = this.props;
@@ -283,11 +293,11 @@ class A0SecretView extends React.Component {
             </div>
         );
     }
-    
+
     onClickEdit() {
         if (this.props.onEdit) this.props.onEdit();
     }
-    
+
     onClickRemove() {
         if (this.props.onRemove) this.props.onRemove();
     }
