@@ -9,16 +9,16 @@
             * {
                 box-sizing: border-box;
             }
-            
+
             #cron-jobs, #editor, #logs {
                 margin: 80px auto 0;
                 width: 80%;
                 min-width: 400px;
-                
+
                 padding: 10px;
                 border: 2px dashed #ccc;
             }
-            
+
             #cron-jobs:before {
                 content: 'webtaskWidget.createCronListing()';
                 margin: 0 0 10px;
@@ -26,7 +26,7 @@
                 display: block;
                 color: #999;
             }
-            
+
             #editor:before {
                 content: 'webtaskWidget.createEditor()';
                 margin: 0 0 10px;
@@ -34,7 +34,7 @@
                 display: block;
                 color: #999;
             }
-            
+
             #logs:before {
                 content: 'webtaskWidget.createLogger()';
                 margin: 0 0 10px;
@@ -54,7 +54,7 @@
                 mount: document.getElementById('cron-jobs'),
                 storeProfile: true,
             });
-        
+
             var editor = window.webtaskWidget.showEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
@@ -62,43 +62,44 @@
                 edit: 'hello',
                 autoSaveOnLoad: true,
                 autoSaveOnChange: true,
+                useSuffixOnRun: false
             });
-            
+
             editor.on('run', function () {
                 console.log('editor.run', arguments);
             });
-            
+
             editor.on('save', function () {
                 console.log('editor.save', arguments);
             });
-            
+
             editor.run()
                 .then(function () {
                     console.log('editor#run', arguments);
                 });
-            
-            
+
+
             var logs = window.webtaskWidget.showLogs({
                 mount: document.getElementById('logs'),
                 storeProfile: true,
             });
-            
+
             logs.on('connect', function () {
                 console.log('logs.connect', arguments);
             });
-            
+
             logs.on('error', function () {
                 console.log('logs.error', arguments);
             });
-            
+
             logs.on('event', function () {
                 console.log('logs.event', arguments);
             });
-            
+
             logs.on('message', function () {
                 console.log('logs.message', arguments);
             });
-            
+
             logs.push('This message was manually pushed.');
         </script>
     </body>

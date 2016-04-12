@@ -25,7 +25,7 @@ import 'styles/editor.less';
 export default class WebtaskEditor extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.requiresInspection = typeof this.props.edit === 'string';
 
         this.strategy = this.props.cron
@@ -35,7 +35,7 @@ export default class WebtaskEditor extends React.Component {
             :   this.props.edit
                 ?   EditWebtaskStrategy
                 :   CreateWebtaskStrategy;
-        
+
         this.state = {
             code: this.requiresInspection
                 ?   ''
@@ -59,24 +59,25 @@ export default class WebtaskEditor extends React.Component {
                 ?   {}
                 :   props.secrets,
             subject: props.edit,
+            useSuffixOnRun: typeof props.useSuffixOnRun === 'undefined' ? true : props.useSuffixOnRun
         };
     }
-    
+
     componentWillMount() {
         let initialPane = this.strategy.defaultPane;
-        
+
         for (let i in this.strategy.panes) {
             let pane = this.strategy.panes[i];
-            
+
             if (pane.id === this.props.pane) {
                 initialPane = pane;
             }
         }
-        
+
         this.inspected$ = this.requiresInspection
             ?   this.inspect()
             :   Bluebird.resolve();
-        
+
         this.inspected$
             .tap(() => this.setState({ currentPane: initialPane }));
     }
@@ -92,7 +93,7 @@ export default class WebtaskEditor extends React.Component {
         const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
         const hideSidebar = this.state.currentPane
             && !!this.state.currentPane.hideSidebar;
-        
+
         const error = this.state.error
             ?   (
                     <div className="a0-error-message"
@@ -151,7 +152,7 @@ export default class WebtaskEditor extends React.Component {
                 readonly={ urlInfo.readonly }
             />
         );
-        
+
         const splitBody = hideSidebar || this.state.inspectionInProgress
             ?   [
                     <div className="a0-editor-split" key="split">
@@ -200,7 +201,7 @@ export default class WebtaskEditor extends React.Component {
                         </div>
                     </div>
                  ];
-        
+
         return (
             <div className="a0-editor-widget">
                 { splitBody }
@@ -256,7 +257,7 @@ export default class WebtaskEditor extends React.Component {
     onSelectHistoryItem(item) {
         this.setState({ selectedHistoryItem: item });
     }
-    
+
     onCronInspection(job) {
         this.setState({
             jobState: job.state,
@@ -264,7 +265,7 @@ export default class WebtaskEditor extends React.Component {
             subject: job,
         });
     }
-    
+
     onWebtaskInspection(claims) {
         this.setState({
             code: claims.code,
@@ -274,42 +275,42 @@ export default class WebtaskEditor extends React.Component {
             secrets: claims.ectx || {},
         });
     }
-    
+
     inspect() {
         this.inspection$ = this.props.cron
             ?   this.inspectCronJob()
             :   this.inspectWebtask();
-        
+
         this.setState({ inspectionInProgress: true });
-        
+
         return this.inspection$
             .catch(error => { this.setState({ error }); throw error; })
             .finally(() => this.setState({ inspectionInProgress: false }));
     }
-    
+
     inspectCronJob() {
         const onCronJob = (job) => {
             const inspectionOptions = {
                 decrypt: true,
                 fetch_code: true
             };
-            
+
             return job.inspect(inspectionOptions)
                 .tap(this.onWebtaskInspection.bind(this));
         };
-        
+
         return this.props.sandbox.getCronJob({ name: this.props.edit })
             .tap(onCronJob)
             .tap(this.onCronInspection.bind(this));
     }
-    
+
     inspectWebtask() {
         const inspectionOptions = {
             name: this.props.edit,
             decrypt: true,
             fetch_code: true
         };
-        
+
         return this.props.sandbox.inspectWebtask(inspectionOptions)
             .tap(this.onWebtaskInspection.bind(this));
     }
@@ -317,14 +318,15 @@ export default class WebtaskEditor extends React.Component {
     run() {
         const runImpl = () => {
             this.setState({ runInProgress: true, currentPane: LogsPane });
-    
+            let wtName = `${this.state.name}${this.state.useSuffixOnRun ? '-run' : ''}`;
+
             const webtaskOptions = {
-                name: this.state.name + '-run',
+                name: wtName,
                 mergeBody: this.state.mergeBody,
                 parseBody: this.state.parseBody,
                 secrets: this.state.secrets,
             };
-            
+
             return this.props.sandbox.create(this.state.code, webtaskOptions)
                 .then(webtask => webtask.run({
                     method: 'get',
@@ -335,13 +337,13 @@ export default class WebtaskEditor extends React.Component {
                 .tap((res) => {
                     const headers = res.header;
                     const auth0HeaderRx = /^x-auth0/;
-    
+
                     for (let header in headers) {
                         if (auth0HeaderRx.test(header)) {
                             headers[header] = JSON.parse(headers[header]);
                         }
                     }
-    
+
                     const data = {
                         data: {
                             headers: headers,
@@ -349,19 +351,19 @@ export default class WebtaskEditor extends React.Component {
                             body: res.body || res.text,
                         },
                     };
-    
+
                     if (this.refs.logs) {
                         this.refs.logs.push(data);
                     }
-    
+
                     if (this.props.onRun) this.props.onRun(data);
-    
+
                     return data;
                 })
                 .catch(error => { this.setState({ error }); throw error; })
                 .finally(() => this.setState({ runInProgress: false }));
         };
-        
+
         return this.inspected$
             .then(runImpl);
     }
@@ -370,19 +372,19 @@ export default class WebtaskEditor extends React.Component {
         const saveImpl = () => {
             const error = this.validate();
             const noop = () => undefined;
-    
+
             if (error) {
                 return this.setState({ error });
             }
-    
+
             this.setState({ saveInProgress: true });
-    
+
             return this.strategy.onSave.call(this)
                 .tap(this.props.onSave || noop)
                 .catch(error => { this.setState({ error }); throw error; })
                 .finally(() => this.setState({ saveInProgress: false }));
         };
-        
+
         return this.inspected$
             .then(saveImpl);
     }
@@ -430,6 +432,7 @@ WebtaskEditor.propTypes = {
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+    useSuffixOnRun: React.PropTypes.bool
 };
 
 WebtaskEditor.defaultProps = {
