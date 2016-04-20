@@ -72,6 +72,11 @@ var baseConfig = {
 
 if (process.env.NODE_ENV === 'production') {
     baseConfig.plugins.push(
+        new Webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': '"' + process.env.NODE_ENV + '"'
+            }
+        }),
         new Webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false
