@@ -83,6 +83,8 @@ export default class WebtaskEditor extends React.Component {
     }
 
     render() {
+        const codeSize = (this.calculateCodeSize(this.state.code) / 1024).toFixed(2)
+        
         const editorBody = this.state.currentPane
             ?   this.state.currentPane.renderBody.call(this)
             :   (
@@ -159,10 +161,11 @@ export default class WebtaskEditor extends React.Component {
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
                                 { this.props.backButton }
+                                <span className="a0-editor-size" style={{color: codeSize>=100 ? 'red' : 'inherit'}}>{codeSize} K out of 100K</span>
                             </div>
                         </div>
                         <div className="a0-editor-right">
-                            <div className="a0-editor-toolbar">
+                            <div className="a0-editor-toolbar"> 
                                 { paneSelector }
                             </div>
                             {
@@ -185,6 +188,7 @@ export default class WebtaskEditor extends React.Component {
                         <div className="a0-editor-left">
                             <div className="a0-editor-toolbar">
                                 { this.props.backButton }
+                                <span className="a0-editor-size" style={{color: codeSize>=100 ? 'red' : 'inherit'}}>{codeSize} K out of 100K</span>
                             </div>
                             <div className="a0-editor-body">
                                 { error }
@@ -409,6 +413,19 @@ export default class WebtaskEditor extends React.Component {
         if (!name.match(/^[-_\.a-zA-Z0-9]+$/)) {
             return new Error('Invalid name: Webtask names must contain alphanumeric characters.');
         }
+    }
+    
+    calculateCodeSize(str) {
+        var s = str.length;
+
+        for (var i = str.length - 1; i >= 0; i--) {
+            var code = str.charCodeAt(i);
+            if (code > 0x7f && code <= 0x7ff) s++;
+            else if (code > 0x7ff && code <= 0xffff) s += 2;
+            if (code >= 0xDC00 && code <= 0xDFFF) i--; 
+        }
+
+        return s;
     }
 }
 
