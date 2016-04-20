@@ -153,6 +153,7 @@ export default class CronList extends React.Component {
             mergeBody: false,
             onSave: unmount,
             parseBody: true,
+            ...this.props.editorOptions
         });
     }
     
@@ -239,6 +240,14 @@ CronList.propTypes = {
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
     showCreateButton: React.PropTypes.bool,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+    editorOptions: React.PropTypes.shape({
+        code: Editor.propTypes.code,
+        mergeBody: Editor.propTypes.mergeBody,
+        pane: Editor.propTypes.pane,
+        parseBody: Editor.propTypes.parseBody,
+        schedule: Editor.propTypes.schedule,
+        secrets: Editor.propTypes.secrets,
+    }),
 };
 
 CronList.defaultProps = {
