@@ -1,11 +1,19 @@
 .a0-component-stack {
+    display: flex;
+    flex-direction: column;
     position: relative;
     
-    .a0-layer {
+    & > .a0-layer {
         display: none;
+        flex: 1;
         
         &:last-child {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            
+            & > * {
+                flex: 1;
+            }
         }
     }
     
