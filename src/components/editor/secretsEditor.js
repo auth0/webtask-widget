@@ -76,7 +76,7 @@ export default class A0SecretsEditor extends React.Component {
         secrets[i].editing = true;
 
         this.setState({ secrets }, () => {
-            if (this.props.onChange) this.props.onChange(this.getValue());
+            // if (this.props.onChange) this.props.onChange(this.getValue());
         });
 
     }
