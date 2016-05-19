@@ -8,6 +8,7 @@ import HistoryItemInspector from './historyItemInspector';
 import JobHistory from './jobHistory';
 import ScheduleEditor from './scheduleEditor';
 import SecretsEditor from './secretsEditor';
+import ParamsEditor from './paramsEditor';
 
 export const CodePane = {
     hideSidebar: true,
@@ -85,6 +86,22 @@ export const SecretsPane = {
                 ref="secrets"
                 secrets={ this.state.secrets }
                 onChange={ secrets => this.onChangeSecrets(secrets) }
+            />
+        );
+    },
+};
+
+export const ParamsPane = {
+    iconClass: '-key',
+    id: 'params',
+    name: 'Params',
+    renderBody: renderEditor,
+    renderSidebar() {
+        return (
+            <ParamsEditor
+                ref="secrets"
+                params={ this.state.params }
+                onChange={ params => this.onChangeParams(params) }
             />
         );
     },
