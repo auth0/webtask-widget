@@ -1,3 +1,4 @@
+var Autoprefixer = require('autoprefixer');
 var Path = require('path');
 var Package = require('./package.json');
 var Webpack = require('webpack');
@@ -26,13 +27,13 @@ var baseConfig = {
                 loaders: ['babel-loader'],
             }, {
                 test: /\.css$/,
-                loaders: ['style-loader', 'css-loader', 'autoprefixer-loader'],
+                loaders: ['style-loader', 'css-loader', 'postcss-loader'],
             }, {
                 test: /\.less$/,
-                loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'less-loader'],
+                loaders: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader'],
             }, {
                 test: /\.styl$/,
-                loaders: ['style-loader', 'css-loader', 'autoprefixer-loader', 'stylus-loader'],
+                loaders: ['style-loader', 'css-loader', 'postcss-loader', 'stylus-loader'],
             }, {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader?limit=10000&mimetype=application/font-woff'
@@ -68,6 +69,8 @@ var baseConfig = {
     devServer: {
         devtool: 'source-map',
     },
+    postcss: () => [Autoprefixer],
+
 };
 
 if (process.env.NODE_ENV === 'production') {
