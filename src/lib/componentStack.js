@@ -27,12 +27,12 @@ export default class ComponentStack {
         return top;
     }
     
-    push(Component, props) {
+    push(Component, props, onMounted) {
         let wrapperEl = document.createElement('div');
         
         wrapperEl.classList.add('a0-layer');
         
-        const componentRef = ReactDOM.render(<Component {...props} stack={ this } />, wrapperEl); 
+        const componentRef = ReactDOM.render(<Component {...props} stack={ this } />, wrapperEl, onMounted); 
         
         componentRef.unmount = () => {
             if (!wrapperEl) return;

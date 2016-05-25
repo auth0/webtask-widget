@@ -1,6 +1,13 @@
+import Ace from 'brace';
 import Bluebird from 'bluebird';
 import { EventEmitter } from 'events';
 import ComponentStack from 'lib/componentStack';
+import ReactDOM from 'react-dom';
+
+const HashHandler = Ace.acequire('ace/keyboard/hash_handler').HashHandler;
+const Event = Ace.acequire('ace/lib/event');
+const KeyUtil = Ace.acequire('ace/lib/keys');
+const UserAgent = Ace.acequire('ace/lib/useragent');
 
 
 export default class Widget extends EventEmitter {
@@ -16,6 +23,7 @@ export default class Widget extends EventEmitter {
         this.stack = options.stack instanceof ComponentStack
             ?   options.stack
             :   new ComponentStack(options.mount);
+        this.hashHandler = new HashHandler();
         
         if (options.events) {
             for (let eventName of Object.keys(options.events)) {
@@ -32,19 +40,46 @@ export default class Widget extends EventEmitter {
             }
         }
         
+        if (options.hotkeys) {
+            const modKey = UserAgent.isMac ? 'Cmd' : 'Ctrl';
+            
+            for (let spec in options.hotkeys) {
+                let handler = options.hotkeys[spec];
+                let hotkey = spec.replace('Mod', modKey);
+                
+                this.hashHandler.bindKey(hotkey, (event, hotkey) => {
+                    event.preventDefault();
+                    
+                    handler.call(this, event);
+                    
+                    return true;
+                })
+            }
+        }
+        
         this.widgetWillMount(Component, options);
     }
     
     widgetWillMount(Component, options) {
-        const component = this.stack.push(Component, options);
-        
-        this.widgetDidMount(component);
+        const component = this.stack.push(Component, options, () => this.widgetDidMount(component));
     }
     
     widgetDidMount(component) {
+        const node = ReactDOM.findDOMNode(component);
+        
         this.component = component;
 
         this._flushQueue();
+        
+        Event.addCommandKeyListener(node, (e, hashId, keyCode) => {
+            const keyString = KeyUtil.keyCodeToString(keyCode);
+            const command = this.hashHandler.findKeyCommand(hashId, keyString);
+    
+            if (command && command.exec) {
+                command.exec(e);
+                Event.stopEvent(e);
+            }
+        });
     }
     
     destroy() {

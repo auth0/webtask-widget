@@ -8,6 +8,10 @@ export default class EditorWidget extends AuthenticatedWidget {
                 save: 'onSave',
                 run: 'onRun',
             },
+            hotkeys: {
+                'Mod-Enter': e => this.run(),
+                'Mod-s': e => this.save(),
+            },
             ...options
         });
     }
