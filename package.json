@@ -1,6 +1,6 @@
 {
   "name": "auth0-webtask-widget",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Embeddable webtask toolkit",
   "main": "src/webtask.js",
   "dependencies": {
