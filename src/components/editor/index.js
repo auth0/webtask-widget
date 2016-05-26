@@ -3,6 +3,7 @@ import Genid from 'genid';
 import ComponentStack from 'lib/componentStack';
 import React from 'react';
 import Sandbox from 'sandboxjs';
+import merge from 'lodash.merge';
 
 import {
     LogsPane
@@ -90,7 +91,7 @@ export default class WebtaskEditor extends React.Component {
                         <span>Loading...</span>
                     </div>
                 );
-        const urlInfo = this.strategy.getUrlInfo(this.props.sandbox);
+        const urlInfo = merge({}, this.strategy.getUrlInfo(this.props.sandbox), this.props.urlInfo);
         const hideSidebar = this.state.currentPane
             && !!this.state.currentPane.hideSidebar;
 
@@ -432,6 +433,11 @@ WebtaskEditor.propTypes = {
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+    urlInfo: React.PropTypes.shape({
+        copyButton: React.PropTypes.bool,
+        prefix: React.PropTypes.string,
+        readonly: React.PropTypes.bool,
+    }),
     useSuffixOnRun: React.PropTypes.bool
 };
 
