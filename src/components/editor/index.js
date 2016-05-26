@@ -91,7 +91,11 @@ export default class WebtaskEditor extends React.Component {
                         <span>Loading...</span>
                     </div>
                 );
-        const urlInfo = merge({}, this.strategy.getUrlInfo(this.props.sandbox), this.props.urlInfo);
+        const urlInfoDefaults = this.strategy.getUrlInfo(this.props.sandbox, this.state.subject);
+        const urlInfoOverrides = typeof this.props.urlInfo === 'function'
+            ?   this.props.urlInfo(this.props.sandbox, this.state.subject, urlInfoDefaults)
+            :   this.props.urlInfo;
+        const urlInfo = merge({}, urlInfoDefaults, urlInfoOverrides);
         const hideSidebar = this.state.currentPane
             && !!this.state.currentPane.hideSidebar;
 
@@ -263,7 +267,6 @@ export default class WebtaskEditor extends React.Component {
         this.setState({
             jobState: job.state,
             schedule: job.schedule,
-            subject: job,
         });
     }
 
@@ -295,6 +298,8 @@ export default class WebtaskEditor extends React.Component {
                 decrypt: true,
                 fetch_code: true
             };
+        
+            this.setState({ subject: job });
 
             return job.inspect(inspectionOptions)
                 .tap(this.onWebtaskInspection.bind(this));
@@ -306,14 +311,20 @@ export default class WebtaskEditor extends React.Component {
     }
 
     inspectWebtask() {
-        const inspectionOptions = {
-            name: this.props.edit,
-            decrypt: true,
-            fetch_code: true
-        };
+        const onWebtask = (webtask) => {
+            const inspectionOptions = {
+                decrypt: true,
+                fetch_code: true
+            };
+        
+            this.setState({ subject: webtask });
 
-        return this.props.sandbox.inspectWebtask(inspectionOptions)
-            .tap(this.onWebtaskInspection.bind(this));
+            return webtask.inspect(inspectionOptions)
+                .tap(this.onWebtaskInspection.bind(this));
+        };
+        
+        return this.props.sandbox.getWebtask({ name: this.props.edit })
+            .tap(onWebtask);
     }
 
     run() {
@@ -433,11 +444,14 @@ WebtaskEditor.propTypes = {
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
-    urlInfo: React.PropTypes.shape({
-        copyButton: React.PropTypes.bool,
-        prefix: React.PropTypes.string,
-        readonly: React.PropTypes.bool,
-    }),
+    urlInfo: React.PropTypes.oneOfType([
+        React.PropTypes.func,
+        React.PropTypes.shape({
+            copyButton: React.PropTypes.bool,
+            prefix: React.PropTypes.string,
+            readonly: React.PropTypes.bool,
+        }),
+    ]),
     useSuffixOnRun: React.PropTypes.bool
 };
 
