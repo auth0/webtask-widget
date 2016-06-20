@@ -7,6 +7,7 @@ import {
     LogsPane,
     SchedulePane,
     SecretsPane,
+    ParamsPane,
     SettingsPane,
 } from './panes';
 
@@ -33,7 +34,7 @@ export const CreateWebtaskStrategy = {
         };
     },
     onSave: saveWebtask,
-    panes: [CodePane, SecretsPane, SettingsPane, LogsPane],
+    panes: [CodePane, SecretsPane, ParamsPane, SettingsPane, LogsPane],
 };
 
 export const EditWebtaskStrategy = {
@@ -50,7 +51,7 @@ export const EditWebtaskStrategy = {
         };
     },
     onSave: saveWebtask,
-    panes: [CodePane, SecretsPane, SettingsPane, LogsPane],
+    panes: [CodePane, SecretsPane, ParamsPane, SettingsPane, LogsPane],
 };
 
 export const CreateCronJobStrategy = {
@@ -71,7 +72,7 @@ export const CreateCronJobStrategy = {
         this.setState({ jobState: state });
     },
     onSave: saveCronJob,
-    panes: [CodePane, SecretsPane, SchedulePane, LogsPane],
+    panes: [CodePane, SecretsPane, ParamsPane, SchedulePane, LogsPane],
 };
 
 export const EditCronJobStrategy = {
@@ -96,7 +97,7 @@ export const EditCronJobStrategy = {
             .finally(() => this.setState({ jobStateChangePending: false }));
     },
     onSave: saveCronJob,
-    panes: [CodePane, SecretsPane, SchedulePane, LogsPane, HistoryPane],
+    panes: [CodePane, SecretsPane, ParamsPane, SchedulePane, LogsPane, HistoryPane],
 };
 
 
@@ -114,6 +115,7 @@ function saveWebtask(nextStrategy = EditWebtaskStrategy) {
         mergeBody: this.state.mergeBody,
         parseBody: this.state.parseBody,
         secrets: this.state.secrets,
+        params: this.state.params,
     })
         .tap(subject => {
             this.setState({ subject });

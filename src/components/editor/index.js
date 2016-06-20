@@ -59,6 +59,9 @@ export default class WebtaskEditor extends React.Component {
             secrets: this.requiresInspection
                 ?   {}
                 :   props.secrets,
+            params: this.requiresInspection
+                ?   {}
+                :   props.params,
             subject: props.edit,
             useSuffixOnRun: typeof props.useSuffixOnRun === 'undefined' ? true : props.useSuffixOnRun
         };
@@ -246,6 +249,10 @@ export default class WebtaskEditor extends React.Component {
     onChangeSecrets(secrets) {
         this.setState({ secrets });
     }
+    
+    onChangeParams(params) {
+        this.setState({ params });
+    }
 
     onChangeState(state) {
         this.strategy.onChangeState.call(this, state);
@@ -277,6 +284,7 @@ export default class WebtaskEditor extends React.Component {
             name: claims.jtn || this.state.name,
             parseBody: !!claims.pb,
             secrets: claims.ectx || {},
+            params: claims.pctx || {},
         });
     }
 
@@ -337,6 +345,7 @@ export default class WebtaskEditor extends React.Component {
                 mergeBody: this.state.mergeBody,
                 parseBody: this.state.parseBody,
                 secrets: this.state.secrets,
+                params: this.state.params
             };
 
             return this.props.sandbox.create(this.state.code, webtaskOptions)
@@ -443,6 +452,7 @@ WebtaskEditor.propTypes = {
     sandbox: React.PropTypes.instanceOf(Sandbox).isRequired,
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
+    params: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
     urlInfo: React.PropTypes.oneOfType([
         React.PropTypes.func,
@@ -461,4 +471,5 @@ WebtaskEditor.defaultProps = {
     name: Genid(10),
     schedule: '',
     secrets: {},
+    params: {},
 };
