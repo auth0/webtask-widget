@@ -4,7 +4,7 @@ import React from 'react';
 import 'styles/secretsEditor.less';
 
 
-export default class A0SecretsEditor extends React.Component {
+export default class A0KeyValueListEditor extends React.Component {
     constructor(props) {
         super(props);
 
@@ -39,24 +39,23 @@ export default class A0SecretsEditor extends React.Component {
         const state = this.state;
 
         return (
-            <div className="a0-secrets-editor">
-                <div className="a0-sidebar-intro">
-                    <h2 className="a0-title">Secrets</h2>
-                    <p className="a0-explanation">You can create webtasks that depend on a set of encrypted secrets, like an API key or connection string. To access the secret use: <code>context.secrets.KEY</code>.</p>
-                </div>
+            <div className="a0-kvlist-editor">
                 { state.secrets.map((secret, i) => (
                     secret.editing
-                        ?   <A0SecretEditor secret={ secret } key={ i }
+                        ?   <A0KeyValueEditor secret={ secret } key={ i }
                                 onAccept={ (accepted) => this.updateSecret(i, accepted) }
+                                valueType={ props.valueType }
                             />
-                        :   <A0SecretView secret={ secret } key={ i }
+                        :   <A0KeyValueViewer secret={ secret } key={ i }
                                 onEdit={ () => this.editSecret(i) }
                                 onRemove={ () => this.removeSecret(i) }
+                                valueType={ props.valueType }
                             />
                 ))}
-                <A0SecretCreator
+                <A0KeyValueCreator
                     ref="creator"
                     onAccept={ (accepted) => this.addSecret(accepted) }
+                    valueType={ props.valueType }
                 />
             </div>
         );
@@ -118,11 +117,17 @@ export default class A0SecretsEditor extends React.Component {
 }
 
 
-A0SecretsEditor.propTypes = {
+A0KeyValueListEditor.propTypes = {
     secrets: React.PropTypes.object.isRequired,
+    valueType: React.PropTypes.oneOf(['password', 'text']),
 };
 
-class A0SecretCreator extends React.Component {
+A0KeyValueListEditor.defaultProps = {
+    valueType: 'password',
+};
+
+
+class A0KeyValueCreator extends React.Component {
     constructor(props) {
         super(props);
 
@@ -150,7 +155,7 @@ class A0SecretCreator extends React.Component {
                         value={ state.key }
                     />
                     <input className="a0-text-input -dark" placeholder="Value"
-                        type="password"
+                        type={ props.valueType }
                         onChange={ (e) => this.setState({ value: e.target.value }) }
                         value={ state.value }
                     />
@@ -193,8 +198,16 @@ class A0SecretCreator extends React.Component {
     }
 }
 
+A0KeyValueCreator.propTypes = {
+    valueType: React.PropTypes.oneOf(['password', 'text']),
+};
 
-class A0SecretEditor extends React.Component {
+A0KeyValueCreator.defaultProps = {
+    valueType: 'password',
+};
+
+
+class A0KeyValueEditor extends React.Component {
     constructor(props) {
         super(props);
 
@@ -222,7 +235,7 @@ class A0SecretEditor extends React.Component {
                         value={ state.key }
                     />
                     <input className="a0-text-input -darker" placeholder="Value"
-                        type="password"
+                        type={ props.valueType }
                         onChange={ (e) => this.setState({ value: e.target.value }) }
                         value={ state.value }
                     />
@@ -258,7 +271,16 @@ class A0SecretEditor extends React.Component {
     }
 }
 
-class A0SecretView extends React.Component {
+A0KeyValueEditor.propTypes = {
+    valueType: React.PropTypes.oneOf(['password', 'text']),
+};
+
+A0KeyValueEditor.defaultProps = {
+    valueType: 'password',
+};
+
+
+class A0KeyValueViewer extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -279,7 +301,7 @@ class A0SecretView extends React.Component {
                     <div className="a0-value">
                         <span className="a0-inline-text -strong -bright">Value:</span>
                         { " " }
-                        <span className="a0-inline-text -bright">********</span>
+                        <span className="a0-inline-text -bright">{ props.valueType === 'password' ? '********' : props.secret.value }</span>
                     </div>
                 </div>
                 <div className="a0-actions">
@@ -309,3 +331,11 @@ class A0SecretView extends React.Component {
         };
     }
 }
+
+A0KeyValueViewer.propTypes = {
+    valueType: React.PropTypes.oneOf(['password', 'text']),
+};
+
+A0KeyValueViewer.defaultProps = {
+    valueType: 'password',
+};

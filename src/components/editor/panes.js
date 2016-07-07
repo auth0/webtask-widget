@@ -6,8 +6,8 @@ import AceEditor from './aceEditor';
 import EditorOptions from './editorOptions';
 import HistoryItemInspector from './historyItemInspector';
 import JobHistory from './jobHistory';
+import KeyValueListEditor from './keyValueListEditor';
 import ScheduleEditor from './scheduleEditor';
-import SecretsEditor from './secretsEditor';
 
 export const CodePane = {
     hideSidebar: true,
@@ -36,6 +36,29 @@ export const HistoryPane = {
             <HistoryItemInspector
                 item={ this.state.selectedHistoryItem }
             />
+        );
+    },
+};
+
+export const MetadataPane = {
+    iconClass: '-tag',
+    id: 'meta',
+    name: 'Metadata',
+    renderBody: renderEditor,
+    renderSidebar() {
+        return (
+            <div className="a0-sidebar-metadata a0-sidebar-scroller">
+                <div className="a0-sidebar-intro">
+                    <h2 className="a0-title">Metadata</h2>
+                    <p className="a0-explanation">You can associate metadata with saved webtasks. This metadata can be used to query saved webtasks using the http api.</p>
+                </div>
+                <KeyValueListEditor
+                    ref="meta"
+                    secrets={ this.state.meta }
+                    onChange={ meta => this.onChangeMeta(meta) }
+                    valueType="text"
+                />
+            </div>
         );
     },
 };
@@ -81,11 +104,17 @@ export const SecretsPane = {
     renderBody: renderEditor,
     renderSidebar() {
         return (
-            <SecretsEditor
-                ref="secrets"
-                secrets={ this.state.secrets }
-                onChange={ secrets => this.onChangeSecrets(secrets) }
-            />
+            <div className="a0-sidebar-secrets a0-sidebar-scroller">
+                <div className="a0-sidebar-intro">
+                    <h2 className="a0-title">Secrets</h2>
+                    <p className="a0-explanation">You can create webtasks that depend on a set of encrypted secrets, like an API key or connection string. To access the secret use: <code>context.secrets.KEY</code>.</p>
+                </div>
+                <KeyValueListEditor
+                    ref="secrets"
+                    secrets={ this.state.secrets }
+                    onChange={ secrets => this.onChangeSecrets(secrets) }
+                />
+            </div>
         );
     },
 };

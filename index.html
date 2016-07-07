@@ -2,9 +2,10 @@
 <html>
 
     <head>
+        <meta charset="utf-8">
         <title>Webtask in a box demo</title>
+        <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/latest/index.css"></link>
         <script type="text/javascript" src="dist/webtask.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"></link>
         <style>
             * {
                 box-sizing: border-box;
@@ -55,10 +56,11 @@
                 mount: document.getElementById('cron-jobs'),
                 storeProfile: true,
             });
-
+            
             var editor = window.webtaskWidget.showEditor({
                 mount: document.getElementById('editor'),
                 storeProfile: true,
+                edit: 'test',
             });
 
             editor.on('run', function () {
@@ -68,12 +70,7 @@
             editor.on('save', function () {
                 console.log('editor.save', arguments);
             });
-
-            editor.run()
-                .then(function () {
-                    console.log('editor#run', arguments);
-                });
-
+    
 
             var logs = window.webtaskWidget.showLogs({
                 mount: document.getElementById('logs'),

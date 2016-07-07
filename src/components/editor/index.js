@@ -26,8 +26,8 @@ import 'styles/editor.less';
 export default class WebtaskEditor extends React.Component {
     constructor(props) {
         super(props);
-
-        this.requiresInspection = typeof this.props.edit === 'string';
+        
+        this.requiresInspection = !!this.props.edit;
 
         this.strategy = this.props.cron
             ?   this.props.edit
@@ -47,6 +47,9 @@ export default class WebtaskEditor extends React.Component {
             mergeBody: typeof this.props.mergeBody !== 'undefined'
                 ?   this.props.mergeBody
                 :   this.strategy.defaultMergeBody,
+            meta: this.requiresInspection
+                ?   {}
+                :   props.meta,
             name: this.requiresInspection
                 ?   ''
                 :   props.name,
@@ -114,6 +117,7 @@ export default class WebtaskEditor extends React.Component {
                 currentPane={ this.state.currentPane }
                 panes={ this.strategy.panes }
                 onChange={ pane => this.onChangePane(pane) }
+                size={ this.props.size }
             />
         );
 
@@ -231,6 +235,10 @@ export default class WebtaskEditor extends React.Component {
         this.setState({ code });
     }
 
+    onChangeMeta(meta) {
+        this.setState({ meta });
+    }
+
     onChangeOptions(options) {
         this.setState(options);
     }
@@ -263,7 +271,7 @@ export default class WebtaskEditor extends React.Component {
         this.setState({ selectedHistoryItem: item });
     }
 
-    onCronInspection(job) {
+    onCronJob(job) {
         this.setState({
             jobState: job.state,
             schedule: job.schedule,
@@ -274,6 +282,7 @@ export default class WebtaskEditor extends React.Component {
         this.setState({
             code: claims.code,
             mergeBody: !!claims.mb,
+            meta: claims.meta || {},
             name: claims.jtn || this.state.name,
             parseBody: !!claims.pb,
             secrets: claims.ectx || {},
@@ -281,9 +290,22 @@ export default class WebtaskEditor extends React.Component {
     }
 
     inspect() {
-        this.inspection$ = this.props.cron
-            ?   this.inspectCronJob()
-            :   this.inspectWebtask();
+        if (this.props.edit instanceof Sandbox.CronJob || this.props.edit instanceof Sandbox.Webtask) {
+            this.inspection$ = this.props.edit.inspect({ decrypt: true, fetch_code: true })
+                .tap(this.onWebtaskInspection.bind(this));
+            
+            this.setState({
+                subject: this.props.edit,
+            });
+            
+            if (this.props.edit instanceof Sandbox.CronJob) {
+                this.onCronJob(this.props.edit);
+            }
+        } else {
+            this.inspection$ = this.props.cron
+                ?   this.inspectCronJob()
+                :   this.inspectWebtask();
+        }
 
         this.setState({ inspectionInProgress: true });
 
@@ -299,7 +321,7 @@ export default class WebtaskEditor extends React.Component {
                 fetch_code: true
             };
         
-            this.setState({ subject: job });
+            this.setState({ subject: job, meta: job.meta });
 
             return job.inspect(inspectionOptions)
                 .tap(this.onWebtaskInspection.bind(this));
@@ -307,7 +329,7 @@ export default class WebtaskEditor extends React.Component {
 
         return this.props.sandbox.getCronJob({ name: this.props.edit })
             .tap(onCronJob)
-            .tap(this.onCronInspection.bind(this));
+            .tap(this.onCronJob.bind(this));
     }
 
     inspectWebtask() {
@@ -444,6 +466,7 @@ WebtaskEditor.propTypes = {
     schedule: React.PropTypes.string,
     secrets: React.PropTypes.object,
     stack: React.PropTypes.instanceOf(ComponentStack).isRequired,
+    size: React.PropTypes.oneOf(['small', 'large']),
     urlInfo: React.PropTypes.oneOfType([
         React.PropTypes.func,
         React.PropTypes.shape({
@@ -461,4 +484,5 @@ WebtaskEditor.defaultProps = {
     name: Genid(10),
     schedule: '',
     secrets: {},
+    size: 'large',
 };
