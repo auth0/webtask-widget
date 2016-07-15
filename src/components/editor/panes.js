@@ -50,7 +50,7 @@ export const MetadataPane = {
             <div className="a0-sidebar-metadata a0-sidebar-scroller">
                 <div className="a0-sidebar-intro">
                     <h2 className="a0-title">Metadata</h2>
-                    <p className="a0-explanation">You can associate metadata with saved webtasks. This metadata can be used to query saved webtasks using the http api.</p>
+                    <p className="a0-explanation">You can associate metadata with saved webtasks. This metadata can be used to query saved webtasks using the HTTP api.</p>
                 </div>
                 <KeyValueListEditor
                     ref="meta"
