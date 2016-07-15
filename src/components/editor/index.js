@@ -291,7 +291,7 @@ export default class WebtaskEditor extends React.Component {
 
     inspect() {
         if (this.props.edit instanceof Sandbox.CronJob || this.props.edit instanceof Sandbox.Webtask) {
-            this.inspection$ = this.props.edit.inspect({ decrypt: true, fetch_code: true })
+            this.inspection$ = this.props.edit.inspect({ decrypt: true, fetch_code: true, meta: true })
                 .tap(this.onWebtaskInspection.bind(this));
             
             this.setState({
@@ -318,7 +318,8 @@ export default class WebtaskEditor extends React.Component {
         const onCronJob = (job) => {
             const inspectionOptions = {
                 decrypt: true,
-                fetch_code: true
+                fetch_code: true,
+                meta: true,
             };
         
             this.setState({ subject: job, meta: job.meta });
@@ -336,7 +337,8 @@ export default class WebtaskEditor extends React.Component {
         const onWebtask = (webtask) => {
             const inspectionOptions = {
                 decrypt: true,
-                fetch_code: true
+                fetch_code: true,
+                meta: true,
             };
         
             this.setState({ subject: webtask });
