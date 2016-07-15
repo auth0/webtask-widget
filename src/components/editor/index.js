@@ -459,6 +459,7 @@ WebtaskEditor.propTypes = {
     ]),
     jobState: React.PropTypes.oneOf(['active', 'inactive']),
     mergeBody: React.PropTypes.bool,
+    meta: React.PropTypes.object,
     name: React.PropTypes.string,
     onRun: React.PropTypes.func,
     onSave: React.PropTypes.func,
@@ -483,6 +484,7 @@ WebtaskEditor.propTypes = {
 WebtaskEditor.defaultProps = {
     cron: false,
     jobState: 'inactive',
+    meta: {},
     name: Genid(10),
     schedule: '',
     secrets: {},
