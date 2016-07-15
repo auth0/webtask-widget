@@ -7,6 +7,8 @@ import Sandbox from 'sandboxjs';
 
 export default class AuthenticatedWidget extends Widget {
     widgetWillMount(Component, {
+        sandbox = null,
+        edit = null,
         url = 'https://webtask.it.auth0.com',
         token = null,
         container = null,
@@ -57,7 +59,6 @@ export default class AuthenticatedWidget extends Widget {
             }
             
             function handleStorageEvent(e) {
-                console.log('storage event', e);
                 if (e.storageArea === storageKey && e.newValue) {
                     try {
                         onLogin(validateProfile(JSON.stringify(e.newValue)));
@@ -114,6 +115,22 @@ export default class AuthenticatedWidget extends Widget {
             storeProfile,
             storageKey,
         };
+        
+        if (edit && edit.sandbox instanceof Sandbox) {
+            sandbox = edit.sandbox;
+        }
+        
+        if (sandbox instanceof Sandbox) {
+            this.emit('sandbox', sandbox);
+            
+            writeProfile(sandbox);
+            
+            const component = this.stack.push(Component, Object.assign({}, props, { sandbox }));
+            
+            this.widgetDidMount(component);
+            
+            return;
+        }
         
         Bluebird.resolve(readProfile(options))
             .then(validateProfile)

@@ -20,7 +20,7 @@
     "react-json-inspector": "^6.0.0",
     "react-object-inspector": "^0.2.0",
     "react-timeago": "^2.2.1",
-    "sandboxjs": "^2.3.1",
+    "sandboxjs": "^2.4.1",
     "superagent": "^1.4.0",
     "zeroclipboard": "^2.2.0"
   },

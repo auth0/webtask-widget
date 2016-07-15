@@ -186,6 +186,16 @@
             }
         }
     }
+    
+    &.-small > .a0-icon-button {
+        & > .a0-selector-text {
+            display: none;
+        }
+        
+        &:before {
+            padding: 0;
+        }
+    }
 }
 
 
@@ -297,6 +307,7 @@
 
 .a0-sidebar-intro {
     margin-bottom: 1em;
+    padding: 1.5em;
 
     & > .a0-title {
         color: @text-light-color;
@@ -310,6 +321,10 @@
         font-size: 13px;
 
     }
+}
+
+.a0-sidebar-scroller {
+    overflow: auto;
 }
 
 .a0-editor-footer {

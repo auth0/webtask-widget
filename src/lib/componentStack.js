@@ -32,6 +32,10 @@ export default class ComponentStack {
         
         wrapperEl.classList.add('a0-layer');
         
+        if (this.element.offsetWidth < 992) {
+            props.size = 'small';
+        }
+        
         const componentRef = ReactDOM.render(<Component {...props} stack={ this } />, wrapperEl, onMounted); 
         
         componentRef.unmount = () => {
