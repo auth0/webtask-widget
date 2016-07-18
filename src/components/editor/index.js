@@ -360,6 +360,7 @@ export default class WebtaskEditor extends React.Component {
                 name: wtName,
                 mergeBody: this.state.mergeBody,
                 parseBody: this.state.parseBody,
+                meta: this.state.meta,
                 secrets: this.state.secrets,
             };
 
