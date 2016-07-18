@@ -44,6 +44,7 @@ export default class A0KeyValueListEditor extends React.Component {
                     secret.editing
                         ?   <A0KeyValueEditor secret={ secret } key={ i }
                                 onAccept={ (accepted) => this.updateSecret(i, accepted) }
+                                validKeyRx={ props.validKeyRx }
                                 valueType={ props.valueType }
                             />
                         :   <A0KeyValueViewer secret={ secret } key={ i }
@@ -55,6 +56,7 @@ export default class A0KeyValueListEditor extends React.Component {
                 <A0KeyValueCreator
                     ref="creator"
                     onAccept={ (accepted) => this.addSecret(accepted) }
+                    validKeyRx={ props.validKeyRx }
                     valueType={ props.valueType }
                 />
             </div>
@@ -119,10 +121,12 @@ export default class A0KeyValueListEditor extends React.Component {
 
 A0KeyValueListEditor.propTypes = {
     secrets: React.PropTypes.object.isRequired,
+    validKeyRx: React.PropTypes.instanceOf(RegExp),
     valueType: React.PropTypes.oneOf(['password', 'text']),
 };
 
 A0KeyValueListEditor.defaultProps = {
+    validKeyRx: /^[\$_a-zA-Z][-\$_a-zA-Z0-9]*$/,
     valueType: 'password',
 };
 
@@ -135,8 +139,6 @@ class A0KeyValueCreator extends React.Component {
             key: '',
             value: '',
         };
-
-        this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
 
     render() {
@@ -171,7 +173,7 @@ class A0KeyValueCreator extends React.Component {
     }
 
     isValid() {
-        return this.validKeyRx.test(this.state.key);
+        return this.props.validKeyRx.test(this.state.key);
     }
 
     onSubmit(e) {
@@ -199,6 +201,7 @@ class A0KeyValueCreator extends React.Component {
 }
 
 A0KeyValueCreator.propTypes = {
+    validKeyRx: React.PropTypes.instanceOf(RegExp).isRequired,
     valueType: React.PropTypes.oneOf(['password', 'text']),
 };
 
@@ -215,8 +218,6 @@ class A0KeyValueEditor extends React.Component {
             key: props.secret ? props.secret.key : '',
             value: props.secret ? props.secret.value : '',
         };
-
-        this.validKeyRx = /^[\$_a-zA-Z][\$_a-zA-Z0-9]*$/;
     }
 
     render() {
@@ -251,7 +252,7 @@ class A0KeyValueEditor extends React.Component {
     }
 
     isValid() {
-        return this.validKeyRx.test(this.state.key);
+        return this.props.validKeyRx.test(this.state.key);
     }
 
     onSubmit(e) {
@@ -272,6 +273,7 @@ class A0KeyValueEditor extends React.Component {
 }
 
 A0KeyValueEditor.propTypes = {
+    validKeyRx: React.PropTypes.instanceOf(RegExp).isRequired,
     valueType: React.PropTypes.oneOf(['password', 'text']),
 };
 
