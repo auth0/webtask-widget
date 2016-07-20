@@ -105,18 +105,24 @@ function saveCronJob() {
     const jobState = this.getJobState();
 
     return saveWebtask.call(this, EditCronJobStrategy)
-        .then(webtask => webtask.createCronJob({ schedule: this.state.schedule, state: jobState }))
+        .then(webtask => webtask.createCronJob({ meta: this.state.meta, schedule: this.state.schedule, state: jobState }))
         .tap(subject => this.setState({ subject }));
 }
 
 function saveWebtask(nextStrategy = EditWebtaskStrategy) {
-    return this.props.sandbox.create(this.state.code, {
+    const options = {
         name: this.state.name.trim(),
         mergeBody: this.state.mergeBody,
         meta: this.state.meta,
         parseBody: this.state.parseBody,
         secrets: this.state.secrets,
-    })
+    };
+
+    if (this.state.subject) {
+        options.params = this.state.subject.claims.pctx;
+    }
+
+    return this.props.sandbox.create(this.state.code, options)
         .tap(subject => {
             this.setState({ subject });
             this.setStrategy(nextStrategy);
