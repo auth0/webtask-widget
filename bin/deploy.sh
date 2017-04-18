@@ -17,7 +17,5 @@ else
     for i in $VERSIONS; do
         aws s3 cp --region us-west-1 ./dist/webtask.js s3://assets.us.auth0.com/$PATH_PREFIX-$i.js;
         aws s3 cp --region us-west-1 ./dist/webtask.min.js s3://assets.us.auth0.com/$PATH_PREFIX-$i.min.js;
-        curl -fs -XDELETE https://cdn.auth0.com/$PATH_PREFIX-$i.js;
-        curl -fs -XDELETE https://cdn.auth0.com/$PATH_PREFIX-$i.min.js;
     done;
 fi
